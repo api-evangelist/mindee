@@ -1,0 +1,33 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "https://api-v2.mindee.net/v2/inferences/9d8c2c5a-1d44-4c64-9c4f-2a8b9c33d9aa",
+    "headers": {
+      "Authorization": "$MINDEE_API_KEY"
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "inference": {
+        "id": "9d8c2c5a-1d44-4c64-9c4f-2a8b9c33d9aa",
+        "model": { "id": "model_invoice", "name": "Invoice Extraction" },
+        "file": { "name": "invoice.pdf", "alias": null },
+        "active_options": {
+          "rag": false,
+          "raw_text": true,
+          "polygon": true,
+          "confidence": true
+        },
+        "result": {
+          "fields": {
+            "supplier_name": { "value": "ACME Corp", "confidence": 0.98 },
+            "invoice_number": { "value": "INV-12042", "confidence": 0.99 },
+            "invoice_date": { "value": "2026-05-12", "confidence": 0.97 },
+            "total_amount": { "value": 1248.5, "confidence": 0.99, "currency": "USD" }
+          }
+        }
+      }
+    }
+  }
+}

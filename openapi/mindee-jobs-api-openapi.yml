@@ -1,0 +1,291 @@
+openapi: 3.1.0
+info:
+  title: Mindee Jobs API
+  version: 2.0.0
+  description: Poll the status of asynchronous Mindee inference jobs across every Mindee product.
+  contact:
+    name: Mindee
+    url: https://mindee.com
+  license:
+    name: Proprietary
+servers:
+- url: https://api-v2.mindee.net
+tags:
+- name: Jobs
+  description: Poll the status of asynchronous Mindee inference jobs across every Mindee product.
+paths:
+  /v2/jobs/{job_id}:
+    get:
+      tags:
+      - Jobs
+      summary: Get The Status Of A File's Processing
+      description: 'Get the status of an inference that was previously enqueued.
+
+
+        If you are using webhooks there is no need to call this route.
+
+
+        When the job `status` is `Processing` or `Failed` the return code will be HTTP 200.
+
+
+        When the job `status` is `Processed` the return code will be HTTP 302.
+
+
+        The processing result can then be retrieved in two ways:
+
+        * **Recommended:** Using a GET on the URL specified in the `result_url` field of the response
+
+        * Allowing your client to redirect on the `Location` header of the response
+
+
+        Note: set the `redirect` parameter to `false` to disable the redirection behavior, and always return HTTP 200.'
+      operationId: Get_Job_Status_v2_jobs__job_id__get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid4
+          title: Job ID
+          description: UUID of the job to retrieve
+        description: UUID of the job to retrieve
+      - name: redirect
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: Automatically redirect to the result URL
+          default: true
+          title: Redirect
+        description: Automatically redirect to the result URL
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResponse'
+        '302':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResponse'
+          description: Found
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Not Found
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Unprocessable Content
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Too Many Requests
+components:
+  securitySchemes:
+    APIKeyHeader:
+      type: apiKey
+      in: header
+      name: Authorization
+  schemas:
+    ErrorItem:
+      properties:
+        pointer:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Pointer
+          description: A JSON Pointer to the location of the body property.
+          examples:
+          - '#/model_id'
+        detail:
+          type: string
+          title: Detail
+          description: Explicit information on the issue.
+          examples:
+          - '''model_id'' must be a valid UUID format'
+      type: object
+      required:
+      - pointer
+      - detail
+      title: ErrorItem
+      description: Explicit details on a problem.
+    ErrorResponse:
+      properties:
+        status:
+          type: integer
+          maximum: 599.0
+          minimum: 100.0
+          title: Status
+          description: The HTTP status code returned by the server.
+          examples:
+          - 422
+        detail:
+          type: string
+          title: Detail
+          description: A human-readable explanation specific to the occurrence of the problem.
+          examples:
+          - One or more fields failed validation.
+        title:
+          type: string
+          title: Title
+          description: A short, human-readable summary of the problem.
+          examples:
+          - Invalid fields in form
+        code:
+          type: string
+          title: Code
+          description: A machine-readable code specific to the occurrence of the problem.
+          examples:
+          - 422-001
+        errors:
+          items:
+            $ref: '#/components/schemas/ErrorItem'
+          type: array
+          title: Errors
+          description: A list of explicit details on the problem.
+          default: []
+      type: object
+      required:
+      - status
+      - detail
+      - title
+      - code
+      title: ErrorResponse
+      description: Error response detailing a problem. The format adheres to RFC 9457.
+    Job:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          title: Id
+          description: UUID of the Job.
+        model_id:
+          type: string
+          format: uuid4
+          title: Model Id
+          description: UUID of the model to be used for the inference.
+        filename:
+          type: string
+          title: Filename
+          description: Name of the file sent.
+          examples:
+          - file.jpg
+        alias:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Alias
+          description: Optional alias sent for the file.
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: Date and time of the Job creation.
+        completed_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Completed At
+          description: Date and time of the Job completion. Filled once processing is finished.
+        status:
+          $ref: '#/components/schemas/Status'
+        polling_url:
+          type: string
+          maxLength: 2083
+          minLength: 1
+          format: uri
+          title: Polling Url
+          description: URL to poll for the Job status.
+        result_url:
+          anyOf:
+          - type: string
+            maxLength: 2083
+            minLength: 1
+            format: uri
+          - type: 'null'
+          title: Result Url
+          description: URL to retrieve the inference results. Will be filled once the inference is ready.
+        webhooks:
+          items:
+            $ref: '#/components/schemas/WebhookResponse'
+          type: array
+          title: Webhooks
+          description: List of responses from webhooks called. Empty until processing is finished.
+          default: []
+        error:
+          anyOf:
+          - $ref: '#/components/schemas/ErrorResponse'
+          - type: 'null'
+          description: If an error occurred during processing, contains the problem details.
+      type: object
+      required:
+      - id
+      - model_id
+      - filename
+      - created_at
+      - status
+      - polling_url
+      title: Job
+      description: Information on the processing of a file sent to the Mindee API.
+    JobResponse:
+      properties:
+        job:
+          $ref: '#/components/schemas/Job'
+      type: object
+      required:
+      - job
+      title: JobResponse
+      description: Response for a Job.
+    Status:
+      type: string
+      enum:
+      - Processing
+      - Failed
+      - Processed
+      title: Status
+      description: Possible states of an operation.
+    WebhookResponse:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          title: Id
+          description: UUID of the webhook endpoint.
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: Date and time the webhook was called.
+        status:
+          $ref: '#/components/schemas/Status'
+          default: Processing
+        error:
+          anyOf:
+          - $ref: '#/components/schemas/ErrorResponse'
+          - type: 'null'
+          description: If an error occurred when calling the webhook, contains the problem details.
+        attempts_count:
+          type: integer
+          title: Attempts Count
+          description: Number of attempts made to call the webhook.
+          default: 0
+      type: object
+      required:
+      - id
+      title: WebhookResponse
+      description: Response from a webhook call.
+security:
+- APIKeyHeader: []

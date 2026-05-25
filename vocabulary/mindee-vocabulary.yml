@@ -1,0 +1,61 @@
+specification: API Evangelist Vocabulary
+specificationVersion: '0.1'
+provider: Mindee
+providerId: mindee
+created: '2026-05-25'
+modified: '2026-05-25'
+description: Operational and capability vocabulary for the Mindee Document Parsing API. Captures the model families, asynchronous job lifecycle, and document parsing surface that defines Mindee.
+tags:
+  - Document Parsing
+  - OCR
+  - IDP
+  - AI
+  - Machine Learning
+terms:
+  - term: Inference
+    definition: A single execution of a Mindee model against an input document; the unit of work that consumes a credit.
+    related:
+      - Job
+      - Model
+  - term: Job
+    definition: The asynchronous handle for a queued inference; clients poll the job until it completes or receive the result via webhook.
+    related:
+      - Inference
+      - Webhook
+  - term: Model
+    definition: A named Mindee model that consumes documents and produces structured output. Models are grouped by family — Extraction, Classification, Crop, OCR, Split.
+    related:
+      - Extraction Model
+      - OCR Model
+  - term: Extraction Model
+    definition: A model that extracts named fields (totals, dates, line items, IDs) from a document and returns them as a structured JSON payload following a Data Schema.
+  - term: Classification Model
+    definition: A model that labels a document as belonging to one of the predefined classes so it can be routed to the appropriate extraction model.
+  - term: Crop Model
+    definition: A model that detects the document area inside a larger image and returns the cropped region for downstream processing.
+  - term: OCR Model
+    definition: A model that performs full-page optical character recognition and returns raw text along with bounding polygons.
+  - term: Split Model
+    definition: A model that splits a multi-document file into individual documents that can each be processed independently.
+  - term: Data Schema
+    definition: The configurable JSON output structure for an extraction model; defines the fields the model will attempt to populate for each document.
+  - term: Continuous Learning (RAG)
+    definition: Mindee's Retrieval-Augmented Generation mechanism that allows customers to attach a knowledge base of reference documents to improve accuracy on edge cases.
+  - term: Confidence Score
+    definition: A per-field numeric score indicating how confident the model is in the extracted value; available on Pro and higher plans.
+  - term: Polygon
+    definition: The bounding polygon coordinates for an extracted field on a document page; available on Pro and higher plans.
+  - term: Credit
+    definition: The metering unit for Mindee billing; one credit is typically one inference on a single-page document.
+  - term: Webhook
+    definition: A URL the customer registers to receive asynchronous inference completion events instead of polling.
+domains:
+  - id: document-parsing
+    label: Document Parsing
+    description: Extracting structured information from unstructured documents.
+  - id: ocr
+    label: Optical Character Recognition
+    description: Converting document images into machine-readable text with bounding boxes.
+  - id: idp
+    label: Intelligent Document Processing
+    description: Combining classification, extraction, and downstream routing into automated document workflows.

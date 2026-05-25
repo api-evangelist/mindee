@@ -1,0 +1,172 @@
+specification: API Commons Plans
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/Plans
+provider: Mindee
+providerId: mindee
+created: '2026-05-25'
+modified: '2026-05-25'
+reconciled: true
+tags:
+  - Document Parsing
+  - OCR
+  - AI
+  - IDP
+description: 'Reconciled subscription plans and per-credit pricing for the Mindee Document Parsing API. Source: mindee.com/pricing.'
+sources:
+  - https://mindee.com/pricing
+  - https://docs.mindee.com/account-management/subscription-plans
+plans:
+  - id: mindee-starter
+    name: Starter
+    type: tiered
+    description: Entry-level plan with 500 credits per month and community support.
+    entries:
+      - label: Monthly subscription
+        name: subscription
+        type: fixed
+        metric: month
+        limit: 1
+        timeFrame: month
+        geo: global
+        unit: 1
+        price: '44.00'
+        currency: EUR
+        userMultiplied: false
+      - label: Included credits
+        name: included_credits
+        type: included
+        metric: credit
+        limit: 500
+        timeFrame: month
+        geo: global
+        unit: 1
+        price: '0.00'
+        currency: EUR
+        userMultiplied: false
+      - label: Credit overage
+        name: overage
+        type: metered
+        metric: credit
+        limit: -1
+        timeFrame: usage
+        geo: global
+        unit: 1
+        price: '0.05'
+        currency: EUR
+        userMultiplied: false
+    features:
+      - Unlimited models
+      - Community support
+  - id: mindee-pro
+    name: Pro
+    type: tiered
+    description: Most popular plan with 2,500 credits per month, live chat support, RAG (20 documents), and polygons.
+    entries:
+      - label: Monthly subscription
+        name: subscription
+        type: fixed
+        metric: month
+        limit: 1
+        timeFrame: month
+        geo: global
+        unit: 1
+        price: '179.00'
+        currency: EUR
+        userMultiplied: false
+      - label: Included credits
+        name: included_credits
+        type: included
+        metric: credit
+        limit: 2500
+        timeFrame: month
+        geo: global
+        unit: 1
+        price: '0.00'
+        currency: EUR
+        userMultiplied: false
+      - label: Credit overage
+        name: overage
+        type: metered
+        metric: credit
+        limit: -1
+        timeFrame: usage
+        geo: global
+        unit: 1
+        price: '0.04'
+        currency: EUR
+        userMultiplied: false
+    features:
+      - Unlimited models
+      - Live chat support
+      - Team members
+      - Data processing localization
+      - RAG (up to 20 documents)
+      - Polygons
+  - id: mindee-business
+    name: Business
+    type: tiered
+    description: 10,000 credits per month with unlimited RAG, confidence scores, and boosted accuracy.
+    entries:
+      - label: Monthly subscription
+        name: subscription
+        type: fixed
+        metric: month
+        limit: 1
+        timeFrame: month
+        geo: global
+        unit: 1
+        price: '584.00'
+        currency: EUR
+        userMultiplied: false
+      - label: Included credits
+        name: included_credits
+        type: included
+        metric: credit
+        limit: 10000
+        timeFrame: month
+        geo: global
+        unit: 1
+        price: '0.00'
+        currency: EUR
+        userMultiplied: false
+      - label: Credit overage
+        name: overage
+        type: metered
+        metric: credit
+        limit: -1
+        timeFrame: usage
+        geo: global
+        unit: 1
+        price: '0.035'
+        currency: EUR
+        userMultiplied: false
+    features:
+      - All Pro features
+      - Unlimited RAG
+      - Confidence scores
+      - Boosted accuracy and precision
+  - id: mindee-enterprise
+    name: Enterprise
+    type: custom
+    description: Custom pricing for organizations using 250k+ credits annually, with dedicated account manager, custom SLAs, and premium technical support.
+    entries:
+      - label: Custom contract
+        name: contract
+        type: contact-sales
+        metric: contract
+        limit: 1
+        timeFrame: year
+        geo: global
+        unit: 1
+        price: 'Contact Sales'
+        currency: EUR
+        userMultiplied: false
+    features:
+      - Dedicated account manager
+      - Custom SLAs
+      - Premium technical support
+      - Custom models
+      - All Business features
+notes:
+  - Annual billing offers a 10 percent discount versus monthly billing.
+  - A credit is consumed per inference; multi-page documents may consume multiple credits depending on the model.

@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/mindee/main/json-schema/mindee-inference-schema.json",
+  "title": "Mindee Inference",
+  "description": "A completed Mindee inference returned by an extraction, classification, crop, OCR, or split product result endpoint.",
+  "type": "object",
+  "required": ["inference"],
+  "properties": {
+    "inference": {
+      "type": "object",
+      "required": ["id", "model", "file", "result"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier of the inference."
+        },
+        "model": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string" },
+            "name": { "type": "string" }
+          }
+        },
+        "file": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "alias": { "type": ["string", "null"] }
+          }
+        },
+        "active_options": {
+          "type": "object",
+          "properties": {
+            "rag": { "type": "boolean" },
+            "raw_text": { "type": "boolean" },
+            "polygon": { "type": "boolean" },
+            "confidence": { "type": "boolean" }
+          }
+        },
+        "result": {
+          "type": "object",
+          "description": "Product-specific result payload. Shape depends on the model's Data Schema.",
+          "additionalProperties": true
+        }
+      }
+    }
+  }
+}

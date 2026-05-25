@@ -1,0 +1,51 @@
+extends:
+  - [spectral:oas, recommended]
+rules:
+  mindee-operation-id-camelcase:
+    description: Operation IDs should be camelCase.
+    severity: warn
+    given: $.paths[*][get,post,put,patch,delete].operationId
+    then:
+      function: pattern
+      functionOptions:
+        match: '^[a-z][a-zA-Z0-9]+$'
+  mindee-summary-title-case:
+    description: Operation summaries should use Title Case.
+    severity: warn
+    given: $.paths[*][get,post,put,patch,delete].summary
+    then:
+      function: pattern
+      functionOptions:
+        match: '^[A-Z]'
+  mindee-tag-required:
+    description: Every operation must have at least one tag matching a Mindee product family.
+    severity: error
+    given: $.paths[*][get,post,put,patch,delete].tags
+    then:
+      function: length
+      functionOptions:
+        min: 1
+  mindee-async-pattern:
+    description: Mindee inference endpoints follow an enqueue/jobs/results async pattern; enqueue endpoints should POST and return 202.
+    severity: info
+    given: $.paths[?(@property.match(/enqueue$/))].post.responses
+    then:
+      field: '202'
+      function: truthy
+  mindee-server-required:
+    description: Specs must declare the Mindee V2 server.
+    severity: error
+    given: $.servers
+    then:
+      function: length
+      functionOptions:
+        min: 1
+  mindee-api-key-header:
+    description: Security must be the Authorization header API key.
+    severity: error
+    given: $.components.securitySchemes.APIKeyHeader
+    then:
+      field: 'in'
+      function: enumeration
+      functionOptions:
+        values: ['header']

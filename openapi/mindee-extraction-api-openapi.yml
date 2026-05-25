@@ -1,0 +1,1711 @@
+openapi: 3.1.0
+info:
+  title: Mindee Extraction API
+  version: 2.0.0
+  description: Extract structured fields from invoices, receipts, IDs, and other documents using Mindee's configurable extraction
+    models.
+  contact:
+    name: Mindee
+    url: https://mindee.com
+  license:
+    name: Proprietary
+servers:
+- url: https://api-v2.mindee.net
+tags:
+- name: Extraction
+  description: Extract structured fields from invoices, receipts, IDs, and other documents using Mindee's configurable extraction
+    models.
+paths:
+  /v2/products/extraction/enqueue:
+    post:
+      tags:
+      - Extraction
+      summary: Send A File For An Extraction Product Inference
+      description: "Send a file to the asynchronous processing queue for an extraction inference.\n\nResults can be retrieved\
+        \ in two ways:\n* Loop on the `polling_url` endpoint in the response until the status\n  is `Processed` or `Failed`\
+        \ (polling).\n* Use a webhook to be notified when the inference is finished.\n  Webhooks can be configured on the\
+        \ platform on a per-model basis.\n\nInferences taking longer than 590 seconds will time out."
+      operationId: Enqueue_Extraction_Product_Inference_v2_products_extraction_enqueue_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                model_id:
+                  type: string
+                  format: uuid4
+                  title: Model Id
+                  description: Model ID to use for the inference.
+                file:
+                  anyOf:
+                  - type: string
+                    format: binary
+                  - type: 'null'
+                  title: File
+                  description: Upload a file as bytes. Required if `url` is not provided.
+                url:
+                  anyOf:
+                  - type: string
+                    maxLength: 2048
+                    minLength: 1
+                    format: uri
+                  - type: 'null'
+                  title: Url
+                  description: Download the file from a URL, must be secure (HTTPS) and publicly available. Required if `file`
+                    is not provided.
+                file_base64:
+                  anyOf:
+                  - type: string
+                    minLength: 15
+                  - type: 'null'
+                  title: File Base64
+                  description: Upload a file as a base 64 string. Used as an alternative to `file`. *Not recommended*, for
+                    specific use only.
+                  examples:
+                  - Base64String==
+                webhook_ids:
+                  items:
+                    type: string
+                    format: uuid4
+                  type: array
+                  title: Webhook Ids
+                  description: Webhook IDs to call after all processing is finished. If empty, no webhooks will be used. Can
+                    be a list or comma-separated string.
+                filename:
+                  anyOf:
+                  - type: string
+                  - type: 'null'
+                  title: Filename
+                  description: Optional filename to associate with the uploaded or fetched file.
+                alias:
+                  anyOf:
+                  - type: string
+                  - type: 'null'
+                  title: Alias
+                  description: 'Optional: a free-form string to tag the request with your own identifier. For example, an
+                    internal document ID, reference number, or database key. If set, it will be included in the job and result
+                    responses.'
+                  examples:
+                  - my_file_alias
+                raw_text:
+                  anyOf:
+                  - type: boolean
+                  - type: 'null'
+                  title: Raw Text
+                  description: Extract the entire text from the document as strings, and fill the `raw_text` attribute.
+                polygon:
+                  anyOf:
+                  - type: boolean
+                  - type: 'null'
+                  title: Polygon
+                  description: Calculate bounding box polygons for values, and fill the `locations` attribute of fields
+                confidence:
+                  anyOf:
+                  - type: boolean
+                  - type: 'null'
+                  title: Confidence
+                  description: Calculate confidence scores for values, and fill the `confidence` attribute of fields. Useful
+                    for automation.
+                rag:
+                  anyOf:
+                  - type: boolean
+                  - type: 'null'
+                  title: Rag
+                  description: Use Retrieval-Augmented Generation during inference.
+                text_context:
+                  anyOf:
+                  - type: string
+                  - type: 'null'
+                  title: Text Context
+                  description: Pass additional context for use by the model, for this inference.
+                  examples:
+                  - This document is a receipt from a grocery store.
+                data_schema:
+                  anyOf:
+                  - type: string
+                    contentMediaType: application/json
+                    contentSchema:
+                      properties:
+                        replace:
+                          anyOf:
+                          - properties:
+                              fields:
+                                items:
+                                  properties:
+                                    title:
+                                      type: string
+                                      title: Title
+                                      description: Display name for the field, also impacts inference results.
+                                    name:
+                                      type: string
+                                      title: Field Name
+                                      description: Name of the field in the data schema.
+                                      examples:
+                                      - my_simple_field
+                                    is_array:
+                                      type: boolean
+                                      title: Is Array
+                                      description: Whether this field can contain multiple values
+                                    unique_values:
+                                      type: boolean
+                                      title: Unique Values
+                                      description: Whether to remove duplicate values in the array. Only applicable if `is_array`
+                                        is True.
+                                      default: false
+                                    description:
+                                      type: string
+                                      title: Description
+                                      description: Detailed description of what the field represents.
+                                    guidelines:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: Guidelines
+                                      description: Optional extraction guidelines.
+                                    classification_values:
+                                      items:
+                                        type: string
+                                      type: array
+                                      title: Classification Values
+                                      description: Allowed values when type is `classification`. Leave empty for other types.
+                                    type:
+                                      type: string
+                                      enum:
+                                      - string
+                                      - number
+                                      - date
+                                      - boolean
+                                      - classification
+                                      - nested_object
+                                      - object_detection
+                                      - barcode
+                                      title: FieldType
+                                      description: Enumeration of valid field types for data schema fields.
+                                    nested_fields:
+                                      items:
+                                        properties:
+                                          title:
+                                            type: string
+                                            title: Title
+                                            description: Display name for the field, also impacts inference results.
+                                          name:
+                                            type: string
+                                            title: Field Name
+                                            description: Name of the field in the data schema.
+                                            examples:
+                                            - my_simple_field
+                                          is_array:
+                                            type: boolean
+                                            title: Is Array
+                                            description: Whether this field can contain multiple values
+                                          unique_values:
+                                            type: boolean
+                                            title: Unique Values
+                                            description: Whether to remove duplicate values in the array. Only applicable
+                                              if `is_array` is True.
+                                            default: false
+                                          description:
+                                            type: string
+                                            title: Description
+                                            description: Detailed description of what the field represents.
+                                          guidelines:
+                                            anyOf:
+                                            - type: string
+                                            - type: 'null'
+                                            title: Guidelines
+                                            description: Optional extraction guidelines.
+                                          classification_values:
+                                            items:
+                                              type: string
+                                            type: array
+                                            title: Classification Values
+                                            description: Allowed values when type is `classification`. Leave empty for other
+                                              types.
+                                          type:
+                                            type: string
+                                            enum:
+                                            - string
+                                            - number
+                                            - date
+                                            - boolean
+                                            - classification
+                                            title: SubFieldType
+                                            description: Enumeration of valid field types for subfields (excludes nested_object
+                                              and object_detection).
+                                        type: object
+                                        required:
+                                        - title
+                                        - name
+                                        - is_array
+                                        - description
+                                        - type
+                                        title: SubFieldSchema
+                                        description: Subfield model for nested objects in data models.
+                                      type: array
+                                      title: Nested Fields
+                                      description: Subfields when type is `nested_object`. Leave empty for other types
+                                  type: object
+                                  required:
+                                  - title
+                                  - name
+                                  - is_array
+                                  - description
+                                  - type
+                                  title: FieldSchema
+                                  description: A field in the data schema.
+                                type: array
+                                title: Fields
+                                description: All fields in the Data Schema.
+                            type: object
+                            required:
+                            - fields
+                            title: ExtractionDataSchema
+                            description: The JSON structure of an extraction model's data schema.
+                          - type: 'null'
+                          description: If set, completely replaces the data schema of the model.
+                      type: object
+                      title: DynamicDataSchema
+                      description: Dynamic changes to the Data Schema of the model.
+                  - type: 'null'
+                  title: Data Schema
+                  description: Dynamically change the data schema of the model, for this inference.
+              type: object
+              required:
+              - model_id
+              title: ExtractionEnqueueForm
+              description: Form to enqueue an inference for extraction models.
+          application/json:
+            schema:
+              properties:
+                model_id:
+                  type: string
+                  format: uuid4
+                  title: Model Id
+                  description: Model ID to use for the inference.
+                url:
+                  anyOf:
+                  - type: string
+                    maxLength: 2048
+                    minLength: 1
+                    format: uri
+                  - type: 'null'
+                  title: Url
+                  description: Download the file from a URL, must be secure (HTTPS) and publicly available. Required if `file`
+                    is not provided.
+                file_base64:
+                  anyOf:
+                  - type: string
+                    minLength: 15
+                  - type: 'null'
+                  title: File Base64
+                  description: Upload a file as a base 64 string. Used as an alternative to `file`. *Not recommended*, for
+                    specific use only.
+                  examples:
+                  - Base64String==
+                webhook_ids:
+                  items:
+                    type: string
+                    format: uuid4
+                  type: array
+                  title: Webhook Ids
+                  description: Webhook IDs to call after all processing is finished. If empty, no webhooks will be used. Can
+                    be a list or comma-separated string.
+                filename:
+                  anyOf:
+                  - type: string
+                  - type: 'null'
+                  title: Filename
+                  description: Optional filename to associate with the uploaded or fetched file.
+                alias:
+                  anyOf:
+                  - type: string
+                  - type: 'null'
+                  title: Alias
+                  description: 'Optional: a free-form string to tag the request with your own identifier. For example, an
+                    internal document ID, reference number, or database key. If set, it will be included in the job and result
+                    responses.'
+                  examples:
+                  - my_file_alias
+                raw_text:
+                  anyOf:
+                  - type: boolean
+                  - type: 'null'
+                  title: Raw Text
+                  description: Extract the entire text from the document as strings, and fill the `raw_text` attribute.
+                polygon:
+                  anyOf:
+                  - type: boolean
+                  - type: 'null'
+                  title: Polygon
+                  description: Calculate bounding box polygons for values, and fill the `locations` attribute of fields
+                confidence:
+                  anyOf:
+                  - type: boolean
+                  - type: 'null'
+                  title: Confidence
+                  description: Calculate confidence scores for values, and fill the `confidence` attribute of fields. Useful
+                    for automation.
+                rag:
+                  anyOf:
+                  - type: boolean
+                  - type: 'null'
+                  title: Rag
+                  description: Use Retrieval-Augmented Generation during inference.
+                text_context:
+                  anyOf:
+                  - type: string
+                  - type: 'null'
+                  title: Text Context
+                  description: Pass additional context for use by the model, for this inference.
+                  examples:
+                  - This document is a receipt from a grocery store.
+                data_schema:
+                  anyOf:
+                  - type: string
+                    contentMediaType: application/json
+                    contentSchema:
+                      properties:
+                        replace:
+                          anyOf:
+                          - properties:
+                              fields:
+                                items:
+                                  properties:
+                                    title:
+                                      type: string
+                                      title: Title
+                                      description: Display name for the field, also impacts inference results.
+                                    name:
+                                      type: string
+                                      title: Field Name
+                                      description: Name of the field in the data schema.
+                                      examples:
+                                      - my_simple_field
+                                    is_array:
+                                      type: boolean
+                                      title: Is Array
+                                      description: Whether this field can contain multiple values
+                                    unique_values:
+                                      type: boolean
+                                      title: Unique Values
+                                      description: Whether to remove duplicate values in the array. Only applicable if `is_array`
+                                        is True.
+                                      default: false
+                                    description:
+                                      type: string
+                                      title: Description
+                                      description: Detailed description of what the field represents.
+                                    guidelines:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: Guidelines
+                                      description: Optional extraction guidelines.
+                                    classification_values:
+                                      items:
+                                        type: string
+                                      type: array
+                                      title: Classification Values
+                                      description: Allowed values when type is `classification`. Leave empty for other types.
+                                    type:
+                                      type: string
+                                      enum:
+                                      - string
+                                      - number
+                                      - date
+                                      - boolean
+                                      - classification
+                                      - nested_object
+                                      - object_detection
+                                      - barcode
+                                      title: FieldType
+                                      description: Enumeration of valid field types for data schema fields.
+                                    nested_fields:
+                                      items:
+                                        properties:
+                                          title:
+                                            type: string
+                                            title: Title
+                                            description: Display name for the field, also impacts inference results.
+                                          name:
+                                            type: string
+                                            title: Field Name
+                                            description: Name of the field in the data schema.
+                                            examples:
+                                            - my_simple_field
+                                          is_array:
+                                            type: boolean
+                                            title: Is Array
+                                            description: Whether this field can contain multiple values
+                                          unique_values:
+                                            type: boolean
+                                            title: Unique Values
+                                            description: Whether to remove duplicate values in the array. Only applicable
+                                              if `is_array` is True.
+                                            default: false
+                                          description:
+                                            type: string
+                                            title: Description
+                                            description: Detailed description of what the field represents.
+                                          guidelines:
+                                            anyOf:
+                                            - type: string
+                                            - type: 'null'
+                                            title: Guidelines
+                                            description: Optional extraction guidelines.
+                                          classification_values:
+                                            items:
+                                              type: string
+                                            type: array
+                                            title: Classification Values
+                                            description: Allowed values when type is `classification`. Leave empty for other
+                                              types.
+                                          type:
+                                            type: string
+                                            enum:
+                                            - string
+                                            - number
+                                            - date
+                                            - boolean
+                                            - classification
+                                            title: SubFieldType
+                                            description: Enumeration of valid field types for subfields (excludes nested_object
+                                              and object_detection).
+                                        type: object
+                                        required:
+                                        - title
+                                        - name
+                                        - is_array
+                                        - description
+                                        - type
+                                        title: SubFieldSchema
+                                        description: Subfield model for nested objects in data models.
+                                      type: array
+                                      title: Nested Fields
+                                      description: Subfields when type is `nested_object`. Leave empty for other types
+                                  type: object
+                                  required:
+                                  - title
+                                  - name
+                                  - is_array
+                                  - description
+                                  - type
+                                  title: FieldSchema
+                                  description: A field in the data schema.
+                                type: array
+                                title: Fields
+                                description: All fields in the Data Schema.
+                            type: object
+                            required:
+                            - fields
+                            title: ExtractionDataSchema
+                            description: The JSON structure of an extraction model's data schema.
+                          - type: 'null'
+                          description: If set, completely replaces the data schema of the model.
+                      type: object
+                      title: DynamicDataSchema
+                      description: Dynamic changes to the Data Schema of the model.
+                  - type: 'null'
+                  title: Data Schema
+                  description: Dynamically change the data schema of the model, for this inference.
+              type: object
+              required:
+              - model_id
+              title: ExtractionEnqueueForm
+              description: Form to enqueue an inference for extraction models.
+        required: true
+      responses:
+        '202':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResponse'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - APIKeyHeader: []
+  /v2/inferences/enqueue:
+    post:
+      tags:
+      - Extraction
+      summary: Send A File For An Extraction Product Inference
+      description: "Send a file to the asynchronous processing queue for an extraction inference.\n\nResults can be retrieved\
+        \ in two ways:\n* Loop on the `polling_url` endpoint in the response until the status\n  is `Processed` or `Failed`\
+        \ (polling).\n* Use a webhook to be notified when the inference is finished.\n  Webhooks can be configured on the\
+        \ platform on a per-model basis.\n\nInferences taking longer than 590 seconds will time out."
+      operationId: Enqueue_Extraction_Product_Inference_v2_inferences_enqueue_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                model_id:
+                  type: string
+                  format: uuid4
+                  title: Model Id
+                  description: Model ID to use for the inference.
+                file:
+                  anyOf:
+                  - type: string
+                    format: binary
+                  - type: 'null'
+                  title: File
+                  description: Upload a file as bytes. Required if `url` is not provided.
+                url:
+                  anyOf:
+                  - type: string
+                    maxLength: 2048
+                    minLength: 1
+                    format: uri
+                  - type: 'null'
+                  title: Url
+                  description: Download the file from a URL, must be secure (HTTPS) and publicly available. Required if `file`
+                    is not provided.
+                file_base64:
+                  anyOf:
+                  - type: string
+                    minLength: 15
+                  - type: 'null'
+                  title: File Base64
+                  description: Upload a file as a base 64 string. Used as an alternative to `file`. *Not recommended*, for
+                    specific use only.
+                  examples:
+                  - Base64String==
+                webhook_ids:
+                  items:
+                    type: string
+                    format: uuid4
+                  type: array
+                  title: Webhook Ids
+                  description: Webhook IDs to call after all processing is finished. If empty, no webhooks will be used. Can
+                    be a list or comma-separated string.
+                filename:
+                  anyOf:
+                  - type: string
+                  - type: 'null'
+                  title: Filename
+                  description: Optional filename to associate with the uploaded or fetched file.
+                alias:
+                  anyOf:
+                  - type: string
+                  - type: 'null'
+                  title: Alias
+                  description: 'Optional: a free-form string to tag the request with your own identifier. For example, an
+                    internal document ID, reference number, or database key. If set, it will be included in the job and result
+                    responses.'
+                  examples:
+                  - my_file_alias
+                raw_text:
+                  anyOf:
+                  - type: boolean
+                  - type: 'null'
+                  title: Raw Text
+                  description: Extract the entire text from the document as strings, and fill the `raw_text` attribute.
+                polygon:
+                  anyOf:
+                  - type: boolean
+                  - type: 'null'
+                  title: Polygon
+                  description: Calculate bounding box polygons for values, and fill the `locations` attribute of fields
+                confidence:
+                  anyOf:
+                  - type: boolean
+                  - type: 'null'
+                  title: Confidence
+                  description: Calculate confidence scores for values, and fill the `confidence` attribute of fields. Useful
+                    for automation.
+                rag:
+                  anyOf:
+                  - type: boolean
+                  - type: 'null'
+                  title: Rag
+                  description: Use Retrieval-Augmented Generation during inference.
+                text_context:
+                  anyOf:
+                  - type: string
+                  - type: 'null'
+                  title: Text Context
+                  description: Pass additional context for use by the model, for this inference.
+                  examples:
+                  - This document is a receipt from a grocery store.
+                data_schema:
+                  anyOf:
+                  - type: string
+                    contentMediaType: application/json
+                    contentSchema:
+                      properties:
+                        replace:
+                          anyOf:
+                          - properties:
+                              fields:
+                                items:
+                                  properties:
+                                    title:
+                                      type: string
+                                      title: Title
+                                      description: Display name for the field, also impacts inference results.
+                                    name:
+                                      type: string
+                                      title: Field Name
+                                      description: Name of the field in the data schema.
+                                      examples:
+                                      - my_simple_field
+                                    is_array:
+                                      type: boolean
+                                      title: Is Array
+                                      description: Whether this field can contain multiple values
+                                    unique_values:
+                                      type: boolean
+                                      title: Unique Values
+                                      description: Whether to remove duplicate values in the array. Only applicable if `is_array`
+                                        is True.
+                                      default: false
+                                    description:
+                                      type: string
+                                      title: Description
+                                      description: Detailed description of what the field represents.
+                                    guidelines:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: Guidelines
+                                      description: Optional extraction guidelines.
+                                    classification_values:
+                                      items:
+                                        type: string
+                                      type: array
+                                      title: Classification Values
+                                      description: Allowed values when type is `classification`. Leave empty for other types.
+                                    type:
+                                      type: string
+                                      enum:
+                                      - string
+                                      - number
+                                      - date
+                                      - boolean
+                                      - classification
+                                      - nested_object
+                                      - object_detection
+                                      - barcode
+                                      title: FieldType
+                                      description: Enumeration of valid field types for data schema fields.
+                                    nested_fields:
+                                      items:
+                                        properties:
+                                          title:
+                                            type: string
+                                            title: Title
+                                            description: Display name for the field, also impacts inference results.
+                                          name:
+                                            type: string
+                                            title: Field Name
+                                            description: Name of the field in the data schema.
+                                            examples:
+                                            - my_simple_field
+                                          is_array:
+                                            type: boolean
+                                            title: Is Array
+                                            description: Whether this field can contain multiple values
+                                          unique_values:
+                                            type: boolean
+                                            title: Unique Values
+                                            description: Whether to remove duplicate values in the array. Only applicable
+                                              if `is_array` is True.
+                                            default: false
+                                          description:
+                                            type: string
+                                            title: Description
+                                            description: Detailed description of what the field represents.
+                                          guidelines:
+                                            anyOf:
+                                            - type: string
+                                            - type: 'null'
+                                            title: Guidelines
+                                            description: Optional extraction guidelines.
+                                          classification_values:
+                                            items:
+                                              type: string
+                                            type: array
+                                            title: Classification Values
+                                            description: Allowed values when type is `classification`. Leave empty for other
+                                              types.
+                                          type:
+                                            type: string
+                                            enum:
+                                            - string
+                                            - number
+                                            - date
+                                            - boolean
+                                            - classification
+                                            title: SubFieldType
+                                            description: Enumeration of valid field types for subfields (excludes nested_object
+                                              and object_detection).
+                                        type: object
+                                        required:
+                                        - title
+                                        - name
+                                        - is_array
+                                        - description
+                                        - type
+                                        title: SubFieldSchema
+                                        description: Subfield model for nested objects in data models.
+                                      type: array
+                                      title: Nested Fields
+                                      description: Subfields when type is `nested_object`. Leave empty for other types
+                                  type: object
+                                  required:
+                                  - title
+                                  - name
+                                  - is_array
+                                  - description
+                                  - type
+                                  title: FieldSchema
+                                  description: A field in the data schema.
+                                type: array
+                                title: Fields
+                                description: All fields in the Data Schema.
+                            type: object
+                            required:
+                            - fields
+                            title: ExtractionDataSchema
+                            description: The JSON structure of an extraction model's data schema.
+                          - type: 'null'
+                          description: If set, completely replaces the data schema of the model.
+                      type: object
+                      title: DynamicDataSchema
+                      description: Dynamic changes to the Data Schema of the model.
+                  - type: 'null'
+                  title: Data Schema
+                  description: Dynamically change the data schema of the model, for this inference.
+              type: object
+              required:
+              - model_id
+              title: ExtractionEnqueueForm
+              description: Form to enqueue an inference for extraction models.
+          application/json:
+            schema:
+              properties:
+                model_id:
+                  type: string
+                  format: uuid4
+                  title: Model Id
+                  description: Model ID to use for the inference.
+                url:
+                  anyOf:
+                  - type: string
+                    maxLength: 2048
+                    minLength: 1
+                    format: uri
+                  - type: 'null'
+                  title: Url
+                  description: Download the file from a URL, must be secure (HTTPS) and publicly available. Required if `file`
+                    is not provided.
+                file_base64:
+                  anyOf:
+                  - type: string
+                    minLength: 15
+                  - type: 'null'
+                  title: File Base64
+                  description: Upload a file as a base 64 string. Used as an alternative to `file`. *Not recommended*, for
+                    specific use only.
+                  examples:
+                  - Base64String==
+                webhook_ids:
+                  items:
+                    type: string
+                    format: uuid4
+                  type: array
+                  title: Webhook Ids
+                  description: Webhook IDs to call after all processing is finished. If empty, no webhooks will be used. Can
+                    be a list or comma-separated string.
+                filename:
+                  anyOf:
+                  - type: string
+                  - type: 'null'
+                  title: Filename
+                  description: Optional filename to associate with the uploaded or fetched file.
+                alias:
+                  anyOf:
+                  - type: string
+                  - type: 'null'
+                  title: Alias
+                  description: 'Optional: a free-form string to tag the request with your own identifier. For example, an
+                    internal document ID, reference number, or database key. If set, it will be included in the job and result
+                    responses.'
+                  examples:
+                  - my_file_alias
+                raw_text:
+                  anyOf:
+                  - type: boolean
+                  - type: 'null'
+                  title: Raw Text
+                  description: Extract the entire text from the document as strings, and fill the `raw_text` attribute.
+                polygon:
+                  anyOf:
+                  - type: boolean
+                  - type: 'null'
+                  title: Polygon
+                  description: Calculate bounding box polygons for values, and fill the `locations` attribute of fields
+                confidence:
+                  anyOf:
+                  - type: boolean
+                  - type: 'null'
+                  title: Confidence
+                  description: Calculate confidence scores for values, and fill the `confidence` attribute of fields. Useful
+                    for automation.
+                rag:
+                  anyOf:
+                  - type: boolean
+                  - type: 'null'
+                  title: Rag
+                  description: Use Retrieval-Augmented Generation during inference.
+                text_context:
+                  anyOf:
+                  - type: string
+                  - type: 'null'
+                  title: Text Context
+                  description: Pass additional context for use by the model, for this inference.
+                  examples:
+                  - This document is a receipt from a grocery store.
+                data_schema:
+                  anyOf:
+                  - type: string
+                    contentMediaType: application/json
+                    contentSchema:
+                      properties:
+                        replace:
+                          anyOf:
+                          - properties:
+                              fields:
+                                items:
+                                  properties:
+                                    title:
+                                      type: string
+                                      title: Title
+                                      description: Display name for the field, also impacts inference results.
+                                    name:
+                                      type: string
+                                      title: Field Name
+                                      description: Name of the field in the data schema.
+                                      examples:
+                                      - my_simple_field
+                                    is_array:
+                                      type: boolean
+                                      title: Is Array
+                                      description: Whether this field can contain multiple values
+                                    unique_values:
+                                      type: boolean
+                                      title: Unique Values
+                                      description: Whether to remove duplicate values in the array. Only applicable if `is_array`
+                                        is True.
+                                      default: false
+                                    description:
+                                      type: string
+                                      title: Description
+                                      description: Detailed description of what the field represents.
+                                    guidelines:
+                                      anyOf:
+                                      - type: string
+                                      - type: 'null'
+                                      title: Guidelines
+                                      description: Optional extraction guidelines.
+                                    classification_values:
+                                      items:
+                                        type: string
+                                      type: array
+                                      title: Classification Values
+                                      description: Allowed values when type is `classification`. Leave empty for other types.
+                                    type:
+                                      type: string
+                                      enum:
+                                      - string
+                                      - number
+                                      - date
+                                      - boolean
+                                      - classification
+                                      - nested_object
+                                      - object_detection
+                                      - barcode
+                                      title: FieldType
+                                      description: Enumeration of valid field types for data schema fields.
+                                    nested_fields:
+                                      items:
+                                        properties:
+                                          title:
+                                            type: string
+                                            title: Title
+                                            description: Display name for the field, also impacts inference results.
+                                          name:
+                                            type: string
+                                            title: Field Name
+                                            description: Name of the field in the data schema.
+                                            examples:
+                                            - my_simple_field
+                                          is_array:
+                                            type: boolean
+                                            title: Is Array
+                                            description: Whether this field can contain multiple values
+                                          unique_values:
+                                            type: boolean
+                                            title: Unique Values
+                                            description: Whether to remove duplicate values in the array. Only applicable
+                                              if `is_array` is True.
+                                            default: false
+                                          description:
+                                            type: string
+                                            title: Description
+                                            description: Detailed description of what the field represents.
+                                          guidelines:
+                                            anyOf:
+                                            - type: string
+                                            - type: 'null'
+                                            title: Guidelines
+                                            description: Optional extraction guidelines.
+                                          classification_values:
+                                            items:
+                                              type: string
+                                            type: array
+                                            title: Classification Values
+                                            description: Allowed values when type is `classification`. Leave empty for other
+                                              types.
+                                          type:
+                                            type: string
+                                            enum:
+                                            - string
+                                            - number
+                                            - date
+                                            - boolean
+                                            - classification
+                                            title: SubFieldType
+                                            description: Enumeration of valid field types for subfields (excludes nested_object
+                                              and object_detection).
+                                        type: object
+                                        required:
+                                        - title
+                                        - name
+                                        - is_array
+                                        - description
+                                        - type
+                                        title: SubFieldSchema
+                                        description: Subfield model for nested objects in data models.
+                                      type: array
+                                      title: Nested Fields
+                                      description: Subfields when type is `nested_object`. Leave empty for other types
+                                  type: object
+                                  required:
+                                  - title
+                                  - name
+                                  - is_array
+                                  - description
+                                  - type
+                                  title: FieldSchema
+                                  description: A field in the data schema.
+                                type: array
+                                title: Fields
+                                description: All fields in the Data Schema.
+                            type: object
+                            required:
+                            - fields
+                            title: ExtractionDataSchema
+                            description: The JSON structure of an extraction model's data schema.
+                          - type: 'null'
+                          description: If set, completely replaces the data schema of the model.
+                      type: object
+                      title: DynamicDataSchema
+                      description: Dynamic changes to the Data Schema of the model.
+                  - type: 'null'
+                  title: Data Schema
+                  description: Dynamically change the data schema of the model, for this inference.
+              type: object
+              required:
+              - model_id
+              title: ExtractionEnqueueForm
+              description: Form to enqueue an inference for extraction models.
+        required: true
+      responses:
+        '202':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResponse'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      deprecated: true
+      security:
+      - APIKeyHeader: []
+  /v2/products/extraction/results/{inference_id}:
+    get:
+      tags:
+      - Extraction
+      summary: Get The Result Of A Completed Extraction Product Inference
+      description: 'Get the result of an extraction inference that was previously enqueued.
+
+
+        The inference will only be available after it has finished processing.
+
+
+        If you are using webhooks there is no need to call this route.<br/>
+
+        However, the JSON payload described here is what will be sent to each specified webhook''s URL.
+
+
+        If you activated the "Delete extracted data when fetched" option for the model,
+
+        the inference will be deleted after this route completes.<br>
+
+        Any further requests to the same inference ID will return a 404.'
+      operationId: Get_Extraction_Product_Result_v2_products_extraction_results__inference_id__get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: inference_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid4
+          title: Inference ID
+          description: UUID of the inference to retrieve
+        description: UUID of the inference to retrieve
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtractionResponse-Output'
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Not Found
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Unprocessable Content
+  /v2/inferences/{inference_id}:
+    get:
+      tags:
+      - Extraction
+      summary: Get The Result Of A Completed Extraction Product Inference
+      description: 'Get the result of an extraction inference that was previously enqueued.
+
+
+        The inference will only be available after it has finished processing.
+
+
+        If you are using webhooks there is no need to call this route.<br/>
+
+        However, the JSON payload described here is what will be sent to each specified webhook''s URL.
+
+
+        If you activated the "Delete extracted data when fetched" option for the model,
+
+        the inference will be deleted after this route completes.<br>
+
+        Any further requests to the same inference ID will return a 404.'
+      operationId: Get_Extraction_Product_Result_v2_inferences__inference_id__get
+      deprecated: true
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: inference_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid4
+          title: Inference ID
+          description: UUID of the inference to retrieve
+        description: UUID of the inference to retrieve
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtractionResponse-Output'
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Not Found
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Unprocessable Content
+components:
+  securitySchemes:
+    APIKeyHeader:
+      type: apiKey
+      in: header
+      name: Authorization
+  schemas:
+    BaseJob:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          title: Id
+          description: UUID of the Job.
+      type: object
+      required:
+      - id
+      title: BaseJob
+      description: Base class for Job.
+    DataSchemaActiveOption:
+      properties:
+        replace:
+          type: boolean
+          title: Replace
+          description: Whether the data schema was replaced for the inference.
+      type: object
+      required:
+      - replace
+      title: DataSchemaActiveOption
+      description: Data schema options activated during the inference.
+    ErrorItem:
+      properties:
+        pointer:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Pointer
+          description: A JSON Pointer to the location of the body property.
+          examples:
+          - '#/model_id'
+        detail:
+          type: string
+          title: Detail
+          description: Explicit information on the issue.
+          examples:
+          - '''model_id'' must be a valid UUID format'
+      type: object
+      required:
+      - pointer
+      - detail
+      title: ErrorItem
+      description: Explicit details on a problem.
+    ErrorResponse:
+      properties:
+        status:
+          type: integer
+          maximum: 599.0
+          minimum: 100.0
+          title: Status
+          description: The HTTP status code returned by the server.
+          examples:
+          - 422
+        detail:
+          type: string
+          title: Detail
+          description: A human-readable explanation specific to the occurrence of the problem.
+          examples:
+          - One or more fields failed validation.
+        title:
+          type: string
+          title: Title
+          description: A short, human-readable summary of the problem.
+          examples:
+          - Invalid fields in form
+        code:
+          type: string
+          title: Code
+          description: A machine-readable code specific to the occurrence of the problem.
+          examples:
+          - 422-001
+        errors:
+          items:
+            $ref: '#/components/schemas/ErrorItem'
+          type: array
+          title: Errors
+          description: A list of explicit details on the problem.
+          default: []
+      type: object
+      required:
+      - status
+      - detail
+      - title
+      - code
+      title: ErrorResponse
+      description: Error response detailing a problem. The format adheres to RFC 9457.
+    ExtractionInference-Output:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          title: Id
+          description: UUID of the Inference.
+        job:
+          $ref: '#/components/schemas/BaseJob'
+          title: Job
+          description: Job the inference belongs to.
+        model:
+          $ref: '#/components/schemas/InferenceModel'
+        file:
+          $ref: '#/components/schemas/InferenceFile'
+        result:
+          $ref: '#/components/schemas/ExtractionResult-Output'
+        active_options:
+          $ref: '#/components/schemas/InferenceActiveOptions'
+      type: object
+      required:
+      - id
+      - job
+      - model
+      - file
+      - result
+      - active_options
+      title: ExtractionInference
+      description: The inference result for an extraction request.
+    ExtractionResponse-Output:
+      properties:
+        inference:
+          $ref: '#/components/schemas/ExtractionInference-Output'
+      type: object
+      required:
+      - inference
+      title: ExtractionResponse
+      description: Response for an extraction inference.
+    ExtractionResult-Output:
+      properties:
+        fields:
+          additionalProperties:
+            oneOf:
+            - $ref: '#/components/schemas/SimpleField'
+            - $ref: '#/components/schemas/ObjectField-Output'
+            - $ref: '#/components/schemas/ListField-Output'
+          propertyNames:
+            description: Name of the field in the data schema.
+            examples:
+            - my_simple_field
+          type: object
+          title: Fields
+          description: Extracted fields, the key corresponds to the field's name in the data schema.
+        raw_text:
+          anyOf:
+          - $ref: '#/components/schemas/RawText'
+          - type: 'null'
+          title: Raw Text
+          description: If `raw_text` was activated, contains the extracted text of the document.
+        rag:
+          anyOf:
+          - $ref: '#/components/schemas/Rag'
+          - type: 'null'
+          title: RAG
+          description: If `rag` was activated, contains metadata about the RAG operation.
+      type: object
+      required:
+      - fields
+      title: ExtractionResult
+      description: Result of an extraction inference.
+    FieldConfidence:
+      type: string
+      enum:
+      - Certain
+      - High
+      - Medium
+      title: FieldConfidence
+      description: Confidence level of a field.
+    FieldLocation:
+      properties:
+        polygon:
+          items:
+            prefixItems:
+            - type: number
+              maximum: 1.0
+              minimum: 0.0
+              title: Coordinate
+              description: Coordinate value relative to document edge.
+            - type: number
+              maximum: 1.0
+              minimum: 0.0
+              title: Coordinate
+              description: Coordinate value relative to document edge.
+            type: array
+            maxItems: 2
+            minItems: 2
+            title: Point
+            description: Relative coordinates of a point in [X,Y] notation.
+          type: array
+          minItems: 3
+          title: Polygon
+          description: Position information as a list of points in clockwise order.
+        page:
+          type: integer
+          minimum: 0.0
+          title: Page
+          description: 0-based page index of where the polygon is located.
+      type: object
+      required:
+      - polygon
+      - page
+      title: FieldLocation
+      description: A field's location on the document.
+    InferenceActiveOptions:
+      properties:
+        raw_text:
+          type: boolean
+          title: Raw Text
+          description: 'Whether the Raw Text feature was activated.
+
+            When this feature is activated, the raw text extracted from the document is returned in the result.'
+        polygon:
+          type: boolean
+          title: Polygon
+          description: 'Whether the polygon feature was activated.
+
+            When this feature is activated, the bounding-box polygon(s) for each field is returned in the result.'
+        confidence:
+          type: boolean
+          title: Confidence
+          description: 'Whether the confidence feature was activated.
+
+            When this feature is activated, a confidence score for each field is returned in the result.'
+        rag:
+          type: boolean
+          title: RAG
+          description: 'Whether the Retrieval-Augmented Generation feature was activated.
+
+            When this feature is activated, the RAG pipeline is used to increase result accuracy.'
+        multipage_context:
+          type: boolean
+          title: Multipage Context
+          description: 'Whether the multipage context feature was activated.
+
+            When this feature is activated, the model has access to all the other pages as context.'
+        text_context:
+          type: boolean
+          title: Text Context
+          description: 'Whether the text context feature was activated.
+
+            When this feature is activated, the provided context is used to improve the accuracy of the inference.'
+        data_schema:
+          $ref: '#/components/schemas/DataSchemaActiveOption'
+          title: Data Schema
+          description: Data schema options provided for the inference.
+      type: object
+      required:
+      - raw_text
+      - polygon
+      - confidence
+      - rag
+      - multipage_context
+      - text_context
+      - data_schema
+      title: InferenceActiveOptions
+      description: 'Options which were activated during the inference.
+
+
+        Options can be activated or deactivated:
+
+        * By setting their default values on the Platform UI
+
+        * By explicitly setting them in the inference request'
+    InferenceFile:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: File name as sent to the API.
+        alias:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Alias
+          description: Alias sent to the API.
+        page_count:
+          type: integer
+          minimum: 1.0
+          title: Page Count
+          description: Number of pages in the file.
+        mime_type:
+          type: string
+          title: MIME Type
+          description: Detected MIME type of the file.
+      type: object
+      required:
+      - name
+      - page_count
+      - mime_type
+      title: InferenceFile
+      description: File used for the inference.
+    InferenceModel:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          title: ID
+          description: UUID of the model.
+      type: object
+      required:
+      - id
+      title: InferenceModel
+      description: Model used for the inference.
+    Job:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          title: Id
+          description: UUID of the Job.
+        model_id:
+          type: string
+          format: uuid4
+          title: Model Id
+          description: UUID of the model to be used for the inference.
+        filename:
+          type: string
+          title: Filename
+          description: Name of the file sent.
+          examples:
+          - file.jpg
+        alias:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Alias
+          description: Optional alias sent for the file.
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: Date and time of the Job creation.
+        completed_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Completed At
+          description: Date and time of the Job completion. Filled once processing is finished.
+        status:
+          $ref: '#/components/schemas/Status'
+        polling_url:
+          type: string
+          maxLength: 2083
+          minLength: 1
+          format: uri
+          title: Polling Url
+          description: URL to poll for the Job status.
+        result_url:
+          anyOf:
+          - type: string
+            maxLength: 2083
+            minLength: 1
+            format: uri
+          - type: 'null'
+          title: Result Url
+          description: URL to retrieve the inference results. Will be filled once the inference is ready.
+        webhooks:
+          items:
+            $ref: '#/components/schemas/WebhookResponse'
+          type: array
+          title: Webhooks
+          description: List of responses from webhooks called. Empty until processing is finished.
+          default: []
+        error:
+          anyOf:
+          - $ref: '#/components/schemas/ErrorResponse'
+          - type: 'null'
+          description: If an error occurred during processing, contains the problem details.
+      type: object
+      required:
+      - id
+      - model_id
+      - filename
+      - created_at
+      - status
+      - polling_url
+      title: Job
+      description: Information on the processing of a file sent to the Mindee API.
+    JobResponse:
+      properties:
+        job:
+          $ref: '#/components/schemas/Job'
+      type: object
+      required:
+      - job
+      title: JobResponse
+      description: Response for a Job.
+    ListField-Output:
+      properties:
+        items:
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/SimpleField'
+            - $ref: '#/components/schemas/ObjectField-Output'
+            - $ref: '#/components/schemas/ListField-Output'
+          type: array
+          title: Items
+        confidence:
+          anyOf:
+          - $ref: '#/components/schemas/FieldConfidence'
+          - type: 'null'
+      additionalProperties: false
+      type: object
+      required:
+      - items
+      title: ListField
+      description: Field having a list of fields.
+    ObjectField-Output:
+      properties:
+        locations:
+          items:
+            $ref: '#/components/schemas/FieldLocation'
+          type: array
+          title: Locations
+          default: []
+        confidence:
+          anyOf:
+          - $ref: '#/components/schemas/FieldConfidence'
+          - type: 'null'
+        fields:
+          additionalProperties:
+            oneOf:
+            - $ref: '#/components/schemas/SimpleField'
+            - $ref: '#/components/schemas/ObjectField-Output'
+            - $ref: '#/components/schemas/ListField-Output'
+          propertyNames:
+            description: Name of the field in the data schema.
+            examples:
+            - my_simple_field
+          type: object
+          title: Fields
+      additionalProperties: false
+      type: object
+      required:
+      - fields
+      title: ObjectField
+      description: Field having a set of sub-fields.
+    Rag:
+      properties:
+        retrieved_document_id:
+          anyOf:
+          - type: string
+            format: uuid4
+          - type: 'null'
+          title: Retrieved document ID
+          description: The UUID of the matched document used during the RAG operation.
+      type: object
+      required:
+      - retrieved_document_id
+      title: Rag
+      description: Metadata about the RAG operation.
+    RawText:
+      properties:
+        pages:
+          items:
+            $ref: '#/components/schemas/RawTextPage'
+          type: array
+          title: Pages
+          description: List of pages with their extracted text content.
+      type: object
+      required:
+      - pages
+      title: RawText
+      description: Raw text extracted from all pages in the document.
+    RawTextPage:
+      properties:
+        content:
+          type: string
+          title: Content
+          description: Text content of the page as a single string. '\n' is used to separate lines.
+      type: object
+      required:
+      - content
+      title: RawTextPage
+      description: Raw text extracted from a single page.
+    SimpleField:
+      properties:
+        locations:
+          items:
+            $ref: '#/components/schemas/FieldLocation'
+          type: array
+          title: Locations
+          default: []
+        confidence:
+          anyOf:
+          - $ref: '#/components/schemas/FieldConfidence'
+          - type: 'null'
+        value:
+          anyOf:
+          - type: boolean
+          - type: integer
+          - type: number
+          - type: string
+          - type: 'null'
+          title: Value
+      additionalProperties: false
+      type: object
+      required:
+      - value
+      title: SimpleField
+      description: Field having a single value.
+    Status:
+      type: string
+      enum:
+      - Processing
+      - Failed
+      - Processed
+      title: Status
+      description: Possible states of an operation.
+    WebhookResponse:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          title: Id
+          description: UUID of the webhook endpoint.
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: Date and time the webhook was called.
+        status:
+          $ref: '#/components/schemas/Status'
+          default: Processing
+        error:
+          anyOf:
+          - $ref: '#/components/schemas/ErrorResponse'
+          - type: 'null'
+          description: If an error occurred when calling the webhook, contains the problem details.
+        attempts_count:
+          type: integer
+          title: Attempts Count
+          description: Number of attempts made to call the webhook.
+          default: 0
+      type: object
+      required:
+      - id
+      title: WebhookResponse
+      description: Response from a webhook call.
+security:
+- APIKeyHeader: []

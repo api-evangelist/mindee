@@ -1,0 +1,68 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "schema": "https://schema.org/",
+    "mindee": "https://mindee.com/vocab#",
+    "Inference": "mindee:Inference",
+    "ExtractionInference": "mindee:ExtractionInference",
+    "ClassificationInference": "mindee:ClassificationInference",
+    "CropInference": "mindee:CropInference",
+    "OCRInference": "mindee:OCRInference",
+    "SplitInference": "mindee:SplitInference",
+    "Job": "mindee:Job",
+    "Model": "mindee:Model",
+    "Document": "schema:DigitalDocument",
+    "id": "@id",
+    "type": "@type",
+    "model": {
+      "@id": "mindee:model",
+      "@type": "@id"
+    },
+    "file": {
+      "@id": "mindee:file"
+    },
+    "result": {
+      "@id": "mindee:result"
+    },
+    "fields": {
+      "@id": "mindee:fields",
+      "@container": "@index"
+    },
+    "confidence": {
+      "@id": "mindee:confidence",
+      "@type": "schema:Number"
+    },
+    "polygon": {
+      "@id": "mindee:polygon"
+    },
+    "raw_text": {
+      "@id": "mindee:rawText",
+      "@type": "schema:Text"
+    },
+    "page": {
+      "@id": "mindee:page",
+      "@type": "schema:Integer"
+    },
+    "status": {
+      "@id": "mindee:status"
+    },
+    "job_id": {
+      "@id": "mindee:jobId"
+    },
+    "inference_id": {
+      "@id": "mindee:inferenceId"
+    },
+    "created_at": {
+      "@id": "schema:dateCreated",
+      "@type": "schema:DateTime"
+    },
+    "completed_at": {
+      "@id": "mindee:completedAt",
+      "@type": "schema:DateTime"
+    },
+    "webhook_url": {
+      "@id": "mindee:webhookUrl",
+      "@type": "@id"
+    }
+  }
+}

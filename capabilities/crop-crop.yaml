@@ -1,0 +1,125 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Mindee Crop API — Crop
+  description: Mindee Crop API — Crop. 2 operations. Self-contained Naftiko capability covering one Mindee business surface.
+  tags:
+  - Mindee
+  - Crop
+  - Document Parsing
+  - OCR
+  created: '2026-05-25'
+  modified: '2026-05-25'
+binds:
+- namespace: env
+  keys:
+    MINDEE_API_KEY: MINDEE_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: crop-crop
+    baseUri: https://api-v2.mindee.net
+    description: Mindee Crop API — Crop business capability. Self-contained, no shared references.
+    resources:
+    - name: v2-products-crop-enqueue
+      path: /v2/products/crop/enqueue
+      operations:
+      - name: mindee-enqueue-crop-product-inference-v2-products-crop-enqueue-post
+        method: POST
+        description: Mindee Send A File For A Crop Utility Inference
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Multipart form data including the file or URL and model identifier.
+          required: true
+    - name: v2-products-crop-results-inference-id
+      path: /v2/products/crop/results/{inference_id}
+      operations:
+      - name: mindee-get-crop-product-result-v2-products-crop-results--inference-id--get
+        method: GET
+        description: Mindee Get The Result Of A Completed Crop Product Inference
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: inference_id
+          in: path
+          type: string
+          description: UUID of the inference to retrieve
+          required: true
+    authentication:
+      type: apikey
+      key: Authorization
+      value: '{{env.MINDEE_API_KEY}}'
+      placement: header
+  exposes:
+  - type: rest
+    namespace: crop-crop-rest
+    port: 8080
+    description: REST adapter for Mindee Crop API — Crop. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/v2/products/crop/enqueue
+      name: v2-products-crop-enqueue
+      description: REST surface for v2-products-crop-enqueue.
+      operations:
+      - method: POST
+        name: mindee-enqueue-crop-product-inference-v2-products-crop-enqueue-post
+        description: Mindee Send A File For A Crop Utility Inference
+        call: crop-crop.mindee-enqueue-crop-product-inference-v2-products-crop-enqueue-post
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v2/products/crop/results/{inference_id}
+      name: v2-products-crop-results-inference-id
+      description: REST surface for v2-products-crop-results-inference-id.
+      operations:
+      - method: GET
+        name: mindee-get-crop-product-result-v2-products-crop-results--inference-id--get
+        description: Mindee Get The Result Of A Completed Crop Product Inference
+        call: crop-crop.mindee-get-crop-product-result-v2-products-crop-results--inference-id--get
+        with:
+          inference_id: rest.path.inference_id
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: crop-crop-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Mindee Crop API — Crop. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: mindee-enqueue-crop-product-inference-v2-products-crop-enqueue-post
+      description: Mindee Send A File For A Crop Utility Inference
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: crop-crop.mindee-enqueue-crop-product-inference-v2-products-crop-enqueue-post
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: mindee-get-crop-product-result-v2-products-crop-results--inference-id--get
+      description: Mindee Get The Result Of A Completed Crop Product Inference
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: crop-crop.mindee-get-crop-product-result-v2-products-crop-results--inference-id--get
+      with:
+        inference_id: tools.inference_id
+      outputParameters:
+      - type: object
+        mapping: $.

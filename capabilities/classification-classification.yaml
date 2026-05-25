@@ -1,0 +1,126 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Mindee Classification API — Classification
+  description: Mindee Classification API — Classification. 2 operations. Self-contained Naftiko capability covering one Mindee
+    business surface.
+  tags:
+  - Mindee
+  - Classification
+  - Document Parsing
+  - OCR
+  created: '2026-05-25'
+  modified: '2026-05-25'
+binds:
+- namespace: env
+  keys:
+    MINDEE_API_KEY: MINDEE_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: classification-classification
+    baseUri: https://api-v2.mindee.net
+    description: Mindee Classification API — Classification business capability. Self-contained, no shared references.
+    resources:
+    - name: v2-products-classification-enqueue
+      path: /v2/products/classification/enqueue
+      operations:
+      - name: mindee-enqueue-classification-product-inference-v2-products-classification-enqueue-post
+        method: POST
+        description: Mindee Send A File For A Classification Utility Inference
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Multipart form data including the file or URL and model identifier.
+          required: true
+    - name: v2-products-classification-results-inference-id
+      path: /v2/products/classification/results/{inference_id}
+      operations:
+      - name: mindee-get-classification-product-result-v2-products-classification-results--inference-id--get
+        method: GET
+        description: Mindee Get The Result Of A Completed Classification Product Inference
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: inference_id
+          in: path
+          type: string
+          description: UUID of the inference to retrieve
+          required: true
+    authentication:
+      type: apikey
+      key: Authorization
+      value: '{{env.MINDEE_API_KEY}}'
+      placement: header
+  exposes:
+  - type: rest
+    namespace: classification-classification-rest
+    port: 8080
+    description: REST adapter for Mindee Classification API — Classification. One Spectral-compliant resource per consumed
+      operation, prefixed with /v1.
+    resources:
+    - path: /v1/v2/products/classification/enqueue
+      name: v2-products-classification-enqueue
+      description: REST surface for v2-products-classification-enqueue.
+      operations:
+      - method: POST
+        name: mindee-enqueue-classification-product-inference-v2-products-classification-enqueue-post
+        description: Mindee Send A File For A Classification Utility Inference
+        call: classification-classification.mindee-enqueue-classification-product-inference-v2-products-classification-enqueue-post
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/v2/products/classification/results/{inference_id}
+      name: v2-products-classification-results-inference-id
+      description: REST surface for v2-products-classification-results-inference-id.
+      operations:
+      - method: GET
+        name: mindee-get-classification-product-result-v2-products-classification-results--inference-id--get
+        description: Mindee Get The Result Of A Completed Classification Product Inference
+        call: classification-classification.mindee-get-classification-product-result-v2-products-classification-results--inference-id--get
+        with:
+          inference_id: rest.path.inference_id
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: classification-classification-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Mindee Classification API — Classification. One tool per consumed operation, routed inline
+      through this capability's consumes block.
+    tools:
+    - name: mindee-enqueue-classification-product-inference-v2-products-classification-enqueue-post
+      description: Mindee Send A File For A Classification Utility Inference
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: classification-classification.mindee-enqueue-classification-product-inference-v2-products-classification-enqueue-post
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: mindee-get-classification-product-result-v2-products-classification-results--inference-id--get
+      description: Mindee Get The Result Of A Completed Classification Product Inference
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: classification-classification.mindee-get-classification-product-result-v2-products-classification-results--inference-id--get
+      with:
+        inference_id: tools.inference_id
+      outputParameters:
+      - type: object
+        mapping: $.

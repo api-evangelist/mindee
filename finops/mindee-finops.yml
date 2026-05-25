@@ -1,0 +1,82 @@
+specification: FinOps Framework
+specificationVersion: '1.0'
+schema: https://www.finops.org/framework/
+provider: Mindee
+providerId: mindee
+created: '2026-05-25'
+modified: '2026-05-25'
+reconciled: true
+tags:
+  - FinOps
+  - Cost Management
+  - FOCUS
+  - Document Parsing
+  - OCR
+description: FOCUS-aligned FinOps definition for the Mindee Document Parsing API. Credit-based metering with tiered subscription plans and per-credit overage.
+sources:
+  - https://mindee.com/pricing
+  - https://docs.mindee.com/account-management/subscription-plans
+  - https://docs.mindee.com/account-management/usage-insights
+alignedWith:
+  framework: FinOps Foundation Framework
+  frameworkUrl: https://www.finops.org/framework/
+  dataSpec: FOCUS
+  dataSpecVersion: '1.3'
+  dataSpecUrl: https://focus.finops.org/focus-specification/v1-3/
+publisherName: Mindee
+serviceCategory: AI and Machine Learning
+billingModel:
+  pricingCategory: Subscription with usage overage
+  billingFrequency: Monthly
+  billingCurrency: EUR
+  chargeCategories:
+    - Usage
+    - Purchase
+    - Tax
+    - Credit
+    - Adjustment
+  primaryUnit: credit
+  secondaryUnits:
+    - inference
+    - page
+focusColumns:
+  ServiceName: Mindee API
+  ServiceCategory: AI and Machine Learning
+  ProviderName: Mindee
+  PublisherName: Mindee
+  InvoiceIssuerName: Mindee
+  PricingCategory: Subscription with usage overage
+  PricingUnit: credit
+  BilledCost: derived from plan subscription + (overage credits * overage rate)
+  EffectiveCost: derived per credit including overage adjustments
+  ChargeCategory:
+    - Usage (per-credit consumption)
+    - Purchase (monthly subscription)
+    - Credit (promotional or contractual credits)
+  CommitmentDiscountStatus: Used for credits within included allowance; Unused for overage
+  Region: global
+usage:
+  metrics:
+    - id: credits
+      unit: credit
+      description: A unit of API consumption; one credit typically equals one inference on a single-page document.
+    - id: inferences
+      unit: inference
+      description: A completed inference job across any Mindee model.
+    - id: pages
+      unit: page
+      description: Number of document pages processed; large PDFs may consume more than one credit per inference.
+costAllocation:
+  dimensions:
+    - account
+    - workspace
+    - api-key
+    - model
+  notes: Mindee usage insights expose per-model and per-API-key breakdowns inside the platform console.
+optimization:
+  recommendations:
+    - Use the Split model to break multi-document batches into individual documents prior to extraction, avoiding wasted credits on misclassified pages.
+    - Use the Classification model to route documents to the correct extraction model rather than running every document through every extractor.
+    - Configure webhooks to avoid wasted polling overhead and reduce client-side compute.
+    - Annual billing offers a 10 percent discount versus monthly billing.
+    - Move to the next tier when overage cost exceeds the price gap to the next plan.

@@ -1,0 +1,90 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Mindee Jobs API — Jobs
+  description: Mindee Jobs API — Jobs. 1 operations. Self-contained Naftiko capability covering one Mindee business surface.
+  tags:
+  - Mindee
+  - Jobs
+  - Document Parsing
+  - OCR
+  created: '2026-05-25'
+  modified: '2026-05-25'
+binds:
+- namespace: env
+  keys:
+    MINDEE_API_KEY: MINDEE_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: jobs-jobs
+    baseUri: https://api-v2.mindee.net
+    description: Mindee Jobs API — Jobs business capability. Self-contained, no shared references.
+    resources:
+    - name: v2-jobs-job-id
+      path: /v2/jobs/{job_id}
+      operations:
+      - name: mindee-get-job-status-v2-jobs--job-id--get
+        method: GET
+        description: Mindee Get The Status Of A File's Processing
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: job_id
+          in: path
+          type: string
+          description: UUID of the job to retrieve
+          required: true
+        - name: redirect
+          in: query
+          type: boolean
+          description: Automatically redirect to the result URL
+          required: false
+    authentication:
+      type: apikey
+      key: Authorization
+      value: '{{env.MINDEE_API_KEY}}'
+      placement: header
+  exposes:
+  - type: rest
+    namespace: jobs-jobs-rest
+    port: 8080
+    description: REST adapter for Mindee Jobs API — Jobs. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/v2/jobs/{job_id}
+      name: v2-jobs-job-id
+      description: REST surface for v2-jobs-job-id.
+      operations:
+      - method: GET
+        name: mindee-get-job-status-v2-jobs--job-id--get
+        description: Mindee Get The Status Of A File's Processing
+        call: jobs-jobs.mindee-get-job-status-v2-jobs--job-id--get
+        with:
+          job_id: rest.path.job_id
+          redirect: rest.query.redirect
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: jobs-jobs-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Mindee Jobs API — Jobs. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: mindee-get-job-status-v2-jobs--job-id--get
+      description: Mindee Get The Status Of A File's Processing
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: jobs-jobs.mindee-get-job-status-v2-jobs--job-id--get
+      with:
+        job_id: tools.job_id
+        redirect: tools.redirect
+      outputParameters:
+      - type: object
+        mapping: $.

@@ -1,0 +1,39 @@
+specification: API Commons Rate Limits
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits
+provider: Mindee
+providerId: mindee
+created: '2026-05-25'
+modified: '2026-05-25'
+reconciled: true
+tags:
+  - Document Parsing
+  - OCR
+  - Rate Limiting
+  - Quotas
+description: Reconciled limits for the Mindee V2 inference API. Mindee meters consumption by credits rather than per-second request rate; technical limits cover file size, page count, and asynchronous job behavior.
+sources:
+  - https://docs.mindee.com/integrations/technical-limitations
+  - https://docs.mindee.com/integrations/response-times
+  - https://docs.mindee.com/integrations/polling-for-results
+responseCodes:
+  throttled: 429
+  quotaExceeded: 402
+  badRequest: 400
+  unauthorized: 401
+  notFound: 404
+  payloadTooLarge: 413
+algorithm: credit-bucket
+quotas:
+  - dimension: monthly credits
+    description: Each plan ships with a fixed monthly credit allowance; overage is billed per-credit at the plan's overage rate.
+  - dimension: file size
+    description: Files up to 100 MB per inference request.
+  - dimension: page count
+    description: PDFs up to 200 pages; larger documents must be split first.
+  - dimension: concurrency
+    description: Inference is asynchronous; clients enqueue a job and poll for results or receive a webhook callback.
+notes:
+  - Mindee does not publish a per-second request-rate limit; throughput is capped by the asynchronous job pipeline and the plan's monthly credit budget.
+  - Enterprise customers can negotiate higher concurrency and dedicated processing capacity under a custom SLA.
+  - Asynchronous jobs typically complete within a few seconds for single-page documents; larger documents and complex models take longer.
