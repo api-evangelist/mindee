@@ -1,0 +1,125 @@
+arazzo: 1.0.1
+info:
+  title: Mindee Invoice Extraction
+  summary: Enqueue an invoice for extraction, poll the job until processed, then read the extracted fields.
+  description: >-
+    The canonical Mindee asynchronous document AI pattern applied to invoices.
+    The workflow uploads an invoice to the extraction queue against an
+    extraction model, polls the shared jobs endpoint until the job status
+    becomes Processed (or Failed), and then fetches the completed extraction
+    inference to read the structured fields such as supplier, total, and dates.
+    Every step spells out its request inline so the flow can be read and
+    executed without opening the underlying OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: extractionApi
+  url: ../openapi/mindee-extraction-api-openapi.yml
+  type: openapi
+- name: jobsApi
+  url: ../openapi/mindee-jobs-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: invoice-extraction
+  summary: Upload an invoice, wait for processing, and read the extracted fields.
+  description: >-
+    Sends an invoice file to the extraction enqueue endpoint, polls the job
+    status until processing finishes, and retrieves the extraction inference
+    result containing the parsed fields.
+  inputs:
+    type: object
+    required:
+    - authorization
+    - modelId
+    - file
+    properties:
+      authorization:
+        type: string
+        description: Mindee API key sent in the Authorization header.
+      modelId:
+        type: string
+        description: UUID of the extraction model trained for invoices.
+      file:
+        type: string
+        description: The invoice file to upload as binary form data.
+      filename:
+        type: string
+        description: Optional filename to associate with the uploaded invoice.
+      alias:
+        type: string
+        description: Optional free-form identifier tagged onto the request.
+  steps:
+  - stepId: enqueueInvoice
+    description: >-
+      Send the invoice file to the asynchronous extraction queue using the
+      invoice extraction model. Returns a job whose status begins as Processing.
+    operationId: Enqueue_Extraction_Product_Inference_v2_products_extraction_enqueue_post
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    requestBody:
+      contentType: multipart/form-data
+      payload:
+        model_id: $inputs.modelId
+        file: $inputs.file
+        filename: $inputs.filename
+        alias: $inputs.alias
+    successCriteria:
+    - condition: $statusCode == 202
+    outputs:
+      jobId: $response.body#/job/id
+      status: $response.body#/job/status
+  - stepId: pollJob
+    description: >-
+      Poll the shared jobs endpoint for the enqueued invoice. The job remains
+      Processing until extraction completes, then reports Processed or Failed.
+    operationId: Get_Job_Status_v2_jobs__job_id__get
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    - name: job_id
+      in: path
+      value: $steps.enqueueInvoice.outputs.jobId
+    - name: redirect
+      in: query
+      value: false
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      status: $response.body#/job/status
+    onSuccess:
+    - name: jobProcessed
+      type: goto
+      stepId: getResult
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Processed"
+        type: jsonpath
+    - name: jobPending
+      type: goto
+      stepId: pollJob
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Processing"
+        type: jsonpath
+  - stepId: getResult
+    description: >-
+      Retrieve the completed extraction inference and read the structured
+      fields parsed from the invoice.
+    operationId: Get_Extraction_Product_Result_v2_products_extraction_results__inference_id__get
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    - name: inference_id
+      in: path
+      value: $steps.enqueueInvoice.outputs.jobId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      inferenceId: $response.body#/inference/id
+      fields: $response.body#/inference/result/fields
+  outputs:
+    jobId: $steps.enqueueInvoice.outputs.jobId
+    fields: $steps.getResult.outputs.fields

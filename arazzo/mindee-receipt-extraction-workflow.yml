@@ -1,0 +1,122 @@
+arazzo: 1.0.1
+info:
+  title: Mindee Receipt Extraction
+  summary: Enqueue a receipt with confidence scoring, poll until processed, then read the extracted line items and totals.
+  description: >-
+    Applies the Mindee asynchronous extraction pattern to expense receipts.
+    The workflow uploads a receipt against a receipt extraction model with the
+    confidence option enabled, polls the shared jobs endpoint until the job is
+    Processed, and fetches the inference to read the supplier, totals, taxes,
+    and line items along with per-field confidence levels useful for expense
+    automation. Every step spells out its request inline so the flow can be
+    read and executed without opening the underlying OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: extractionApi
+  url: ../openapi/mindee-extraction-api-openapi.yml
+  type: openapi
+- name: jobsApi
+  url: ../openapi/mindee-jobs-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: receipt-extraction
+  summary: Upload a receipt with confidence scoring and read the extracted fields.
+  description: >-
+    Sends a receipt file to the extraction enqueue endpoint with confidence
+    enabled, polls the job until processing finishes, and retrieves the parsed
+    fields with their confidence attributes.
+  inputs:
+    type: object
+    required:
+    - authorization
+    - modelId
+    - file
+    properties:
+      authorization:
+        type: string
+        description: Mindee API key sent in the Authorization header.
+      modelId:
+        type: string
+        description: UUID of the extraction model trained for receipts.
+      file:
+        type: string
+        description: The receipt file to upload as binary form data.
+      filename:
+        type: string
+        description: Optional filename to associate with the uploaded receipt.
+  steps:
+  - stepId: enqueueReceipt
+    description: >-
+      Send the receipt file to the asynchronous extraction queue with the
+      confidence option enabled so each field carries a confidence level.
+    operationId: Enqueue_Extraction_Product_Inference_v2_products_extraction_enqueue_post
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    requestBody:
+      contentType: multipart/form-data
+      payload:
+        model_id: $inputs.modelId
+        file: $inputs.file
+        filename: $inputs.filename
+        confidence: true
+    successCriteria:
+    - condition: $statusCode == 202
+    outputs:
+      jobId: $response.body#/job/id
+      status: $response.body#/job/status
+  - stepId: pollJob
+    description: >-
+      Poll the shared jobs endpoint until the receipt extraction job reports
+      Processed or Failed.
+    operationId: Get_Job_Status_v2_jobs__job_id__get
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    - name: job_id
+      in: path
+      value: $steps.enqueueReceipt.outputs.jobId
+    - name: redirect
+      in: query
+      value: false
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      status: $response.body#/job/status
+    onSuccess:
+    - name: jobProcessed
+      type: goto
+      stepId: getResult
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Processed"
+        type: jsonpath
+    - name: jobPending
+      type: goto
+      stepId: pollJob
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Processing"
+        type: jsonpath
+  - stepId: getResult
+    description: >-
+      Retrieve the completed extraction inference and read the structured
+      fields and their confidence attributes parsed from the receipt.
+    operationId: Get_Extraction_Product_Result_v2_products_extraction_results__inference_id__get
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    - name: inference_id
+      in: path
+      value: $steps.enqueueReceipt.outputs.jobId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      inferenceId: $response.body#/inference/id
+      fields: $response.body#/inference/result/fields
+  outputs:
+    jobId: $steps.enqueueReceipt.outputs.jobId
+    fields: $steps.getResult.outputs.fields

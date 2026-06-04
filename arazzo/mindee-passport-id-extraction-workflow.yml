@@ -1,0 +1,123 @@
+arazzo: 1.0.1
+info:
+  title: Mindee Passport and ID Extraction
+  summary: Enqueue a passport or identity document with polygon locations, poll until processed, then read the extracted holder fields.
+  description: >-
+    Applies the Mindee asynchronous extraction pattern to passports and other
+    identity documents. The workflow uploads an ID document against an identity
+    extraction model with the polygon option enabled so each field carries its
+    bounding box location, polls the shared jobs endpoint until the job is
+    Processed, and fetches the inference to read holder fields such as name,
+    document number, nationality, and expiry. Every step spells out its request
+    inline so the flow can be read and executed without opening the underlying
+    OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: extractionApi
+  url: ../openapi/mindee-extraction-api-openapi.yml
+  type: openapi
+- name: jobsApi
+  url: ../openapi/mindee-jobs-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: passport-id-extraction
+  summary: Upload a passport or ID document with polygon locations and read the extracted holder fields.
+  description: >-
+    Sends an identity document to the extraction enqueue endpoint with polygon
+    location calculation enabled, polls the job until processing finishes, and
+    retrieves the parsed identity fields with their bounding box locations.
+  inputs:
+    type: object
+    required:
+    - authorization
+    - modelId
+    - file
+    properties:
+      authorization:
+        type: string
+        description: Mindee API key sent in the Authorization header.
+      modelId:
+        type: string
+        description: UUID of the extraction model trained for identity documents.
+      file:
+        type: string
+        description: The passport or ID document file to upload as binary form data.
+      filename:
+        type: string
+        description: Optional filename to associate with the uploaded document.
+  steps:
+  - stepId: enqueueDocument
+    description: >-
+      Send the identity document to the asynchronous extraction queue with the
+      polygon option enabled so each field carries a bounding box location.
+    operationId: Enqueue_Extraction_Product_Inference_v2_products_extraction_enqueue_post
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    requestBody:
+      contentType: multipart/form-data
+      payload:
+        model_id: $inputs.modelId
+        file: $inputs.file
+        filename: $inputs.filename
+        polygon: true
+    successCriteria:
+    - condition: $statusCode == 202
+    outputs:
+      jobId: $response.body#/job/id
+      status: $response.body#/job/status
+  - stepId: pollJob
+    description: >-
+      Poll the shared jobs endpoint until the identity extraction job reports
+      Processed or Failed.
+    operationId: Get_Job_Status_v2_jobs__job_id__get
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    - name: job_id
+      in: path
+      value: $steps.enqueueDocument.outputs.jobId
+    - name: redirect
+      in: query
+      value: false
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      status: $response.body#/job/status
+    onSuccess:
+    - name: jobProcessed
+      type: goto
+      stepId: getResult
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Processed"
+        type: jsonpath
+    - name: jobPending
+      type: goto
+      stepId: pollJob
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Processing"
+        type: jsonpath
+  - stepId: getResult
+    description: >-
+      Retrieve the completed extraction inference and read the structured
+      identity fields and their locations parsed from the document.
+    operationId: Get_Extraction_Product_Result_v2_products_extraction_results__inference_id__get
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    - name: inference_id
+      in: path
+      value: $steps.enqueueDocument.outputs.jobId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      inferenceId: $response.body#/inference/id
+      fields: $response.body#/inference/result/fields
+  outputs:
+    jobId: $steps.enqueueDocument.outputs.jobId
+    fields: $steps.getResult.outputs.fields

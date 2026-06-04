@@ -1,0 +1,122 @@
+arazzo: 1.0.1
+info:
+  title: Mindee Split Multi-Document File
+  summary: Enqueue a multi-document file for splitting, poll until processed, then read the identified document ranges.
+  description: >-
+    Uses Mindee's asynchronous split utility to identify the individual
+    documents contained within a single multi-document file. The workflow
+    uploads a file to the split queue, polls the shared jobs endpoint until the
+    job is Processed, and fetches the split inference to read the list of
+    document ranges. This is the natural first step when a scanned batch holds
+    several documents that must be separated before extraction. Every step
+    spells out its request inline so the flow can be read and executed without
+    opening the underlying OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: splitApi
+  url: ../openapi/mindee-split-api-openapi.yml
+  type: openapi
+- name: jobsApi
+  url: ../openapi/mindee-jobs-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: split-multi-document
+  summary: Upload a multi-document file and read the identified document ranges.
+  description: >-
+    Sends a file to the split enqueue endpoint, polls the job until processing
+    finishes, and retrieves the split result containing the identified document
+    ranges.
+  inputs:
+    type: object
+    required:
+    - authorization
+    - modelId
+    - file
+    properties:
+      authorization:
+        type: string
+        description: Mindee API key sent in the Authorization header.
+      modelId:
+        type: string
+        description: UUID of the split utility model to apply.
+      file:
+        type: string
+        description: The multi-document file to upload as binary form data.
+      filename:
+        type: string
+        description: Optional filename to associate with the uploaded file.
+  steps:
+  - stepId: enqueueSplit
+    description: >-
+      Send the multi-document file to the asynchronous split queue. Returns a
+      job whose status begins as Processing.
+    operationId: Enqueue_Split_Product_Inference_v2_products_split_enqueue_post
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    requestBody:
+      contentType: multipart/form-data
+      payload:
+        model_id: $inputs.modelId
+        file: $inputs.file
+        filename: $inputs.filename
+    successCriteria:
+    - condition: $statusCode == 202
+    outputs:
+      jobId: $response.body#/job/id
+      status: $response.body#/job/status
+  - stepId: pollJob
+    description: >-
+      Poll the shared jobs endpoint until the split job reports Processed or
+      Failed.
+    operationId: Get_Job_Status_v2_jobs__job_id__get
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    - name: job_id
+      in: path
+      value: $steps.enqueueSplit.outputs.jobId
+    - name: redirect
+      in: query
+      value: false
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      status: $response.body#/job/status
+    onSuccess:
+    - name: jobProcessed
+      type: goto
+      stepId: getResult
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Processed"
+        type: jsonpath
+    - name: jobPending
+      type: goto
+      stepId: pollJob
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Processing"
+        type: jsonpath
+  - stepId: getResult
+    description: >-
+      Retrieve the completed split inference and read the list of documents
+      identified within the source file.
+    operationId: Get_Split_Product_Result_v2_products_split_results__inference_id__get
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    - name: inference_id
+      in: path
+      value: $steps.enqueueSplit.outputs.jobId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      inferenceId: $response.body#/inference/id
+      splits: $response.body#/inference/result/splits
+  outputs:
+    jobId: $steps.enqueueSplit.outputs.jobId
+    splits: $steps.getResult.outputs.splits

@@ -1,0 +1,125 @@
+arazzo: 1.0.1
+info:
+  title: Mindee Poll Job With Failure Branch
+  summary: Enqueue an extraction, poll the job, and branch explicitly on Processed, Processing, or Failed before reading the result.
+  description: >-
+    A resilient variant of the Mindee polling pattern that handles the Failed
+    terminal state as a first-class outcome rather than only the happy path.
+    The workflow enqueues an extraction, repeatedly polls the shared jobs
+    endpoint, and branches three ways on the job status: it loops while
+    Processing, ends the workflow when the job has Failed, and proceeds to read
+    the result only when Processed. This is the recommended pattern for
+    unattended pipelines that must distinguish success from failure. Every step
+    spells out its request inline so the flow can be read and executed without
+    opening the underlying OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: extractionApi
+  url: ../openapi/mindee-extraction-api-openapi.yml
+  type: openapi
+- name: jobsApi
+  url: ../openapi/mindee-jobs-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: poll-job-with-failure-branch
+  summary: Enqueue, poll, and branch on success or failure before reading the result.
+  description: >-
+    Enqueues an extraction and polls the job, ending on Failed, looping on
+    Processing, and reading the extracted fields on Processed.
+  inputs:
+    type: object
+    required:
+    - authorization
+    - modelId
+    - file
+    properties:
+      authorization:
+        type: string
+        description: Mindee API key sent in the Authorization header.
+      modelId:
+        type: string
+        description: UUID of the extraction model to apply.
+      file:
+        type: string
+        description: The document file to upload as binary form data.
+  steps:
+  - stepId: enqueue
+    description: >-
+      Send the document to the asynchronous extraction queue. Returns a job
+      whose status begins as Processing.
+    operationId: Enqueue_Extraction_Product_Inference_v2_products_extraction_enqueue_post
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    requestBody:
+      contentType: multipart/form-data
+      payload:
+        model_id: $inputs.modelId
+        file: $inputs.file
+    successCriteria:
+    - condition: $statusCode == 202
+    outputs:
+      jobId: $response.body#/job/id
+  - stepId: pollJob
+    description: >-
+      Poll the shared jobs endpoint and branch on the job status. Loop while
+      Processing, end the workflow on Failed, and continue on Processed.
+    operationId: Get_Job_Status_v2_jobs__job_id__get
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    - name: job_id
+      in: path
+      value: $steps.enqueue.outputs.jobId
+    - name: redirect
+      in: query
+      value: false
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      status: $response.body#/job/status
+      error: $response.body#/job/error
+    onSuccess:
+    - name: jobProcessed
+      type: goto
+      stepId: getResult
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Processed"
+        type: jsonpath
+    - name: jobFailed
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Failed"
+        type: jsonpath
+    - name: jobPending
+      type: goto
+      stepId: pollJob
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Processing"
+        type: jsonpath
+  - stepId: getResult
+    description: >-
+      Retrieve the completed extraction inference and read the structured
+      fields parsed from the document.
+    operationId: Get_Extraction_Product_Result_v2_products_extraction_results__inference_id__get
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    - name: inference_id
+      in: path
+      value: $steps.enqueue.outputs.jobId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      inferenceId: $response.body#/inference/id
+      fields: $response.body#/inference/result/fields
+  outputs:
+    jobId: $steps.enqueue.outputs.jobId
+    jobStatus: $steps.pollJob.outputs.status
+    fields: $steps.getResult.outputs.fields

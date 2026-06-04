@@ -1,0 +1,195 @@
+arazzo: 1.0.1
+info:
+  title: Mindee OCR Then Extract
+  summary: Run OCR over a document to capture its raw text, then extract structured fields from the same file, reading both outputs.
+  description: >-
+    A two-product enrichment pattern. The workflow first runs the OCR utility
+    to capture the full per-page text of a document, waits for that job and
+    reads the pages, then enqueues the same file for extraction against the
+    supplied extraction model, polls the extraction job, and reads the parsed
+    fields. The combination yields both a faithful text transcription and a
+    structured field set from one source file. Every step spells out its
+    request inline so the flow can be read and executed without opening the
+    underlying OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: ocrApi
+  url: ../openapi/mindee-ocr-api-openapi.yml
+  type: openapi
+- name: extractionApi
+  url: ../openapi/mindee-extraction-api-openapi.yml
+  type: openapi
+- name: jobsApi
+  url: ../openapi/mindee-jobs-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: ocr-then-extract
+  summary: OCR a document for raw text, then extract structured fields from it.
+  description: >-
+    Runs OCR to capture per-page text, then enqueues the same file for
+    extraction, polling each job to completion and reading the pages and the
+    extracted fields.
+  inputs:
+    type: object
+    required:
+    - authorization
+    - ocrModelId
+    - extractionModelId
+    - file
+    properties:
+      authorization:
+        type: string
+        description: Mindee API key sent in the Authorization header.
+      ocrModelId:
+        type: string
+        description: UUID of the OCR utility model.
+      extractionModelId:
+        type: string
+        description: UUID of the extraction model to apply after OCR.
+      file:
+        type: string
+        description: The document file to upload as binary form data.
+      filename:
+        type: string
+        description: Optional filename to associate with the uploaded document.
+  steps:
+  - stepId: enqueueOcr
+    description: >-
+      Send the document to the asynchronous OCR queue to capture its full text.
+    operationId: Enqueue_OCR_Product_Inference_v2_products_ocr_enqueue_post
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    requestBody:
+      contentType: multipart/form-data
+      payload:
+        model_id: $inputs.ocrModelId
+        file: $inputs.file
+        filename: $inputs.filename
+    successCriteria:
+    - condition: $statusCode == 202
+    outputs:
+      ocrJobId: $response.body#/job/id
+  - stepId: pollOcr
+    description: >-
+      Poll the shared jobs endpoint until the OCR job reports Processed or
+      Failed.
+    operationId: Get_Job_Status_v2_jobs__job_id__get
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    - name: job_id
+      in: path
+      value: $steps.enqueueOcr.outputs.ocrJobId
+    - name: redirect
+      in: query
+      value: false
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      status: $response.body#/job/status
+    onSuccess:
+    - name: ocrProcessed
+      type: goto
+      stepId: getOcr
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Processed"
+        type: jsonpath
+    - name: ocrPending
+      type: goto
+      stepId: pollOcr
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Processing"
+        type: jsonpath
+  - stepId: getOcr
+    description: >-
+      Read the recognized per-page text from the completed OCR inference.
+    operationId: Get_OCR_Product_Result_v2_products_ocr_results__inference_id__get
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    - name: inference_id
+      in: path
+      value: $steps.enqueueOcr.outputs.ocrJobId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      pages: $response.body#/inference/result/pages
+  - stepId: enqueueExtraction
+    description: >-
+      Send the same file to the extraction queue against the chosen extraction
+      model to read its structured fields.
+    operationId: Enqueue_Extraction_Product_Inference_v2_products_extraction_enqueue_post
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    requestBody:
+      contentType: multipart/form-data
+      payload:
+        model_id: $inputs.extractionModelId
+        file: $inputs.file
+        filename: $inputs.filename
+    successCriteria:
+    - condition: $statusCode == 202
+    outputs:
+      extractionJobId: $response.body#/job/id
+  - stepId: pollExtraction
+    description: >-
+      Poll the shared jobs endpoint until the extraction job reports Processed
+      or Failed.
+    operationId: Get_Job_Status_v2_jobs__job_id__get
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    - name: job_id
+      in: path
+      value: $steps.enqueueExtraction.outputs.extractionJobId
+    - name: redirect
+      in: query
+      value: false
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      status: $response.body#/job/status
+    onSuccess:
+    - name: extractionProcessed
+      type: goto
+      stepId: getExtraction
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Processed"
+        type: jsonpath
+    - name: extractionPending
+      type: goto
+      stepId: pollExtraction
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Processing"
+        type: jsonpath
+  - stepId: getExtraction
+    description: >-
+      Retrieve the completed extraction inference and read the structured
+      fields parsed from the document.
+    operationId: Get_Extraction_Product_Result_v2_products_extraction_results__inference_id__get
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    - name: inference_id
+      in: path
+      value: $steps.enqueueExtraction.outputs.extractionJobId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      inferenceId: $response.body#/inference/id
+      fields: $response.body#/inference/result/fields
+  outputs:
+    pages: $steps.getOcr.outputs.pages
+    fields: $steps.getExtraction.outputs.fields

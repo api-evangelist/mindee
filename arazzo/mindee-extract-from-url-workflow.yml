@@ -1,0 +1,121 @@
+arazzo: 1.0.1
+info:
+  title: Mindee Extract From URL
+  summary: Enqueue a publicly hosted document by URL for extraction, poll until processed, then read the extracted fields.
+  description: >-
+    A variant of the Mindee asynchronous extraction pattern that ingests a
+    document directly from a public HTTPS URL instead of uploading bytes. The
+    workflow submits the document URL to the extraction queue, polls the shared
+    jobs endpoint until the job is Processed, and fetches the inference to read
+    the parsed fields. This is useful when documents already live in object
+    storage or a CDN. Every step spells out its request inline so the flow can
+    be read and executed without opening the underlying OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: extractionApi
+  url: ../openapi/mindee-extraction-api-openapi.yml
+  type: openapi
+- name: jobsApi
+  url: ../openapi/mindee-jobs-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: extract-from-url
+  summary: Submit a document URL for extraction and read the parsed fields.
+  description: >-
+    Sends a publicly accessible document URL to the extraction enqueue
+    endpoint, polls the job until processing finishes, and retrieves the
+    extracted fields.
+  inputs:
+    type: object
+    required:
+    - authorization
+    - modelId
+    - url
+    properties:
+      authorization:
+        type: string
+        description: Mindee API key sent in the Authorization header.
+      modelId:
+        type: string
+        description: UUID of the extraction model to apply.
+      url:
+        type: string
+        description: Public HTTPS URL of the document to download and process.
+      alias:
+        type: string
+        description: Optional free-form identifier tagged onto the request.
+  steps:
+  - stepId: enqueueByUrl
+    description: >-
+      Submit the document URL to the asynchronous extraction queue so Mindee
+      downloads and processes the remote file.
+    operationId: Enqueue_Extraction_Product_Inference_v2_products_extraction_enqueue_post
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    requestBody:
+      contentType: multipart/form-data
+      payload:
+        model_id: $inputs.modelId
+        url: $inputs.url
+        alias: $inputs.alias
+    successCriteria:
+    - condition: $statusCode == 202
+    outputs:
+      jobId: $response.body#/job/id
+      status: $response.body#/job/status
+  - stepId: pollJob
+    description: >-
+      Poll the shared jobs endpoint until the extraction job reports Processed
+      or Failed.
+    operationId: Get_Job_Status_v2_jobs__job_id__get
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    - name: job_id
+      in: path
+      value: $steps.enqueueByUrl.outputs.jobId
+    - name: redirect
+      in: query
+      value: false
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      status: $response.body#/job/status
+    onSuccess:
+    - name: jobProcessed
+      type: goto
+      stepId: getResult
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Processed"
+        type: jsonpath
+    - name: jobPending
+      type: goto
+      stepId: pollJob
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Processing"
+        type: jsonpath
+  - stepId: getResult
+    description: >-
+      Retrieve the completed extraction inference and read the structured
+      fields parsed from the remote document.
+    operationId: Get_Extraction_Product_Result_v2_products_extraction_results__inference_id__get
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    - name: inference_id
+      in: path
+      value: $steps.enqueueByUrl.outputs.jobId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      inferenceId: $response.body#/inference/id
+      fields: $response.body#/inference/result/fields
+  outputs:
+    jobId: $steps.enqueueByUrl.outputs.jobId
+    fields: $steps.getResult.outputs.fields

@@ -1,0 +1,122 @@
+arazzo: 1.0.1
+info:
+  title: Mindee Crop Document
+  summary: Enqueue a document for cropping, poll until processed, then read the detected objects and their crop coordinates.
+  description: >-
+    Uses Mindee's asynchronous crop utility to detect documents or objects
+    within a source image and return their cropping coordinates. The workflow
+    uploads a file to the crop queue, polls the shared jobs endpoint until the
+    job is Processed, and fetches the crop inference to read the list of
+    detected crops. This is useful for de-skewing and isolating individual
+    documents before extraction. Every step spells out its request inline so
+    the flow can be read and executed without opening the underlying OpenAPI
+    description.
+  version: 1.0.0
+sourceDescriptions:
+- name: cropApi
+  url: ../openapi/mindee-crop-api-openapi.yml
+  type: openapi
+- name: jobsApi
+  url: ../openapi/mindee-jobs-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: crop-document
+  summary: Upload a document and read the detected crop regions.
+  description: >-
+    Sends a file to the crop enqueue endpoint, polls the job until processing
+    finishes, and retrieves the crop result containing the detected objects and
+    their coordinates.
+  inputs:
+    type: object
+    required:
+    - authorization
+    - modelId
+    - file
+    properties:
+      authorization:
+        type: string
+        description: Mindee API key sent in the Authorization header.
+      modelId:
+        type: string
+        description: UUID of the crop utility model to apply.
+      file:
+        type: string
+        description: The document file to upload as binary form data.
+      filename:
+        type: string
+        description: Optional filename to associate with the uploaded document.
+  steps:
+  - stepId: enqueueCrop
+    description: >-
+      Send the document to the asynchronous crop queue. Returns a job whose
+      status begins as Processing.
+    operationId: Enqueue_Crop_Product_Inference_v2_products_crop_enqueue_post
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    requestBody:
+      contentType: multipart/form-data
+      payload:
+        model_id: $inputs.modelId
+        file: $inputs.file
+        filename: $inputs.filename
+    successCriteria:
+    - condition: $statusCode == 202
+    outputs:
+      jobId: $response.body#/job/id
+      status: $response.body#/job/status
+  - stepId: pollJob
+    description: >-
+      Poll the shared jobs endpoint until the crop job reports Processed or
+      Failed.
+    operationId: Get_Job_Status_v2_jobs__job_id__get
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    - name: job_id
+      in: path
+      value: $steps.enqueueCrop.outputs.jobId
+    - name: redirect
+      in: query
+      value: false
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      status: $response.body#/job/status
+    onSuccess:
+    - name: jobProcessed
+      type: goto
+      stepId: getResult
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Processed"
+        type: jsonpath
+    - name: jobPending
+      type: goto
+      stepId: pollJob
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Processing"
+        type: jsonpath
+  - stepId: getResult
+    description: >-
+      Retrieve the completed crop inference and read the detected objects and
+      their cropping coordinates.
+    operationId: Get_Crop_Product_Result_v2_products_crop_results__inference_id__get
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    - name: inference_id
+      in: path
+      value: $steps.enqueueCrop.outputs.jobId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      inferenceId: $response.body#/inference/id
+      crops: $response.body#/inference/result/crops
+  outputs:
+    jobId: $steps.enqueueCrop.outputs.jobId
+    crops: $steps.getResult.outputs.crops

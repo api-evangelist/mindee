@@ -1,0 +1,120 @@
+arazzo: 1.0.1
+info:
+  title: Mindee Classify Document Type
+  summary: Enqueue a document for classification, poll until processed, then read the predicted document type.
+  description: >-
+    Uses Mindee's asynchronous classification utility to determine what kind of
+    document a file is. The workflow uploads a file to the classification
+    queue, polls the shared jobs endpoint until the job is Processed, and
+    fetches the classification inference to read the predicted document type.
+    This is a useful first stage before routing a document to a type-specific
+    extraction model. Every step spells out its request inline so the flow can
+    be read and executed without opening the underlying OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: classificationApi
+  url: ../openapi/mindee-classification-api-openapi.yml
+  type: openapi
+- name: jobsApi
+  url: ../openapi/mindee-jobs-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: classify-document-type
+  summary: Upload a document and read its predicted document type.
+  description: >-
+    Sends a file to the classification enqueue endpoint, polls the job until
+    processing finishes, and retrieves the classification result.
+  inputs:
+    type: object
+    required:
+    - authorization
+    - modelId
+    - file
+    properties:
+      authorization:
+        type: string
+        description: Mindee API key sent in the Authorization header.
+      modelId:
+        type: string
+        description: UUID of the classification utility model to apply.
+      file:
+        type: string
+        description: The document file to upload as binary form data.
+      filename:
+        type: string
+        description: Optional filename to associate with the uploaded document.
+  steps:
+  - stepId: enqueueClassification
+    description: >-
+      Send the document to the asynchronous classification queue. Returns a job
+      whose status begins as Processing.
+    operationId: Enqueue_Classification_Product_Inference_v2_products_classification_enqueue_post
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    requestBody:
+      contentType: multipart/form-data
+      payload:
+        model_id: $inputs.modelId
+        file: $inputs.file
+        filename: $inputs.filename
+    successCriteria:
+    - condition: $statusCode == 202
+    outputs:
+      jobId: $response.body#/job/id
+      status: $response.body#/job/status
+  - stepId: pollJob
+    description: >-
+      Poll the shared jobs endpoint until the classification job reports
+      Processed or Failed.
+    operationId: Get_Job_Status_v2_jobs__job_id__get
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    - name: job_id
+      in: path
+      value: $steps.enqueueClassification.outputs.jobId
+    - name: redirect
+      in: query
+      value: false
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      status: $response.body#/job/status
+    onSuccess:
+    - name: jobProcessed
+      type: goto
+      stepId: getResult
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Processed"
+        type: jsonpath
+    - name: jobPending
+      type: goto
+      stepId: pollJob
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Processing"
+        type: jsonpath
+  - stepId: getResult
+    description: >-
+      Retrieve the completed classification inference and read the predicted
+      document type from the source file.
+    operationId: Get_classification_Product_Result_v2_products_classification_results__inference_id__get
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    - name: inference_id
+      in: path
+      value: $steps.enqueueClassification.outputs.jobId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      inferenceId: $response.body#/inference/id
+      classification: $response.body#/inference/result/classification
+  outputs:
+    jobId: $steps.enqueueClassification.outputs.jobId
+    classification: $steps.getResult.outputs.classification

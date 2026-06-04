@@ -1,0 +1,196 @@
+arazzo: 1.0.1
+info:
+  title: Mindee Split Then Extract
+  summary: Split a multi-document file into ranges, then extract structured fields from the original file, reading splits and fields.
+  description: >-
+    A two-product batch intake pattern. The workflow first runs the split
+    utility to discover the individual document ranges inside a multi-document
+    file, waits for that job and reads the ranges, then enqueues the same file
+    for extraction against the supplied extraction model, polls the extraction
+    job, and reads the parsed fields. This mirrors a scanning pipeline where a
+    batch file is segmented before its contents are read. Every step spells out
+    its request inline so the flow can be read and executed without opening the
+    underlying OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: splitApi
+  url: ../openapi/mindee-split-api-openapi.yml
+  type: openapi
+- name: extractionApi
+  url: ../openapi/mindee-extraction-api-openapi.yml
+  type: openapi
+- name: jobsApi
+  url: ../openapi/mindee-jobs-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: split-then-extract
+  summary: Split a multi-document file, then extract fields from it.
+  description: >-
+    Splits a batch file into document ranges, then enqueues the same file for
+    extraction, polling each job to completion and reading the ranges and the
+    extracted fields.
+  inputs:
+    type: object
+    required:
+    - authorization
+    - splitModelId
+    - extractionModelId
+    - file
+    properties:
+      authorization:
+        type: string
+        description: Mindee API key sent in the Authorization header.
+      splitModelId:
+        type: string
+        description: UUID of the split utility model.
+      extractionModelId:
+        type: string
+        description: UUID of the extraction model to apply after splitting.
+      file:
+        type: string
+        description: The multi-document file to upload as binary form data.
+      filename:
+        type: string
+        description: Optional filename to associate with the uploaded file.
+  steps:
+  - stepId: enqueueSplit
+    description: >-
+      Send the multi-document file to the asynchronous split queue to discover
+      its document ranges.
+    operationId: Enqueue_Split_Product_Inference_v2_products_split_enqueue_post
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    requestBody:
+      contentType: multipart/form-data
+      payload:
+        model_id: $inputs.splitModelId
+        file: $inputs.file
+        filename: $inputs.filename
+    successCriteria:
+    - condition: $statusCode == 202
+    outputs:
+      splitJobId: $response.body#/job/id
+  - stepId: pollSplit
+    description: >-
+      Poll the shared jobs endpoint until the split job reports Processed or
+      Failed.
+    operationId: Get_Job_Status_v2_jobs__job_id__get
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    - name: job_id
+      in: path
+      value: $steps.enqueueSplit.outputs.splitJobId
+    - name: redirect
+      in: query
+      value: false
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      status: $response.body#/job/status
+    onSuccess:
+    - name: splitProcessed
+      type: goto
+      stepId: getSplit
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Processed"
+        type: jsonpath
+    - name: splitPending
+      type: goto
+      stepId: pollSplit
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Processing"
+        type: jsonpath
+  - stepId: getSplit
+    description: >-
+      Read the identified document ranges from the completed split inference.
+    operationId: Get_Split_Product_Result_v2_products_split_results__inference_id__get
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    - name: inference_id
+      in: path
+      value: $steps.enqueueSplit.outputs.splitJobId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      splits: $response.body#/inference/result/splits
+  - stepId: enqueueExtraction
+    description: >-
+      Send the same file to the extraction queue against the chosen extraction
+      model to read the contents of the documents.
+    operationId: Enqueue_Extraction_Product_Inference_v2_products_extraction_enqueue_post
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    requestBody:
+      contentType: multipart/form-data
+      payload:
+        model_id: $inputs.extractionModelId
+        file: $inputs.file
+        filename: $inputs.filename
+    successCriteria:
+    - condition: $statusCode == 202
+    outputs:
+      extractionJobId: $response.body#/job/id
+  - stepId: pollExtraction
+    description: >-
+      Poll the shared jobs endpoint until the extraction job reports Processed
+      or Failed.
+    operationId: Get_Job_Status_v2_jobs__job_id__get
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    - name: job_id
+      in: path
+      value: $steps.enqueueExtraction.outputs.extractionJobId
+    - name: redirect
+      in: query
+      value: false
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      status: $response.body#/job/status
+    onSuccess:
+    - name: extractionProcessed
+      type: goto
+      stepId: getExtraction
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Processed"
+        type: jsonpath
+    - name: extractionPending
+      type: goto
+      stepId: pollExtraction
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Processing"
+        type: jsonpath
+  - stepId: getExtraction
+    description: >-
+      Retrieve the completed extraction inference and read the structured
+      fields parsed from the documents.
+    operationId: Get_Extraction_Product_Result_v2_products_extraction_results__inference_id__get
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    - name: inference_id
+      in: path
+      value: $steps.enqueueExtraction.outputs.extractionJobId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      inferenceId: $response.body#/inference/id
+      fields: $response.body#/inference/result/fields
+  outputs:
+    splits: $steps.getSplit.outputs.splits
+    fields: $steps.getExtraction.outputs.fields

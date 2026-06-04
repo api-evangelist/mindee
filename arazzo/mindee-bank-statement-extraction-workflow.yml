@@ -1,0 +1,126 @@
+arazzo: 1.0.1
+info:
+  title: Mindee Bank Statement Extraction
+  summary: Enqueue a bank statement with RAG and raw text enabled, poll until processed, then read the extracted transactions and balances.
+  description: >-
+    Applies the Mindee asynchronous extraction pattern to bank and financial
+    statements, which often contain long transaction tables. The workflow
+    uploads a statement against a financial extraction model with both the rag
+    and raw_text options enabled to improve recall on dense documents, polls
+    the shared jobs endpoint until the job is Processed, and fetches the
+    inference to read the extracted account fields, transaction lines, and the
+    full raw text. Every step spells out its request inline so the flow can be
+    read and executed without opening the underlying OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: extractionApi
+  url: ../openapi/mindee-extraction-api-openapi.yml
+  type: openapi
+- name: jobsApi
+  url: ../openapi/mindee-jobs-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: bank-statement-extraction
+  summary: Upload a bank statement with RAG and raw text, then read the extracted fields.
+  description: >-
+    Sends a bank statement to the extraction enqueue endpoint with rag and
+    raw_text enabled, polls the job until processing finishes, and retrieves
+    the extracted fields and full text.
+  inputs:
+    type: object
+    required:
+    - authorization
+    - modelId
+    - file
+    properties:
+      authorization:
+        type: string
+        description: Mindee API key sent in the Authorization header.
+      modelId:
+        type: string
+        description: UUID of the extraction model trained for bank statements.
+      file:
+        type: string
+        description: The bank statement file to upload as binary form data.
+      filename:
+        type: string
+        description: Optional filename to associate with the uploaded statement.
+  steps:
+  - stepId: enqueueStatement
+    description: >-
+      Send the bank statement to the asynchronous extraction queue with rag and
+      raw_text enabled to maximize recall on dense transaction tables.
+    operationId: Enqueue_Extraction_Product_Inference_v2_products_extraction_enqueue_post
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    requestBody:
+      contentType: multipart/form-data
+      payload:
+        model_id: $inputs.modelId
+        file: $inputs.file
+        filename: $inputs.filename
+        rag: true
+        raw_text: true
+    successCriteria:
+    - condition: $statusCode == 202
+    outputs:
+      jobId: $response.body#/job/id
+      status: $response.body#/job/status
+  - stepId: pollJob
+    description: >-
+      Poll the shared jobs endpoint until the bank statement extraction job
+      reports Processed or Failed.
+    operationId: Get_Job_Status_v2_jobs__job_id__get
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    - name: job_id
+      in: path
+      value: $steps.enqueueStatement.outputs.jobId
+    - name: redirect
+      in: query
+      value: false
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      status: $response.body#/job/status
+    onSuccess:
+    - name: jobProcessed
+      type: goto
+      stepId: getResult
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Processed"
+        type: jsonpath
+    - name: jobPending
+      type: goto
+      stepId: pollJob
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Processing"
+        type: jsonpath
+  - stepId: getResult
+    description: >-
+      Retrieve the completed extraction inference and read the structured
+      account and transaction fields along with the full raw text.
+    operationId: Get_Extraction_Product_Result_v2_products_extraction_results__inference_id__get
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    - name: inference_id
+      in: path
+      value: $steps.enqueueStatement.outputs.jobId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      inferenceId: $response.body#/inference/id
+      fields: $response.body#/inference/result/fields
+      rawText: $response.body#/inference/result/raw_text
+  outputs:
+    jobId: $steps.enqueueStatement.outputs.jobId
+    fields: $steps.getResult.outputs.fields
+    rawText: $steps.getResult.outputs.rawText

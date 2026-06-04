@@ -1,0 +1,197 @@
+arazzo: 1.0.1
+info:
+  title: Mindee Classify Then Extract
+  summary: Classify an unknown document, then run extraction on the same file once the type is known, reading the parsed fields.
+  description: >-
+    A two-product routing pattern. The workflow first classifies an unknown
+    document using the classification utility, waits for that job to finish and
+    reads the predicted type, then enqueues the same file for extraction
+    against the supplied extraction model, polls the extraction job, and reads
+    the parsed fields. This mirrors a real intake pipeline where documents of
+    unknown type are identified before the appropriate extraction model is
+    applied. Every step spells out its request inline so the flow can be read
+    and executed without opening the underlying OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: classificationApi
+  url: ../openapi/mindee-classification-api-openapi.yml
+  type: openapi
+- name: extractionApi
+  url: ../openapi/mindee-extraction-api-openapi.yml
+  type: openapi
+- name: jobsApi
+  url: ../openapi/mindee-jobs-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: classify-then-extract
+  summary: Classify a document, then extract structured fields from it.
+  description: >-
+    Classifies a document to discover its type, then enqueues the same file for
+    extraction, polling each job to completion and reading the predicted type
+    and the extracted fields.
+  inputs:
+    type: object
+    required:
+    - authorization
+    - classificationModelId
+    - extractionModelId
+    - file
+    properties:
+      authorization:
+        type: string
+        description: Mindee API key sent in the Authorization header.
+      classificationModelId:
+        type: string
+        description: UUID of the classification utility model.
+      extractionModelId:
+        type: string
+        description: UUID of the extraction model to apply after classification.
+      file:
+        type: string
+        description: The document file to upload as binary form data.
+      filename:
+        type: string
+        description: Optional filename to associate with the uploaded document.
+  steps:
+  - stepId: enqueueClassification
+    description: >-
+      Send the document to the asynchronous classification queue to discover
+      its type.
+    operationId: Enqueue_Classification_Product_Inference_v2_products_classification_enqueue_post
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    requestBody:
+      contentType: multipart/form-data
+      payload:
+        model_id: $inputs.classificationModelId
+        file: $inputs.file
+        filename: $inputs.filename
+    successCriteria:
+    - condition: $statusCode == 202
+    outputs:
+      classificationJobId: $response.body#/job/id
+  - stepId: pollClassification
+    description: >-
+      Poll the shared jobs endpoint until the classification job reports
+      Processed or Failed.
+    operationId: Get_Job_Status_v2_jobs__job_id__get
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    - name: job_id
+      in: path
+      value: $steps.enqueueClassification.outputs.classificationJobId
+    - name: redirect
+      in: query
+      value: false
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      status: $response.body#/job/status
+    onSuccess:
+    - name: classificationProcessed
+      type: goto
+      stepId: getClassification
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Processed"
+        type: jsonpath
+    - name: classificationPending
+      type: goto
+      stepId: pollClassification
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Processing"
+        type: jsonpath
+  - stepId: getClassification
+    description: >-
+      Read the predicted document type from the completed classification
+      inference.
+    operationId: Get_classification_Product_Result_v2_products_classification_results__inference_id__get
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    - name: inference_id
+      in: path
+      value: $steps.enqueueClassification.outputs.classificationJobId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      classification: $response.body#/inference/result/classification
+  - stepId: enqueueExtraction
+    description: >-
+      Now that the document type is known, send the same file to the extraction
+      queue against the chosen extraction model.
+    operationId: Enqueue_Extraction_Product_Inference_v2_products_extraction_enqueue_post
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    requestBody:
+      contentType: multipart/form-data
+      payload:
+        model_id: $inputs.extractionModelId
+        file: $inputs.file
+        filename: $inputs.filename
+    successCriteria:
+    - condition: $statusCode == 202
+    outputs:
+      extractionJobId: $response.body#/job/id
+  - stepId: pollExtraction
+    description: >-
+      Poll the shared jobs endpoint until the extraction job reports Processed
+      or Failed.
+    operationId: Get_Job_Status_v2_jobs__job_id__get
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    - name: job_id
+      in: path
+      value: $steps.enqueueExtraction.outputs.extractionJobId
+    - name: redirect
+      in: query
+      value: false
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      status: $response.body#/job/status
+    onSuccess:
+    - name: extractionProcessed
+      type: goto
+      stepId: getExtraction
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Processed"
+        type: jsonpath
+    - name: extractionPending
+      type: goto
+      stepId: pollExtraction
+      criteria:
+      - context: $response.body
+        condition: $.job.status == "Processing"
+        type: jsonpath
+  - stepId: getExtraction
+    description: >-
+      Retrieve the completed extraction inference and read the structured
+      fields parsed from the document.
+    operationId: Get_Extraction_Product_Result_v2_products_extraction_results__inference_id__get
+    parameters:
+    - name: Authorization
+      in: header
+      value: $inputs.authorization
+    - name: inference_id
+      in: path
+      value: $steps.enqueueExtraction.outputs.extractionJobId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      inferenceId: $response.body#/inference/id
+      fields: $response.body#/inference/result/fields
+  outputs:
+    classification: $steps.getClassification.outputs.classification
+    fields: $steps.getExtraction.outputs.fields
