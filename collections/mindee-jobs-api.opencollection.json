@@ -1,0 +1,57 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Mindee Jobs API",
+    "version": "2.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Jobs",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get The Status Of A File's Processing",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api-v2.mindee.net/v2/jobs/:job_id",
+            "params": [
+              {
+                "name": "job_id",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the job to retrieve"
+              },
+              {
+                "name": "redirect",
+                "value": "",
+                "type": "query",
+                "description": "Automatically redirect to the result URL"
+              }
+            ],
+            "auth": {
+              "type": "apikey",
+              "key": "Authorization",
+              "value": "{{Authorization}}",
+              "placement": "header"
+            }
+          },
+          "docs": "Get the status of an inference that was previously enqueued.\n\nIf you are using webhooks there is no need to call this route.\n\nWhen the job `status` is `Processing` or `Failed` the return code will be HTTP 200.\n\nWhen the job `status` is `Processed` the return code will be HTTP 302.\n\nThe processing result can then be retrieved in two ways:\n* **Recommended:** Using a GET on the URL specified in the `result_url` field of the response\n* Allowing your client to redirect on the `Location` header of the"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

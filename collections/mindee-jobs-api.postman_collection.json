@@ -1,0 +1,407 @@
+{
+  "item": [
+    {
+      "id": "fe004a41-f37d-43ff-a66b-b3c5d28c8eaf",
+      "name": "Jobs",
+      "description": {
+        "content": "Poll the status of asynchronous Mindee inference jobs across every Mindee product.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "cd3d0f23-2022-4048-b91a-18273c275eed",
+          "name": "Get The Status Of A File's Processing",
+          "request": {
+            "name": "Get The Status Of A File's Processing",
+            "description": {
+              "content": "Get the status of an inference that was previously enqueued.\n\nIf you are using webhooks there is no need to call this route.\n\nWhen the job `status` is `Processing` or `Failed` the return code will be HTTP 200.\n\nWhen the job `status` is `Processed` the return code will be HTTP 302.\n\nThe processing result can then be retrieved in two ways:\n* **Recommended:** Using a GET on the URL specified in the `result_url` field of the response\n* Allowing your client to redirect on the `Location` header of the response\n\nNote: set the `redirect` parameter to `false` to disable the redirection behavior, and always return HTTP 200.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v2",
+                "jobs",
+                ":job_id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "redirect",
+                  "value": "true",
+                  "description": "Automatically redirect to the result URL"
+                }
+              ],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<uuid4>",
+                  "key": "job_id",
+                  "description": "(Required) UUID of the job to retrieve"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "apikey",
+              "apikey": [
+                {
+                  "key": "key",
+                  "value": "Authorization"
+                },
+                {
+                  "key": "value",
+                  "value": "{{apiKey}}"
+                },
+                {
+                  "key": "in",
+                  "value": "header"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "3a23676e-3bef-4d61-863e-c7c36a551b1a",
+              "name": "Successful Response",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "jobs",
+                    ":job_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "redirect",
+                      "value": "true"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid4>",
+                      "key": "job_id",
+                      "description": "(Required) UUID of the job to retrieve"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"job\": {\n    \"id\": \"string\",\n    \"model_id\": \"string\",\n    \"filename\": \"file.jpg\",\n    \"created_at\": \"2018-10-06T11:44:28.378Z\",\n    \"status\": \"Processing\",\n    \"polling_url\": \"https://AyjhVtQNYVthAAyRPeyMKSmI.mqaAIbs-5HhCPftAXeFmjGJX,AyM5rSqUZjrApSL,kSi2.a+NU0X\",\n    \"alias\": \"string\",\n    \"completed_at\": \"1985-11-07T05:43:00.827Z\",\n    \"result_url\": \"http://r.lcgili2\",\n    \"error\": {\n      \"status\": 422,\n      \"detail\": \"One or more fields failed validation.\",\n      \"title\": \"Invalid fields in form\",\n      \"code\": \"422-001\"\n    }\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "d4e088a0-df6a-4d64-a284-127a6c9fdf3b",
+              "name": "Found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "jobs",
+                    ":job_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "redirect",
+                      "value": "true"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid4>",
+                      "key": "job_id",
+                      "description": "(Required) UUID of the job to retrieve"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Found",
+              "code": 302,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"job\": {\n    \"id\": \"string\",\n    \"model_id\": \"string\",\n    \"filename\": \"file.jpg\",\n    \"created_at\": \"2018-10-06T11:44:28.378Z\",\n    \"status\": \"Processing\",\n    \"polling_url\": \"https://AyjhVtQNYVthAAyRPeyMKSmI.mqaAIbs-5HhCPftAXeFmjGJX,AyM5rSqUZjrApSL,kSi2.a+NU0X\",\n    \"alias\": \"string\",\n    \"completed_at\": \"1985-11-07T05:43:00.827Z\",\n    \"result_url\": \"http://r.lcgili2\",\n    \"error\": {\n      \"status\": 422,\n      \"detail\": \"One or more fields failed validation.\",\n      \"title\": \"Invalid fields in form\",\n      \"code\": \"422-001\"\n    }\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "2b939ad0-b9fd-48b8-a7dd-9e9c6c19cce2",
+              "name": "Not Found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "jobs",
+                    ":job_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "redirect",
+                      "value": "true"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid4>",
+                      "key": "job_id",
+                      "description": "(Required) UUID of the job to retrieve"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": 422,\n  \"detail\": \"One or more fields failed validation.\",\n  \"title\": \"Invalid fields in form\",\n  \"code\": \"422-001\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "ae96bb75-1d50-4086-af82-4a1edcb0f065",
+              "name": "Unprocessable Content",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "jobs",
+                    ":job_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "redirect",
+                      "value": "true"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid4>",
+                      "key": "job_id",
+                      "description": "(Required) UUID of the job to retrieve"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": 422,\n  \"detail\": \"One or more fields failed validation.\",\n  \"title\": \"Invalid fields in form\",\n  \"code\": \"422-001\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "75aa1e72-7f1f-42e1-85c0-d6338a0beeb4",
+              "name": "Too Many Requests",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "jobs",
+                    ":job_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "redirect",
+                      "value": "true"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid4>",
+                      "key": "job_id",
+                      "description": "(Required) UUID of the job to retrieve"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": 422,\n  \"detail\": \"One or more fields failed validation.\",\n  \"title\": \"Invalid fields in form\",\n  \"code\": \"422-001\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api-v2.mindee.net",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "Authorization"
+      },
+      {
+        "key": "value",
+        "value": "{{apiKey}}"
+      },
+      {
+        "key": "in",
+        "value": "header"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "b3562d19-2b3d-4a95-8f36-c277a7edb70c",
+    "name": "Mindee Jobs API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Poll the status of asynchronous Mindee inference jobs across every Mindee product.\n\nContact Support:\n Name: Mindee",
+      "type": "text/plain"
+    }
+  }
+}

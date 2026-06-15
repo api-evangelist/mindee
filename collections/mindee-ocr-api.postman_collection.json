@@ -1,0 +1,721 @@
+{
+  "item": [
+    {
+      "id": "7a5bb258-2a30-441c-9762-ca6aab5ca9d7",
+      "name": "Ocr",
+      "description": {
+        "content": "Run full-page optical character recognition to obtain raw text and bounding polygons for any document.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "6b2e4659-df45-4928-97b8-9585ab9d827a",
+          "name": "Send A File For An Ocr Utility Inference",
+          "request": {
+            "name": "Send A File For An Ocr Utility Inference",
+            "description": {
+              "content": "Send a file to the asynchronous processing queue for an ocr utility inference.\n\nResults can be retrieved in two ways:\n* Loop on the `polling_url` endpoint in the response until the status\n  is `Processed` or `Failed` (polling).\n* Use a webhook to be notified when the inference is finished.\n  Webhooks can be configured on the platform on a per-model basis.\n\nInferences taking longer than 590 seconds will time out.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v2",
+                "products",
+                "ocr",
+                "enqueue"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "apikey",
+              "apikey": [
+                {
+                  "key": "key",
+                  "value": "Authorization"
+                },
+                {
+                  "key": "value",
+                  "value": "{{apiKey}}"
+                },
+                {
+                  "key": "in",
+                  "value": "header"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "44d4547b-5eea-4d69-b8dc-ae144b0e6513",
+              "name": "Successful Response",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "products",
+                    "ocr",
+                    "enqueue"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "Accepted",
+              "code": 202,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"job\": {\n    \"id\": \"string\",\n    \"model_id\": \"string\",\n    \"filename\": \"file.jpg\",\n    \"created_at\": \"2018-12-20T14:50:36.498Z\",\n    \"status\": \"Processed\",\n    \"polling_url\": \"https://ONfidOKTGzgknqvEPSwLzHLW.otiTnkKbEKq9Qem4hggS4svR+KpM4uVOXP\",\n    \"alias\": \"string\",\n    \"completed_at\": \"2024-11-24T08:05:17.044Z\",\n    \"result_url\": \"https://KKpTGBZHX.weebDI+chAchmOYFTPELKvIk8EZ1,nv3\",\n    \"error\": {\n      \"status\": 422,\n      \"detail\": \"One or more fields failed validation.\",\n      \"title\": \"Invalid fields in form\",\n      \"code\": \"422-001\"\n    }\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "52eb892b-6cd8-4baa-8f39-a0e645a0fdc5",
+              "name": "Unprocessable Content",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "products",
+                    "ocr",
+                    "enqueue"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": 422,\n  \"detail\": \"One or more fields failed validation.\",\n  \"title\": \"Invalid fields in form\",\n  \"code\": \"422-001\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "a19b59de-00cc-45fb-8592-c7b8acde678b",
+              "name": "Too Many Requests",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "products",
+                    "ocr",
+                    "enqueue"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": 422,\n  \"detail\": \"One or more fields failed validation.\",\n  \"title\": \"Invalid fields in form\",\n  \"code\": \"422-001\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "4e870b5b-f911-4a1f-8233-ed6ccaec1d59",
+          "name": "Get The Result Of A Completed Ocr Product Inference",
+          "request": {
+            "name": "Get The Result Of A Completed Ocr Product Inference",
+            "description": {
+              "content": "Get the result of an ocr utility inference that was previously enqueued.\n\nThe inference will only be available after it has finished processing.\n\nIf you are using webhooks there is no need to call this route.<br/>\nHowever, the JSON payload described here is what will be sent to each specified webhook's URL.\n\nIf you activated the \"Delete extracted data when fetched\" option for the model,\nthe inference will be deleted after this route completes.<br>\nAny further requests to the same inference ID will return a 404.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "v2",
+                "products",
+                "ocr",
+                "results",
+                ":inference_id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<uuid4>",
+                  "key": "inference_id",
+                  "description": "(Required) UUID of the inference to retrieve"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "apikey",
+              "apikey": [
+                {
+                  "key": "key",
+                  "value": "Authorization"
+                },
+                {
+                  "key": "value",
+                  "value": "{{apiKey}}"
+                },
+                {
+                  "key": "in",
+                  "value": "header"
+                }
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "model_id",
+                  "value": "<uuid4>",
+                  "type": "text",
+                  "description": "(Required) Model ID to use for the inference."
+                },
+                {
+                  "key": "file",
+                  "value": "<binary>",
+                  "type": "text",
+                  "description": "Upload a file as bytes. Required if `url` is not provided."
+                },
+                {
+                  "key": "url",
+                  "value": "<uri>",
+                  "type": "text",
+                  "description": "Download the file from a URL, must be secure (HTTPS) and publicly available. Required if `file` is not provided."
+                },
+                {
+                  "key": "file_base64",
+                  "value": "<string>",
+                  "type": "text",
+                  "description": "Upload a file as a base 64 string. Used as an alternative to `file`. *Not recommended*, for specific use only."
+                },
+                {
+                  "key": "webhook_ids",
+                  "value": "[\"<uuid4>\",\"<uuid4>\"]",
+                  "type": "text",
+                  "description": "Webhook IDs to call after all processing is finished. If empty, no webhooks will be used. Can be a list or comma-separated string."
+                },
+                {
+                  "key": "filename",
+                  "value": "<string>",
+                  "type": "text",
+                  "description": "Optional filename to associate with the uploaded or fetched file."
+                },
+                {
+                  "key": "alias",
+                  "value": "<string>",
+                  "type": "text",
+                  "description": "Optional: a free-form string to tag the request with your own identifier. For example, an internal document ID, reference number, or database key. If set, it will be included in the job and result responses."
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "bfbb5082-c190-4dd0-bcde-4b78f3571d51",
+              "name": "Successful Response",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "products",
+                    "ocr",
+                    "results",
+                    ":inference_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid4>",
+                      "key": "inference_id",
+                      "description": "(Required) UUID of the inference to retrieve"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "description": {
+                        "content": "(Required) Model ID to use for the inference.",
+                        "type": "text/plain"
+                      },
+                      "key": "model_id",
+                      "value": "<uuid4>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "Upload a file as bytes. Required if `url` is not provided.",
+                        "type": "text/plain"
+                      },
+                      "key": "file",
+                      "value": "<binary>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "Download the file from a URL, must be secure (HTTPS) and publicly available. Required if `file` is not provided.",
+                        "type": "text/plain"
+                      },
+                      "key": "url",
+                      "value": "<uri>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "Upload a file as a base 64 string. Used as an alternative to `file`. *Not recommended*, for specific use only.",
+                        "type": "text/plain"
+                      },
+                      "key": "file_base64",
+                      "value": "<string>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "Webhook IDs to call after all processing is finished. If empty, no webhooks will be used. Can be a list or comma-separated string.",
+                        "type": "text/plain"
+                      },
+                      "key": "webhook_ids",
+                      "value": "[\"<uuid4>\",\"<uuid4>\"]",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "Optional filename to associate with the uploaded or fetched file.",
+                        "type": "text/plain"
+                      },
+                      "key": "filename",
+                      "value": "<string>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "Optional: a free-form string to tag the request with your own identifier. For example, an internal document ID, reference number, or database key. If set, it will be included in the job and result responses.",
+                        "type": "text/plain"
+                      },
+                      "key": "alias",
+                      "value": "<string>",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"inference\": {\n    \"id\": \"string\",\n    \"job\": {\n      \"id\": \"string\"\n    },\n    \"model\": {\n      \"id\": \"string\"\n    },\n    \"file\": {\n      \"name\": \"string\",\n      \"page_count\": 4945,\n      \"mime_type\": \"string\",\n      \"alias\": \"string\"\n    },\n    \"result\": {\n      \"pages\": [\n        {\n          \"words\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ],\n          \"content\": \"string\"\n        },\n        {\n          \"words\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ],\n          \"content\": \"string\"\n        }\n      ]\n    }\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "30fa37c2-2f33-4019-b069-3dfd57947029",
+              "name": "Not Found",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "products",
+                    "ocr",
+                    "results",
+                    ":inference_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid4>",
+                      "key": "inference_id",
+                      "description": "(Required) UUID of the inference to retrieve"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "description": {
+                        "content": "(Required) Model ID to use for the inference.",
+                        "type": "text/plain"
+                      },
+                      "key": "model_id",
+                      "value": "<uuid4>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "Upload a file as bytes. Required if `url` is not provided.",
+                        "type": "text/plain"
+                      },
+                      "key": "file",
+                      "value": "<binary>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "Download the file from a URL, must be secure (HTTPS) and publicly available. Required if `file` is not provided.",
+                        "type": "text/plain"
+                      },
+                      "key": "url",
+                      "value": "<uri>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "Upload a file as a base 64 string. Used as an alternative to `file`. *Not recommended*, for specific use only.",
+                        "type": "text/plain"
+                      },
+                      "key": "file_base64",
+                      "value": "<string>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "Webhook IDs to call after all processing is finished. If empty, no webhooks will be used. Can be a list or comma-separated string.",
+                        "type": "text/plain"
+                      },
+                      "key": "webhook_ids",
+                      "value": "[\"<uuid4>\",\"<uuid4>\"]",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "Optional filename to associate with the uploaded or fetched file.",
+                        "type": "text/plain"
+                      },
+                      "key": "filename",
+                      "value": "<string>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "Optional: a free-form string to tag the request with your own identifier. For example, an internal document ID, reference number, or database key. If set, it will be included in the job and result responses.",
+                        "type": "text/plain"
+                      },
+                      "key": "alias",
+                      "value": "<string>",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": 422,\n  \"detail\": \"One or more fields failed validation.\",\n  \"title\": \"Invalid fields in form\",\n  \"code\": \"422-001\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "58d3a1ec-d4b0-44b5-8978-078f089576d0",
+              "name": "Unprocessable Content",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "v2",
+                    "products",
+                    "ocr",
+                    "results",
+                    ":inference_id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<uuid4>",
+                      "key": "inference_id",
+                      "description": "(Required) UUID of the inference to retrieve"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "description": {
+                        "content": "(Required) Model ID to use for the inference.",
+                        "type": "text/plain"
+                      },
+                      "key": "model_id",
+                      "value": "<uuid4>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "Upload a file as bytes. Required if `url` is not provided.",
+                        "type": "text/plain"
+                      },
+                      "key": "file",
+                      "value": "<binary>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "Download the file from a URL, must be secure (HTTPS) and publicly available. Required if `file` is not provided.",
+                        "type": "text/plain"
+                      },
+                      "key": "url",
+                      "value": "<uri>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "Upload a file as a base 64 string. Used as an alternative to `file`. *Not recommended*, for specific use only.",
+                        "type": "text/plain"
+                      },
+                      "key": "file_base64",
+                      "value": "<string>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "Webhook IDs to call after all processing is finished. If empty, no webhooks will be used. Can be a list or comma-separated string.",
+                        "type": "text/plain"
+                      },
+                      "key": "webhook_ids",
+                      "value": "[\"<uuid4>\",\"<uuid4>\"]",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "Optional filename to associate with the uploaded or fetched file.",
+                        "type": "text/plain"
+                      },
+                      "key": "filename",
+                      "value": "<string>",
+                      "type": "text"
+                    },
+                    {
+                      "description": {
+                        "content": "Optional: a free-form string to tag the request with your own identifier. For example, an internal document ID, reference number, or database key. If set, it will be included in the job and result responses.",
+                        "type": "text/plain"
+                      },
+                      "key": "alias",
+                      "value": "<string>",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": 422,\n  \"detail\": \"One or more fields failed validation.\",\n  \"title\": \"Invalid fields in form\",\n  \"code\": \"422-001\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api-v2.mindee.net",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "Authorization"
+      },
+      {
+        "key": "value",
+        "value": "{{apiKey}}"
+      },
+      {
+        "key": "in",
+        "value": "header"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "490be9e4-246b-45d8-814c-f34e2aeec9b0",
+    "name": "Mindee OCR API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Run full-page optical character recognition to obtain raw text and bounding polygons for any document.\n\nContact Support:\n Name: Mindee",
+      "type": "text/plain"
+    }
+  }
+}

@@ -1,0 +1,118 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Mindee Extraction API",
+    "version": "2.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "Authorization",
+      "value": "{{Authorization}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Extraction",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Send A File For An Extraction Product Inference",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api-v2.mindee.net/v2/products/extraction/enqueue",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "apikey",
+              "key": "Authorization",
+              "value": "{{Authorization}}",
+              "placement": "header"
+            }
+          },
+          "docs": "Send a file to the asynchronous processing queue for an extraction inference.\n\nResults can be retrieved in two ways:\n* Loop on the `polling_url` endpoint in the response until the status\n  is `Processed` or `Failed` (polling).\n* Use a webhook to be notified when the inference is finished.\n  Webhooks can be configured on the platform on a per-model basis.\n\nInferences taking longer than 590 seconds will time out."
+        },
+        {
+          "info": {
+            "name": "Send A File For An Extraction Product Inference",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api-v2.mindee.net/v2/inferences/enqueue",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "apikey",
+              "key": "Authorization",
+              "value": "{{Authorization}}",
+              "placement": "header"
+            }
+          },
+          "docs": "Send a file to the asynchronous processing queue for an extraction inference.\n\nResults can be retrieved in two ways:\n* Loop on the `polling_url` endpoint in the response until the status\n  is `Processed` or `Failed` (polling).\n* Use a webhook to be notified when the inference is finished.\n  Webhooks can be configured on the platform on a per-model basis.\n\nInferences taking longer than 590 seconds will time out."
+        },
+        {
+          "info": {
+            "name": "Get The Result Of A Completed Extraction Product Inference",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api-v2.mindee.net/v2/products/extraction/results/:inference_id",
+            "params": [
+              {
+                "name": "inference_id",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the inference to retrieve"
+              }
+            ],
+            "auth": {
+              "type": "apikey",
+              "key": "Authorization",
+              "value": "{{Authorization}}",
+              "placement": "header"
+            }
+          },
+          "docs": "Get the result of an extraction inference that was previously enqueued.\n\nThe inference will only be available after it has finished processing.\n\nIf you are using webhooks there is no need to call this route.<br/>\nHowever, the JSON payload described here is what will be sent to each specified webhook's URL.\n\nIf you activated the \"Delete extracted data when fetched\" option for the model,\nthe inference will be deleted after this route completes.<br>\nAny further requests to the same inference ID wil"
+        },
+        {
+          "info": {
+            "name": "Get The Result Of A Completed Extraction Product Inference",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api-v2.mindee.net/v2/inferences/:inference_id",
+            "params": [
+              {
+                "name": "inference_id",
+                "value": "",
+                "type": "path",
+                "description": "UUID of the inference to retrieve"
+              }
+            ],
+            "auth": {
+              "type": "apikey",
+              "key": "Authorization",
+              "value": "{{Authorization}}",
+              "placement": "header"
+            }
+          },
+          "docs": "Get the result of an extraction inference that was previously enqueued.\n\nThe inference will only be available after it has finished processing.\n\nIf you are using webhooks there is no need to call this route.<br/>\nHowever, the JSON payload described here is what will be sent to each specified webhook's URL.\n\nIf you activated the \"Delete extracted data when fetched\" option for the model,\nthe inference will be deleted after this route completes.<br>\nAny further requests to the same inference ID wil"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
