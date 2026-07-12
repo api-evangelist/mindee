@@ -1,0 +1,22 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/mindee-classification-api-openapi.yml, openapi/mindee-crop-api-openapi.yml,
+  openapi/mindee-extraction-api-openapi.yml, openapi/mindee-jobs-api-openapi.yml, openapi/mindee-ocr-api-openapi.yml,
+  openapi/mindee-split-api-openapi.yml
+summary:
+  types:
+  - apiKey
+  api_key_in:
+  - header
+schemes:
+- name: APIKeyHeader
+  type: apiKey
+  in: header
+  parameter: Authorization
+  sources:
+  - openapi/mindee-classification-api-openapi.yml
+  - openapi/mindee-crop-api-openapi.yml
+  - openapi/mindee-extraction-api-openapi.yml
+  - openapi/mindee-jobs-api-openapi.yml
+  - openapi/mindee-ocr-api-openapi.yml
+  - openapi/mindee-split-api-openapi.yml
