@@ -1,9 +1,8 @@
 openapi: 3.1.0
 info:
-  title: Mindee Extraction API
+  title: Mindee Classification Extraction API
   version: 2.0.0
-  description: Extract structured fields from invoices, receipts, IDs, and other documents using Mindee's configurable extraction
-    models.
+  description: Classify documents by type so they can be routed to the appropriate downstream extraction model.
   contact:
     name: Mindee
     url: https://mindee.com
@@ -11,20 +10,18 @@ info:
     name: Proprietary
 servers:
 - url: https://api-v2.mindee.net
+security:
+- APIKeyHeader: []
 tags:
 - name: Extraction
-  description: Extract structured fields from invoices, receipts, IDs, and other documents using Mindee's configurable extraction
-    models.
+  description: Extract structured fields from invoices, receipts, IDs, and other documents using Mindee's configurable extraction models.
 paths:
   /v2/products/extraction/enqueue:
     post:
       tags:
       - Extraction
       summary: Send A File For An Extraction Product Inference
-      description: "Send a file to the asynchronous processing queue for an extraction inference.\n\nResults can be retrieved\
-        \ in two ways:\n* Loop on the `polling_url` endpoint in the response until the status\n  is `Processed` or `Failed`\
-        \ (polling).\n* Use a webhook to be notified when the inference is finished.\n  Webhooks can be configured on the\
-        \ platform on a per-model basis.\n\nInferences taking longer than 590 seconds will time out."
+      description: "Send a file to the asynchronous processing queue for an extraction inference.\n\nResults can be retrieved in two ways:\n* Loop on the `polling_url` endpoint in the response until the status\n  is `Processed` or `Failed` (polling).\n* Use a webhook to be notified when the inference is finished.\n  Webhooks can be configured on the platform on a per-model basis.\n\nInferences taking longer than 590 seconds will time out."
       operationId: Enqueue_Extraction_Product_Inference_v2_products_extraction_enqueue_post
       requestBody:
         content:
@@ -51,16 +48,14 @@ paths:
                     format: uri
                   - type: 'null'
                   title: Url
-                  description: Download the file from a URL, must be secure (HTTPS) and publicly available. Required if `file`
-                    is not provided.
+                  description: Download the file from a URL, must be secure (HTTPS) and publicly available. Required if `file` is not provided.
                 file_base64:
                   anyOf:
                   - type: string
                     minLength: 15
                   - type: 'null'
                   title: File Base64
-                  description: Upload a file as a base 64 string. Used as an alternative to `file`. *Not recommended*, for
-                    specific use only.
+                  description: Upload a file as a base 64 string. Used as an alternative to `file`. *Not recommended*, for specific use only.
                   examples:
                   - Base64String==
                 webhook_ids:
@@ -69,8 +64,7 @@ paths:
                     format: uuid4
                   type: array
                   title: Webhook Ids
-                  description: Webhook IDs to call after all processing is finished. If empty, no webhooks will be used. Can
-                    be a list or comma-separated string.
+                  description: Webhook IDs to call after all processing is finished. If empty, no webhooks will be used. Can be a list or comma-separated string.
                 filename:
                   anyOf:
                   - type: string
@@ -82,9 +76,7 @@ paths:
                   - type: string
                   - type: 'null'
                   title: Alias
-                  description: 'Optional: a free-form string to tag the request with your own identifier. For example, an
-                    internal document ID, reference number, or database key. If set, it will be included in the job and result
-                    responses.'
+                  description: 'Optional: a free-form string to tag the request with your own identifier. For example, an internal document ID, reference number, or database key. If set, it will be included in the job and result responses.'
                   examples:
                   - my_file_alias
                 raw_text:
@@ -104,8 +96,7 @@ paths:
                   - type: boolean
                   - type: 'null'
                   title: Confidence
-                  description: Calculate confidence scores for values, and fill the `confidence` attribute of fields. Useful
-                    for automation.
+                  description: Calculate confidence scores for values, and fill the `confidence` attribute of fields. Useful for automation.
                 rag:
                   anyOf:
                   - type: boolean
@@ -149,8 +140,7 @@ paths:
                                     unique_values:
                                       type: boolean
                                       title: Unique Values
-                                      description: Whether to remove duplicate values in the array. Only applicable if `is_array`
-                                        is True.
+                                      description: Whether to remove duplicate values in the array. Only applicable if `is_array` is True.
                                       default: false
                                     description:
                                       type: string
@@ -201,8 +191,7 @@ paths:
                                           unique_values:
                                             type: boolean
                                             title: Unique Values
-                                            description: Whether to remove duplicate values in the array. Only applicable
-                                              if `is_array` is True.
+                                            description: Whether to remove duplicate values in the array. Only applicable if `is_array` is True.
                                             default: false
                                           description:
                                             type: string
@@ -219,8 +208,7 @@ paths:
                                               type: string
                                             type: array
                                             title: Classification Values
-                                            description: Allowed values when type is `classification`. Leave empty for other
-                                              types.
+                                            description: Allowed values when type is `classification`. Leave empty for other types.
                                           type:
                                             type: string
                                             enum:
@@ -230,8 +218,7 @@ paths:
                                             - boolean
                                             - classification
                                             title: SubFieldType
-                                            description: Enumeration of valid field types for subfields (excludes nested_object
-                                              and object_detection).
+                                            description: Enumeration of valid field types for subfields (excludes nested_object and object_detection).
                                         type: object
                                         required:
                                         - title
@@ -290,16 +277,14 @@ paths:
                     format: uri
                   - type: 'null'
                   title: Url
-                  description: Download the file from a URL, must be secure (HTTPS) and publicly available. Required if `file`
-                    is not provided.
+                  description: Download the file from a URL, must be secure (HTTPS) and publicly available. Required if `file` is not provided.
                 file_base64:
                   anyOf:
                   - type: string
                     minLength: 15
                   - type: 'null'
                   title: File Base64
-                  description: Upload a file as a base 64 string. Used as an alternative to `file`. *Not recommended*, for
-                    specific use only.
+                  description: Upload a file as a base 64 string. Used as an alternative to `file`. *Not recommended*, for specific use only.
                   examples:
                   - Base64String==
                 webhook_ids:
@@ -308,8 +293,7 @@ paths:
                     format: uuid4
                   type: array
                   title: Webhook Ids
-                  description: Webhook IDs to call after all processing is finished. If empty, no webhooks will be used. Can
-                    be a list or comma-separated string.
+                  description: Webhook IDs to call after all processing is finished. If empty, no webhooks will be used. Can be a list or comma-separated string.
                 filename:
                   anyOf:
                   - type: string
@@ -321,9 +305,7 @@ paths:
                   - type: string
                   - type: 'null'
                   title: Alias
-                  description: 'Optional: a free-form string to tag the request with your own identifier. For example, an
-                    internal document ID, reference number, or database key. If set, it will be included in the job and result
-                    responses.'
+                  description: 'Optional: a free-form string to tag the request with your own identifier. For example, an internal document ID, reference number, or database key. If set, it will be included in the job and result responses.'
                   examples:
                   - my_file_alias
                 raw_text:
@@ -343,8 +325,7 @@ paths:
                   - type: boolean
                   - type: 'null'
                   title: Confidence
-                  description: Calculate confidence scores for values, and fill the `confidence` attribute of fields. Useful
-                    for automation.
+                  description: Calculate confidence scores for values, and fill the `confidence` attribute of fields. Useful for automation.
                 rag:
                   anyOf:
                   - type: boolean
@@ -388,8 +369,7 @@ paths:
                                     unique_values:
                                       type: boolean
                                       title: Unique Values
-                                      description: Whether to remove duplicate values in the array. Only applicable if `is_array`
-                                        is True.
+                                      description: Whether to remove duplicate values in the array. Only applicable if `is_array` is True.
                                       default: false
                                     description:
                                       type: string
@@ -440,8 +420,7 @@ paths:
                                           unique_values:
                                             type: boolean
                                             title: Unique Values
-                                            description: Whether to remove duplicate values in the array. Only applicable
-                                              if `is_array` is True.
+                                            description: Whether to remove duplicate values in the array. Only applicable if `is_array` is True.
                                             default: false
                                           description:
                                             type: string
@@ -458,8 +437,7 @@ paths:
                                               type: string
                                             type: array
                                             title: Classification Values
-                                            description: Allowed values when type is `classification`. Leave empty for other
-                                              types.
+                                            description: Allowed values when type is `classification`. Leave empty for other types.
                                           type:
                                             type: string
                                             enum:
@@ -469,8 +447,7 @@ paths:
                                             - boolean
                                             - classification
                                             title: SubFieldType
-                                            description: Enumeration of valid field types for subfields (excludes nested_object
-                                              and object_detection).
+                                            description: Enumeration of valid field types for subfields (excludes nested_object and object_detection).
                                         type: object
                                         required:
                                         - title
@@ -540,10 +517,7 @@ paths:
       tags:
       - Extraction
       summary: Send A File For An Extraction Product Inference
-      description: "Send a file to the asynchronous processing queue for an extraction inference.\n\nResults can be retrieved\
-        \ in two ways:\n* Loop on the `polling_url` endpoint in the response until the status\n  is `Processed` or `Failed`\
-        \ (polling).\n* Use a webhook to be notified when the inference is finished.\n  Webhooks can be configured on the\
-        \ platform on a per-model basis.\n\nInferences taking longer than 590 seconds will time out."
+      description: "Send a file to the asynchronous processing queue for an extraction inference.\n\nResults can be retrieved in two ways:\n* Loop on the `polling_url` endpoint in the response until the status\n  is `Processed` or `Failed` (polling).\n* Use a webhook to be notified when the inference is finished.\n  Webhooks can be configured on the platform on a per-model basis.\n\nInferences taking longer than 590 seconds will time out."
       operationId: Enqueue_Extraction_Product_Inference_v2_inferences_enqueue_post
       requestBody:
         content:
@@ -570,16 +544,14 @@ paths:
                     format: uri
                   - type: 'null'
                   title: Url
-                  description: Download the file from a URL, must be secure (HTTPS) and publicly available. Required if `file`
-                    is not provided.
+                  description: Download the file from a URL, must be secure (HTTPS) and publicly available. Required if `file` is not provided.
                 file_base64:
                   anyOf:
                   - type: string
                     minLength: 15
                   - type: 'null'
                   title: File Base64
-                  description: Upload a file as a base 64 string. Used as an alternative to `file`. *Not recommended*, for
-                    specific use only.
+                  description: Upload a file as a base 64 string. Used as an alternative to `file`. *Not recommended*, for specific use only.
                   examples:
                   - Base64String==
                 webhook_ids:
@@ -588,8 +560,7 @@ paths:
                     format: uuid4
                   type: array
                   title: Webhook Ids
-                  description: Webhook IDs to call after all processing is finished. If empty, no webhooks will be used. Can
-                    be a list or comma-separated string.
+                  description: Webhook IDs to call after all processing is finished. If empty, no webhooks will be used. Can be a list or comma-separated string.
                 filename:
                   anyOf:
                   - type: string
@@ -601,9 +572,7 @@ paths:
                   - type: string
                   - type: 'null'
                   title: Alias
-                  description: 'Optional: a free-form string to tag the request with your own identifier. For example, an
-                    internal document ID, reference number, or database key. If set, it will be included in the job and result
-                    responses.'
+                  description: 'Optional: a free-form string to tag the request with your own identifier. For example, an internal document ID, reference number, or database key. If set, it will be included in the job and result responses.'
                   examples:
                   - my_file_alias
                 raw_text:
@@ -623,8 +592,7 @@ paths:
                   - type: boolean
                   - type: 'null'
                   title: Confidence
-                  description: Calculate confidence scores for values, and fill the `confidence` attribute of fields. Useful
-                    for automation.
+                  description: Calculate confidence scores for values, and fill the `confidence` attribute of fields. Useful for automation.
                 rag:
                   anyOf:
                   - type: boolean
@@ -668,8 +636,7 @@ paths:
                                     unique_values:
                                       type: boolean
                                       title: Unique Values
-                                      description: Whether to remove duplicate values in the array. Only applicable if `is_array`
-                                        is True.
+                                      description: Whether to remove duplicate values in the array. Only applicable if `is_array` is True.
                                       default: false
                                     description:
                                       type: string
@@ -720,8 +687,7 @@ paths:
                                           unique_values:
                                             type: boolean
                                             title: Unique Values
-                                            description: Whether to remove duplicate values in the array. Only applicable
-                                              if `is_array` is True.
+                                            description: Whether to remove duplicate values in the array. Only applicable if `is_array` is True.
                                             default: false
                                           description:
                                             type: string
@@ -738,8 +704,7 @@ paths:
                                               type: string
                                             type: array
                                             title: Classification Values
-                                            description: Allowed values when type is `classification`. Leave empty for other
-                                              types.
+                                            description: Allowed values when type is `classification`. Leave empty for other types.
                                           type:
                                             type: string
                                             enum:
@@ -749,8 +714,7 @@ paths:
                                             - boolean
                                             - classification
                                             title: SubFieldType
-                                            description: Enumeration of valid field types for subfields (excludes nested_object
-                                              and object_detection).
+                                            description: Enumeration of valid field types for subfields (excludes nested_object and object_detection).
                                         type: object
                                         required:
                                         - title
@@ -809,16 +773,14 @@ paths:
                     format: uri
                   - type: 'null'
                   title: Url
-                  description: Download the file from a URL, must be secure (HTTPS) and publicly available. Required if `file`
-                    is not provided.
+                  description: Download the file from a URL, must be secure (HTTPS) and publicly available. Required if `file` is not provided.
                 file_base64:
                   anyOf:
                   - type: string
                     minLength: 15
                   - type: 'null'
                   title: File Base64
-                  description: Upload a file as a base 64 string. Used as an alternative to `file`. *Not recommended*, for
-                    specific use only.
+                  description: Upload a file as a base 64 string. Used as an alternative to `file`. *Not recommended*, for specific use only.
                   examples:
                   - Base64String==
                 webhook_ids:
@@ -827,8 +789,7 @@ paths:
                     format: uuid4
                   type: array
                   title: Webhook Ids
-                  description: Webhook IDs to call after all processing is finished. If empty, no webhooks will be used. Can
-                    be a list or comma-separated string.
+                  description: Webhook IDs to call after all processing is finished. If empty, no webhooks will be used. Can be a list or comma-separated string.
                 filename:
                   anyOf:
                   - type: string
@@ -840,9 +801,7 @@ paths:
                   - type: string
                   - type: 'null'
                   title: Alias
-                  description: 'Optional: a free-form string to tag the request with your own identifier. For example, an
-                    internal document ID, reference number, or database key. If set, it will be included in the job and result
-                    responses.'
+                  description: 'Optional: a free-form string to tag the request with your own identifier. For example, an internal document ID, reference number, or database key. If set, it will be included in the job and result responses.'
                   examples:
                   - my_file_alias
                 raw_text:
@@ -862,8 +821,7 @@ paths:
                   - type: boolean
                   - type: 'null'
                   title: Confidence
-                  description: Calculate confidence scores for values, and fill the `confidence` attribute of fields. Useful
-                    for automation.
+                  description: Calculate confidence scores for values, and fill the `confidence` attribute of fields. Useful for automation.
                 rag:
                   anyOf:
                   - type: boolean
@@ -907,8 +865,7 @@ paths:
                                     unique_values:
                                       type: boolean
                                       title: Unique Values
-                                      description: Whether to remove duplicate values in the array. Only applicable if `is_array`
-                                        is True.
+                                      description: Whether to remove duplicate values in the array. Only applicable if `is_array` is True.
                                       default: false
                                     description:
                                       type: string
@@ -959,8 +916,7 @@ paths:
                                           unique_values:
                                             type: boolean
                                             title: Unique Values
-                                            description: Whether to remove duplicate values in the array. Only applicable
-                                              if `is_array` is True.
+                                            description: Whether to remove duplicate values in the array. Only applicable if `is_array` is True.
                                             default: false
                                           description:
                                             type: string
@@ -977,8 +933,7 @@ paths:
                                               type: string
                                             type: array
                                             title: Classification Values
-                                            description: Allowed values when type is `classification`. Leave empty for other
-                                              types.
+                                            description: Allowed values when type is `classification`. Leave empty for other types.
                                           type:
                                             type: string
                                             enum:
@@ -988,8 +943,7 @@ paths:
                                             - boolean
                                             - classification
                                             title: SubFieldType
-                                            description: Enumeration of valid field types for subfields (excludes nested_object
-                                              and object_detection).
+                                            description: Enumeration of valid field types for subfields (excludes nested_object and object_detection).
                                         type: object
                                         required:
                                         - title
@@ -1163,57 +1117,148 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
           description: Unprocessable Content
 components:
-  securitySchemes:
-    APIKeyHeader:
-      type: apiKey
-      in: header
-      name: Authorization
   schemas:
-    BaseJob:
+    Rag:
+      properties:
+        retrieved_document_id:
+          anyOf:
+          - type: string
+            format: uuid4
+          - type: 'null'
+          title: Retrieved document ID
+          description: The UUID of the matched document used during the RAG operation.
+      type: object
+      required:
+      - retrieved_document_id
+      title: Rag
+      description: Metadata about the RAG operation.
+    ObjectField-Output:
+      properties:
+        locations:
+          items:
+            $ref: '#/components/schemas/FieldLocation'
+          type: array
+          title: Locations
+          default: []
+        confidence:
+          anyOf:
+          - $ref: '#/components/schemas/FieldConfidence'
+          - type: 'null'
+        fields:
+          additionalProperties:
+            oneOf:
+            - $ref: '#/components/schemas/SimpleField'
+            - $ref: '#/components/schemas/ObjectField-Output'
+            - $ref: '#/components/schemas/ListField-Output'
+          propertyNames:
+            description: Name of the field in the data schema.
+            examples:
+            - my_simple_field
+          type: object
+          title: Fields
+      additionalProperties: false
+      type: object
+      required:
+      - fields
+      title: ObjectField
+      description: Field having a set of sub-fields.
+    SimpleField:
+      properties:
+        locations:
+          items:
+            $ref: '#/components/schemas/FieldLocation'
+          type: array
+          title: Locations
+          default: []
+        confidence:
+          anyOf:
+          - $ref: '#/components/schemas/FieldConfidence'
+          - type: 'null'
+        value:
+          anyOf:
+          - type: boolean
+          - type: integer
+          - type: number
+          - type: string
+          - type: 'null'
+          title: Value
+      additionalProperties: false
+      type: object
+      required:
+      - value
+      title: SimpleField
+      description: Field having a single value.
+    RawText:
+      properties:
+        pages:
+          items:
+            $ref: '#/components/schemas/RawTextPage'
+          type: array
+          title: Pages
+          description: List of pages with their extracted text content.
+      type: object
+      required:
+      - pages
+      title: RawText
+      description: Raw text extracted from all pages in the document.
+    InferenceFile:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: File name as sent to the API.
+        alias:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Alias
+          description: Alias sent to the API.
+        page_count:
+          type: integer
+          minimum: 1.0
+          title: Page Count
+          description: Number of pages in the file.
+        mime_type:
+          type: string
+          title: MIME Type
+          description: Detected MIME type of the file.
+      type: object
+      required:
+      - name
+      - page_count
+      - mime_type
+      title: InferenceFile
+      description: File used for the inference.
+    WebhookResponse:
       properties:
         id:
           type: string
           format: uuid4
           title: Id
-          description: UUID of the Job.
+          description: UUID of the webhook endpoint.
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: Date and time the webhook was called.
+        status:
+          $ref: '#/components/schemas/Status'
+          default: Processing
+        error:
+          anyOf:
+          - $ref: '#/components/schemas/ErrorResponse'
+          - type: 'null'
+          description: If an error occurred when calling the webhook, contains the problem details.
+        attempts_count:
+          type: integer
+          title: Attempts Count
+          description: Number of attempts made to call the webhook.
+          default: 0
       type: object
       required:
       - id
-      title: BaseJob
-      description: Base class for Job.
-    DataSchemaActiveOption:
-      properties:
-        replace:
-          type: boolean
-          title: Replace
-          description: Whether the data schema was replaced for the inference.
-      type: object
-      required:
-      - replace
-      title: DataSchemaActiveOption
-      description: Data schema options activated during the inference.
-    ErrorItem:
-      properties:
-        pointer:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Pointer
-          description: A JSON Pointer to the location of the body property.
-          examples:
-          - '#/model_id'
-        detail:
-          type: string
-          title: Detail
-          description: Explicit information on the issue.
-          examples:
-          - '''model_id'' must be a valid UUID format'
-      type: object
-      required:
-      - pointer
-      - detail
-      title: ErrorItem
-      description: Explicit details on a problem.
+      title: WebhookResponse
+      description: Response from a webhook call.
     ErrorResponse:
       properties:
         status:
@@ -1257,84 +1302,6 @@ components:
       - code
       title: ErrorResponse
       description: Error response detailing a problem. The format adheres to RFC 9457.
-    ExtractionInference-Output:
-      properties:
-        id:
-          type: string
-          format: uuid4
-          title: Id
-          description: UUID of the Inference.
-        job:
-          $ref: '#/components/schemas/BaseJob'
-          title: Job
-          description: Job the inference belongs to.
-        model:
-          $ref: '#/components/schemas/InferenceModel'
-        file:
-          $ref: '#/components/schemas/InferenceFile'
-        result:
-          $ref: '#/components/schemas/ExtractionResult-Output'
-        active_options:
-          $ref: '#/components/schemas/InferenceActiveOptions'
-      type: object
-      required:
-      - id
-      - job
-      - model
-      - file
-      - result
-      - active_options
-      title: ExtractionInference
-      description: The inference result for an extraction request.
-    ExtractionResponse-Output:
-      properties:
-        inference:
-          $ref: '#/components/schemas/ExtractionInference-Output'
-      type: object
-      required:
-      - inference
-      title: ExtractionResponse
-      description: Response for an extraction inference.
-    ExtractionResult-Output:
-      properties:
-        fields:
-          additionalProperties:
-            oneOf:
-            - $ref: '#/components/schemas/SimpleField'
-            - $ref: '#/components/schemas/ObjectField-Output'
-            - $ref: '#/components/schemas/ListField-Output'
-          propertyNames:
-            description: Name of the field in the data schema.
-            examples:
-            - my_simple_field
-          type: object
-          title: Fields
-          description: Extracted fields, the key corresponds to the field's name in the data schema.
-        raw_text:
-          anyOf:
-          - $ref: '#/components/schemas/RawText'
-          - type: 'null'
-          title: Raw Text
-          description: If `raw_text` was activated, contains the extracted text of the document.
-        rag:
-          anyOf:
-          - $ref: '#/components/schemas/Rag'
-          - type: 'null'
-          title: RAG
-          description: If `rag` was activated, contains metadata about the RAG operation.
-      type: object
-      required:
-      - fields
-      title: ExtractionResult
-      description: Result of an extraction inference.
-    FieldConfidence:
-      type: string
-      enum:
-      - Certain
-      - High
-      - Medium
-      title: FieldConfidence
-      description: Confidence level of a field.
     FieldLocation:
       properties:
         polygon:
@@ -1370,106 +1337,29 @@ components:
       - page
       title: FieldLocation
       description: A field's location on the document.
-    InferenceActiveOptions:
+    DataSchemaActiveOption:
       properties:
-        raw_text:
+        replace:
           type: boolean
-          title: Raw Text
-          description: 'Whether the Raw Text feature was activated.
-
-            When this feature is activated, the raw text extracted from the document is returned in the result.'
-        polygon:
-          type: boolean
-          title: Polygon
-          description: 'Whether the polygon feature was activated.
-
-            When this feature is activated, the bounding-box polygon(s) for each field is returned in the result.'
-        confidence:
-          type: boolean
-          title: Confidence
-          description: 'Whether the confidence feature was activated.
-
-            When this feature is activated, a confidence score for each field is returned in the result.'
-        rag:
-          type: boolean
-          title: RAG
-          description: 'Whether the Retrieval-Augmented Generation feature was activated.
-
-            When this feature is activated, the RAG pipeline is used to increase result accuracy.'
-        multipage_context:
-          type: boolean
-          title: Multipage Context
-          description: 'Whether the multipage context feature was activated.
-
-            When this feature is activated, the model has access to all the other pages as context.'
-        text_context:
-          type: boolean
-          title: Text Context
-          description: 'Whether the text context feature was activated.
-
-            When this feature is activated, the provided context is used to improve the accuracy of the inference.'
-        data_schema:
-          $ref: '#/components/schemas/DataSchemaActiveOption'
-          title: Data Schema
-          description: Data schema options provided for the inference.
+          title: Replace
+          description: Whether the data schema was replaced for the inference.
       type: object
       required:
-      - raw_text
-      - polygon
-      - confidence
-      - rag
-      - multipage_context
-      - text_context
-      - data_schema
-      title: InferenceActiveOptions
-      description: 'Options which were activated during the inference.
-
-
-        Options can be activated or deactivated:
-
-        * By setting their default values on the Platform UI
-
-        * By explicitly setting them in the inference request'
-    InferenceFile:
-      properties:
-        name:
-          type: string
-          title: Name
-          description: File name as sent to the API.
-        alias:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Alias
-          description: Alias sent to the API.
-        page_count:
-          type: integer
-          minimum: 1.0
-          title: Page Count
-          description: Number of pages in the file.
-        mime_type:
-          type: string
-          title: MIME Type
-          description: Detected MIME type of the file.
-      type: object
-      required:
-      - name
-      - page_count
-      - mime_type
-      title: InferenceFile
-      description: File used for the inference.
-    InferenceModel:
+      - replace
+      title: DataSchemaActiveOption
+      description: Data schema options activated during the inference.
+    BaseJob:
       properties:
         id:
           type: string
           format: uuid4
-          title: ID
-          description: UUID of the model.
+          title: Id
+          description: UUID of the Job.
       type: object
       required:
       - id
-      title: InferenceModel
-      description: Model used for the inference.
+      title: BaseJob
+      description: Base class for Job.
     Job:
       properties:
         id:
@@ -1546,15 +1436,56 @@ components:
       - polling_url
       title: Job
       description: Information on the processing of a file sent to the Mindee API.
-    JobResponse:
+    RawTextPage:
       properties:
-        job:
-          $ref: '#/components/schemas/Job'
+        content:
+          type: string
+          title: Content
+          description: Text content of the page as a single string. '\n' is used to separate lines.
       type: object
       required:
-      - job
-      title: JobResponse
-      description: Response for a Job.
+      - content
+      title: RawTextPage
+      description: Raw text extracted from a single page.
+    ExtractionResponse-Output:
+      properties:
+        inference:
+          $ref: '#/components/schemas/ExtractionInference-Output'
+      type: object
+      required:
+      - inference
+      title: ExtractionResponse
+      description: Response for an extraction inference.
+    ErrorItem:
+      properties:
+        pointer:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Pointer
+          description: A JSON Pointer to the location of the body property.
+          examples:
+          - '#/model_id'
+        detail:
+          type: string
+          title: Detail
+          description: Explicit information on the issue.
+          examples:
+          - '''model_id'' must be a valid UUID format'
+      type: object
+      required:
+      - pointer
+      - detail
+      title: ErrorItem
+      description: Explicit details on a problem.
+    FieldConfidence:
+      type: string
+      enum:
+      - Certain
+      - High
+      - Medium
+      title: FieldConfidence
+      description: Confidence level of a field.
     ListField-Output:
       properties:
         items:
@@ -1575,18 +1506,77 @@ components:
       - items
       title: ListField
       description: Field having a list of fields.
-    ObjectField-Output:
+    InferenceActiveOptions:
       properties:
-        locations:
-          items:
-            $ref: '#/components/schemas/FieldLocation'
-          type: array
-          title: Locations
-          default: []
+        raw_text:
+          type: boolean
+          title: Raw Text
+          description: 'Whether the Raw Text feature was activated.
+
+            When this feature is activated, the raw text extracted from the document is returned in the result.'
+        polygon:
+          type: boolean
+          title: Polygon
+          description: 'Whether the polygon feature was activated.
+
+            When this feature is activated, the bounding-box polygon(s) for each field is returned in the result.'
         confidence:
-          anyOf:
-          - $ref: '#/components/schemas/FieldConfidence'
-          - type: 'null'
+          type: boolean
+          title: Confidence
+          description: 'Whether the confidence feature was activated.
+
+            When this feature is activated, a confidence score for each field is returned in the result.'
+        rag:
+          type: boolean
+          title: RAG
+          description: 'Whether the Retrieval-Augmented Generation feature was activated.
+
+            When this feature is activated, the RAG pipeline is used to increase result accuracy.'
+        multipage_context:
+          type: boolean
+          title: Multipage Context
+          description: 'Whether the multipage context feature was activated.
+
+            When this feature is activated, the model has access to all the other pages as context.'
+        text_context:
+          type: boolean
+          title: Text Context
+          description: 'Whether the text context feature was activated.
+
+            When this feature is activated, the provided context is used to improve the accuracy of the inference.'
+        data_schema:
+          $ref: '#/components/schemas/DataSchemaActiveOption'
+          title: Data Schema
+          description: Data schema options provided for the inference.
+      type: object
+      required:
+      - raw_text
+      - polygon
+      - confidence
+      - rag
+      - multipage_context
+      - text_context
+      - data_schema
+      title: InferenceActiveOptions
+      description: 'Options which were activated during the inference.
+
+
+        Options can be activated or deactivated:
+
+        * By setting their default values on the Platform UI
+
+        * By explicitly setting them in the inference request'
+    JobResponse:
+      properties:
+        job:
+          $ref: '#/components/schemas/Job'
+      type: object
+      required:
+      - job
+      title: JobResponse
+      description: Response for a Job.
+    ExtractionResult-Output:
+      properties:
         fields:
           additionalProperties:
             oneOf:
@@ -1599,76 +1589,65 @@ components:
             - my_simple_field
           type: object
           title: Fields
-      additionalProperties: false
+          description: Extracted fields, the key corresponds to the field's name in the data schema.
+        raw_text:
+          anyOf:
+          - $ref: '#/components/schemas/RawText'
+          - type: 'null'
+          title: Raw Text
+          description: If `raw_text` was activated, contains the extracted text of the document.
+        rag:
+          anyOf:
+          - $ref: '#/components/schemas/Rag'
+          - type: 'null'
+          title: RAG
+          description: If `rag` was activated, contains metadata about the RAG operation.
       type: object
       required:
       - fields
-      title: ObjectField
-      description: Field having a set of sub-fields.
-    Rag:
+      title: ExtractionResult
+      description: Result of an extraction inference.
+    ExtractionInference-Output:
       properties:
-        retrieved_document_id:
-          anyOf:
-          - type: string
-            format: uuid4
-          - type: 'null'
-          title: Retrieved document ID
-          description: The UUID of the matched document used during the RAG operation.
-      type: object
-      required:
-      - retrieved_document_id
-      title: Rag
-      description: Metadata about the RAG operation.
-    RawText:
-      properties:
-        pages:
-          items:
-            $ref: '#/components/schemas/RawTextPage'
-          type: array
-          title: Pages
-          description: List of pages with their extracted text content.
-      type: object
-      required:
-      - pages
-      title: RawText
-      description: Raw text extracted from all pages in the document.
-    RawTextPage:
-      properties:
-        content:
+        id:
           type: string
-          title: Content
-          description: Text content of the page as a single string. '\n' is used to separate lines.
+          format: uuid4
+          title: Id
+          description: UUID of the Inference.
+        job:
+          $ref: '#/components/schemas/BaseJob'
+          title: Job
+          description: Job the inference belongs to.
+        model:
+          $ref: '#/components/schemas/InferenceModel'
+        file:
+          $ref: '#/components/schemas/InferenceFile'
+        result:
+          $ref: '#/components/schemas/ExtractionResult-Output'
+        active_options:
+          $ref: '#/components/schemas/InferenceActiveOptions'
       type: object
       required:
-      - content
-      title: RawTextPage
-      description: Raw text extracted from a single page.
-    SimpleField:
+      - id
+      - job
+      - model
+      - file
+      - result
+      - active_options
+      title: ExtractionInference
+      description: The inference result for an extraction request.
+    InferenceModel:
       properties:
-        locations:
-          items:
-            $ref: '#/components/schemas/FieldLocation'
-          type: array
-          title: Locations
-          default: []
-        confidence:
-          anyOf:
-          - $ref: '#/components/schemas/FieldConfidence'
-          - type: 'null'
-        value:
-          anyOf:
-          - type: boolean
-          - type: integer
-          - type: number
-          - type: string
-          - type: 'null'
-          title: Value
-      additionalProperties: false
+        id:
+          type: string
+          format: uuid4
+          title: ID
+          description: UUID of the model.
       type: object
       required:
-      - value
-      title: SimpleField
-      description: Field having a single value.
+      - id
+      title: InferenceModel
+      description: Model used for the inference.
     Status:
       type: string
       enum:
@@ -1677,35 +1656,8 @@ components:
       - Processed
       title: Status
       description: Possible states of an operation.
-    WebhookResponse:
-      properties:
-        id:
-          type: string
-          format: uuid4
-          title: Id
-          description: UUID of the webhook endpoint.
-        created_at:
-          type: string
-          format: date-time
-          title: Created At
-          description: Date and time the webhook was called.
-        status:
-          $ref: '#/components/schemas/Status'
-          default: Processing
-        error:
-          anyOf:
-          - $ref: '#/components/schemas/ErrorResponse'
-          - type: 'null'
-          description: If an error occurred when calling the webhook, contains the problem details.
-        attempts_count:
-          type: integer
-          title: Attempts Count
-          description: Number of attempts made to call the webhook.
-          default: 0
-      type: object
-      required:
-      - id
-      title: WebhookResponse
-      description: Response from a webhook call.
-security:
-- APIKeyHeader: []
+  securitySchemes:
+    APIKeyHeader:
+      type: apiKey
+      in: header
+      name: Authorization

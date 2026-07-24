@@ -1,8 +1,8 @@
 openapi: 3.1.0
 info:
-  title: Mindee OCR API
+  title: Mindee Classification Ocr API
   version: 2.0.0
-  description: Run full-page optical character recognition to obtain raw text and bounding polygons for any document.
+  description: Classify documents by type so they can be routed to the appropriate downstream extraction model.
   contact:
     name: Mindee
     url: https://mindee.com
@@ -10,6 +10,8 @@ info:
     name: Proprietary
 servers:
 - url: https://api-v2.mindee.net
+security:
+- APIKeyHeader: []
 tags:
 - name: Ocr
   description: Run full-page optical character recognition to obtain raw text and bounding polygons for any document.
@@ -19,10 +21,7 @@ paths:
       tags:
       - Ocr
       summary: Send A File For An Ocr Utility Inference
-      description: "Send a file to the asynchronous processing queue for an ocr utility inference.\n\nResults can be retrieved\
-        \ in two ways:\n* Loop on the `polling_url` endpoint in the response until the status\n  is `Processed` or `Failed`\
-        \ (polling).\n* Use a webhook to be notified when the inference is finished.\n  Webhooks can be configured on the\
-        \ platform on a per-model basis.\n\nInferences taking longer than 590 seconds will time out."
+      description: "Send a file to the asynchronous processing queue for an ocr utility inference.\n\nResults can be retrieved in two ways:\n* Loop on the `polling_url` endpoint in the response until the status\n  is `Processed` or `Failed` (polling).\n* Use a webhook to be notified when the inference is finished.\n  Webhooks can be configured on the platform on a per-model basis.\n\nInferences taking longer than 590 seconds will time out."
       operationId: Enqueue_OCR_Product_Inference_v2_products_ocr_enqueue_post
       responses:
         '202':
@@ -123,22 +122,19 @@ paths:
                     minLength: 1
                     type: string
                   - type: 'null'
-                  description: Download the file from a URL, must be secure (HTTPS) and publicly available. Required if `file`
-                    is not provided.
+                  description: Download the file from a URL, must be secure (HTTPS) and publicly available. Required if `file` is not provided.
                   title: Url
                 file_base64:
                   anyOf:
                   - minLength: 15
                     type: string
                   - type: 'null'
-                  description: Upload a file as a base 64 string. Used as an alternative to `file`. *Not recommended*, for
-                    specific use only.
+                  description: Upload a file as a base 64 string. Used as an alternative to `file`. *Not recommended*, for specific use only.
                   examples:
                   - Base64String==
                   title: File Base64
                 webhook_ids:
-                  description: Webhook IDs to call after all processing is finished. If empty, no webhooks will be used. Can
-                    be a list or comma-separated string.
+                  description: Webhook IDs to call after all processing is finished. If empty, no webhooks will be used. Can be a list or comma-separated string.
                   items:
                     format: uuid4
                     type: string
@@ -154,9 +150,7 @@ paths:
                   anyOf:
                   - type: string
                   - type: 'null'
-                  description: 'Optional: a free-form string to tag the request with your own identifier. For example, an
-                    internal document ID, reference number, or database key. If set, it will be included in the job and result
-                    responses.'
+                  description: 'Optional: a free-form string to tag the request with your own identifier. For example, an internal document ID, reference number, or database key. If set, it will be included in the job and result responses.'
                   examples:
                   - my_file_alias
                   title: Alias
@@ -180,22 +174,19 @@ paths:
                     minLength: 1
                     type: string
                   - type: 'null'
-                  description: Download the file from a URL, must be secure (HTTPS) and publicly available. Required if `file`
-                    is not provided.
+                  description: Download the file from a URL, must be secure (HTTPS) and publicly available. Required if `file` is not provided.
                   title: Url
                 file_base64:
                   anyOf:
                   - minLength: 15
                     type: string
                   - type: 'null'
-                  description: Upload a file as a base 64 string. Used as an alternative to `file`. *Not recommended*, for
-                    specific use only.
+                  description: Upload a file as a base 64 string. Used as an alternative to `file`. *Not recommended*, for specific use only.
                   examples:
                   - Base64String==
                   title: File Base64
                 webhook_ids:
-                  description: Webhook IDs to call after all processing is finished. If empty, no webhooks will be used. Can
-                    be a list or comma-separated string.
+                  description: Webhook IDs to call after all processing is finished. If empty, no webhooks will be used. Can be a list or comma-separated string.
                   items:
                     format: uuid4
                     type: string
@@ -211,9 +202,7 @@ paths:
                   anyOf:
                   - type: string
                   - type: 'null'
-                  description: 'Optional: a free-form string to tag the request with your own identifier. For example, an
-                    internal document ID, reference number, or database key. If set, it will be included in the job and result
-                    responses.'
+                  description: 'Optional: a free-form string to tag the request with your own identifier. For example, an internal document ID, reference number, or database key. If set, it will be included in the job and result responses.'
                   examples:
                   - my_file_alias
                   title: Alias
@@ -223,129 +212,7 @@ paths:
               type: object
         required: true
 components:
-  securitySchemes:
-    APIKeyHeader:
-      type: apiKey
-      in: header
-      name: Authorization
   schemas:
-    BaseJob:
-      properties:
-        id:
-          type: string
-          format: uuid4
-          title: Id
-          description: UUID of the Job.
-      type: object
-      required:
-      - id
-      title: BaseJob
-      description: Base class for Job.
-    ErrorItem:
-      properties:
-        pointer:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Pointer
-          description: A JSON Pointer to the location of the body property.
-          examples:
-          - '#/model_id'
-        detail:
-          type: string
-          title: Detail
-          description: Explicit information on the issue.
-          examples:
-          - '''model_id'' must be a valid UUID format'
-      type: object
-      required:
-      - pointer
-      - detail
-      title: ErrorItem
-      description: Explicit details on a problem.
-    ErrorResponse:
-      properties:
-        status:
-          type: integer
-          maximum: 599.0
-          minimum: 100.0
-          title: Status
-          description: The HTTP status code returned by the server.
-          examples:
-          - 422
-        detail:
-          type: string
-          title: Detail
-          description: A human-readable explanation specific to the occurrence of the problem.
-          examples:
-          - One or more fields failed validation.
-        title:
-          type: string
-          title: Title
-          description: A short, human-readable summary of the problem.
-          examples:
-          - Invalid fields in form
-        code:
-          type: string
-          title: Code
-          description: A machine-readable code specific to the occurrence of the problem.
-          examples:
-          - 422-001
-        errors:
-          items:
-            $ref: '#/components/schemas/ErrorItem'
-          type: array
-          title: Errors
-          description: A list of explicit details on the problem.
-          default: []
-      type: object
-      required:
-      - status
-      - detail
-      - title
-      - code
-      title: ErrorResponse
-      description: Error response detailing a problem. The format adheres to RFC 9457.
-    InferenceFile:
-      properties:
-        name:
-          type: string
-          title: Name
-          description: File name as sent to the API.
-        alias:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Alias
-          description: Alias sent to the API.
-        page_count:
-          type: integer
-          minimum: 1.0
-          title: Page Count
-          description: Number of pages in the file.
-        mime_type:
-          type: string
-          title: MIME Type
-          description: Detected MIME type of the file.
-      type: object
-      required:
-      - name
-      - page_count
-      - mime_type
-      title: InferenceFile
-      description: File used for the inference.
-    InferenceModel:
-      properties:
-        id:
-          type: string
-          format: uuid4
-          title: ID
-          description: UUID of the model.
-      type: object
-      required:
-      - id
-      title: InferenceModel
-      description: Model used for the inference.
     Job:
       properties:
         id:
@@ -422,15 +289,6 @@ components:
       - polling_url
       title: Job
       description: Information on the processing of a file sent to the Mindee API.
-    JobResponse:
-      properties:
-        job:
-          $ref: '#/components/schemas/Job'
-      type: object
-      required:
-      - job
-      title: JobResponse
-      description: Response for a Job.
     OCRInference-Output:
       properties:
         id:
@@ -457,15 +315,6 @@ components:
       - result
       title: OCRInference
       description: The inference result for a ocr utility request.
-    OCRResponse-Output:
-      properties:
-        inference:
-          $ref: '#/components/schemas/OCRInference-Output'
-      type: object
-      required:
-      - inference
-      title: OCRResponse
-      description: Response for an ocr utility inference.
     OCRResult-Output:
       properties:
         pages:
@@ -479,32 +328,43 @@ components:
       - pages
       title: OCRResult
       description: Result of the OCR utility inference.
-    PageOCR:
+    JobResponse:
       properties:
-        words:
-          items:
-            $ref: '#/components/schemas/WordOCR'
-          type: array
-          title: Words
-          description: List of words extracted from the document page.
-        content:
-          type: string
-          title: Content
-          description: Full text content extracted from the document page.
+        job:
+          $ref: '#/components/schemas/Job'
       type: object
       required:
-      - words
-      - content
-      title: PageOCR
-      description: OCR result for a single page.
-    Status:
-      type: string
-      enum:
-      - Processing
-      - Failed
-      - Processed
-      title: Status
-      description: Possible states of an operation.
+      - job
+      title: JobResponse
+      description: Response for a Job.
+    InferenceFile:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: File name as sent to the API.
+        alias:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Alias
+          description: Alias sent to the API.
+        page_count:
+          type: integer
+          minimum: 1.0
+          title: Page Count
+          description: Number of pages in the file.
+        mime_type:
+          type: string
+          title: MIME Type
+          description: Detected MIME type of the file.
+      type: object
+      required:
+      - name
+      - page_count
+      - mime_type
+      title: InferenceFile
+      description: File used for the inference.
     WebhookResponse:
       properties:
         id:
@@ -535,6 +395,110 @@ components:
       - id
       title: WebhookResponse
       description: Response from a webhook call.
+    PageOCR:
+      properties:
+        words:
+          items:
+            $ref: '#/components/schemas/WordOCR'
+          type: array
+          title: Words
+          description: List of words extracted from the document page.
+        content:
+          type: string
+          title: Content
+          description: Full text content extracted from the document page.
+      type: object
+      required:
+      - words
+      - content
+      title: PageOCR
+      description: OCR result for a single page.
+    ErrorResponse:
+      properties:
+        status:
+          type: integer
+          maximum: 599.0
+          minimum: 100.0
+          title: Status
+          description: The HTTP status code returned by the server.
+          examples:
+          - 422
+        detail:
+          type: string
+          title: Detail
+          description: A human-readable explanation specific to the occurrence of the problem.
+          examples:
+          - One or more fields failed validation.
+        title:
+          type: string
+          title: Title
+          description: A short, human-readable summary of the problem.
+          examples:
+          - Invalid fields in form
+        code:
+          type: string
+          title: Code
+          description: A machine-readable code specific to the occurrence of the problem.
+          examples:
+          - 422-001
+        errors:
+          items:
+            $ref: '#/components/schemas/ErrorItem'
+          type: array
+          title: Errors
+          description: A list of explicit details on the problem.
+          default: []
+      type: object
+      required:
+      - status
+      - detail
+      - title
+      - code
+      title: ErrorResponse
+      description: Error response detailing a problem. The format adheres to RFC 9457.
+    ErrorItem:
+      properties:
+        pointer:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Pointer
+          description: A JSON Pointer to the location of the body property.
+          examples:
+          - '#/model_id'
+        detail:
+          type: string
+          title: Detail
+          description: Explicit information on the issue.
+          examples:
+          - '''model_id'' must be a valid UUID format'
+      type: object
+      required:
+      - pointer
+      - detail
+      title: ErrorItem
+      description: Explicit details on a problem.
+    BaseJob:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          title: Id
+          description: UUID of the Job.
+      type: object
+      required:
+      - id
+      title: BaseJob
+      description: Base class for Job.
+    OCRResponse-Output:
+      properties:
+        inference:
+          $ref: '#/components/schemas/OCRInference-Output'
+      type: object
+      required:
+      - inference
+      title: OCRResponse
+      description: Response for an ocr utility inference.
     WordOCR:
       properties:
         content:
@@ -569,5 +533,28 @@ components:
       - polygon
       title: WordOCR
       description: OCR result for a single word extracted from the document page.
-security:
-- APIKeyHeader: []
+    InferenceModel:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          title: ID
+          description: UUID of the model.
+      type: object
+      required:
+      - id
+      title: InferenceModel
+      description: Model used for the inference.
+    Status:
+      type: string
+      enum:
+      - Processing
+      - Failed
+      - Processed
+      title: Status
+      description: Possible states of an operation.
+  securitySchemes:
+    APIKeyHeader:
+      type: apiKey
+      in: header
+      name: Authorization
