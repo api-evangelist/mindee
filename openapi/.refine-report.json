@@ -1,0 +1,24 @@
+{
+  "provider": "mindee",
+  "sources": [
+    "mindee-classification-api-openapi.yml",
+    "mindee-crop-api-openapi.yml",
+    "mindee-extraction-api-openapi.yml",
+    "mindee-jobs-api-openapi.yml",
+    "mindee-ocr-api-openapi.yml",
+    "mindee-split-api-openapi.yml"
+  ],
+  "outputs": [
+    "mindee-classification-api-openapi.yml",
+    "mindee-crop-api-openapi.yml",
+    "mindee-extraction-api-openapi.yml",
+    "mindee-jobs-api-openapi.yml",
+    "mindee-ocr-api-openapi.yml",
+    "mindee-split-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
