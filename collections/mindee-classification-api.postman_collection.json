@@ -1,7 +1,7 @@
 {
   "item": [
     {
-      "id": "4f1b9710-5d57-402b-8e8a-8773bc4b65ae",
+      "id": "813fa378-75dc-4e92-a36d-3794ae1d7a90",
       "name": "Classification",
       "description": {
         "content": "Classify documents by type so they can be routed to the appropriate downstream extraction model.",
@@ -9,7 +9,7 @@
       },
       "item": [
         {
-          "id": "c2efdedd-bf6e-406a-8d75-9224300e8368",
+          "id": "32874e62-0e81-4fb4-a34c-3bd7cdc3a9ab",
           "name": "Send A File For A Classification Utility Inference",
           "request": {
             "name": "Send A File For A Classification Utility Inference",
@@ -108,7 +108,7 @@
           },
           "response": [
             {
-              "id": "0a69d7ed-df50-4be0-af69-ed08693340fc",
+              "id": "0ace8eb1-2f33-47de-9199-24bcf9195a7d",
               "name": "Successful Response",
               "originalRequest": {
                 "url": {
@@ -216,12 +216,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"job\": {\n    \"id\": \"string\",\n    \"model_id\": \"string\",\n    \"filename\": \"file.jpg\",\n    \"created_at\": \"2024-12-15T12:25:19.391Z\",\n    \"status\": \"Processed\",\n    \"polling_url\": \"https://LZkJxpKqLk.eeOd8m31Hdf.uqMBD\",\n    \"alias\": \"string\",\n    \"completed_at\": \"1998-04-10T15:55:02.470Z\",\n    \"result_url\": \"http://tVfltiwcXMpguDgGwJlMWSNPMX.hbkKIjP,UYLc\",\n    \"error\": {\n      \"status\": 422,\n      \"detail\": \"One or more fields failed validation.\",\n      \"title\": \"Invalid fields in form\",\n      \"code\": \"422-001\"\n    }\n  }\n}",
+              "body": "{\n  \"job\": {\n    \"id\": \"string\",\n    \"model_id\": \"string\",\n    \"filename\": \"file.jpg\",\n    \"created_at\": \"1981-12-14T11:26:57.446Z\",\n    \"status\": \"Processed\",\n    \"polling_url\": \"http://YBAYYrOIYEkDWHxROWT.lvcvcjTkxSqk-ad6gMaHjyFFN9,Z-I-B47.N3i7m5XsGj6,o2U-EgG+Du,uPAv\",\n    \"alias\": \"string\",\n    \"completed_at\": \"1972-04-17T07:46:05.504Z\",\n    \"result_url\": \"http://rXhXxYPu.cqlhUIs,dFIRLriCO82Ym\",\n    \"error\": {\n      \"status\": 422,\n      \"detail\": \"One or more fields failed validation.\",\n      \"title\": \"Invalid fields in form\",\n      \"code\": \"422-001\"\n    }\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "5b349de6-d50f-45ed-8ff0-57b4b92a3524",
+              "id": "656a57b5-f068-4eb4-b307-26629b67032f",
               "name": "Unprocessable Content",
               "originalRequest": {
                 "url": {
@@ -334,7 +334,7 @@
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "5400b9a0-1fe7-4427-92d1-e6fa9db29234",
+              "id": "bec8094a-7cd4-4675-9971-3e25597df3da",
               "name": "Too Many Requests",
               "originalRequest": {
                 "url": {
@@ -453,7 +453,7 @@
           }
         },
         {
-          "id": "84f5784b-b687-44d1-a5ae-512557da7537",
+          "id": "0ab796ae-d849-43e8-a5a5-72f1aca6c3a4",
           "name": "Get The Result Of A Completed Classification Product Inference",
           "request": {
             "name": "Get The Result Of A Completed Classification Product Inference",
@@ -510,7 +510,7 @@
           },
           "response": [
             {
-              "id": "3f1d46f8-2dd2-491f-977e-8079947df523",
+              "id": "46948c7c-80e6-44aa-a378-bfe25928a6a7",
               "name": "Successful Response",
               "originalRequest": {
                 "url": {
@@ -560,12 +560,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"inference\": {\n    \"id\": \"string\",\n    \"job\": {\n      \"id\": \"string\"\n    },\n    \"model\": {\n      \"id\": \"string\"\n    },\n    \"file\": {\n      \"name\": \"string\",\n      \"page_count\": 7186,\n      \"mime_type\": \"string\",\n      \"alias\": \"string\"\n    },\n    \"result\": {\n      \"classification\": {\n        \"document_type\": \"string\",\n        \"extraction_response\": {\n          \"inference\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      }\n    }\n  }\n}",
+              "body": "{\n  \"inference\": {\n    \"id\": \"string\",\n    \"job\": {\n      \"id\": \"string\"\n    },\n    \"model\": {\n      \"id\": \"string\"\n    },\n    \"file\": {\n      \"name\": \"string\",\n      \"page_count\": 6633,\n      \"mime_type\": \"string\",\n      \"alias\": \"string\"\n    },\n    \"result\": {\n      \"classification\": {\n        \"document_type\": \"string\",\n        \"extraction_response\": {\n          \"inference\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      }\n    }\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "0b1e9a51-8974-43ed-84a0-5be052a5a68c",
+              "id": "9b120090-dddb-4a6e-b1f2-597188b20386",
               "name": "Not Found",
               "originalRequest": {
                 "url": {
@@ -620,7 +620,7 @@
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "75c3f409-cd9c-46a6-9b48-98da73fc2134",
+              "id": "2053a84c-cfe5-4bae-bcbc-bc573b4d0ddb",
               "name": "Unprocessable Content",
               "originalRequest": {
                 "url": {
@@ -710,7 +710,7 @@
     ]
   },
   "info": {
-    "_postman_id": "58588216-6191-4e6a-8a64-47c47a4a5262",
+    "_postman_id": "1fd7f18b-ab08-428d-bb81-b0ec7b9ffad6",
     "name": "Mindee Classification API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "description": {

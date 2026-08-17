@@ -1,7 +1,7 @@
 {
   "item": [
     {
-      "id": "fe004a41-f37d-43ff-a66b-b3c5d28c8eaf",
+      "id": "92f54ec3-cdcf-47cb-93c6-43faec6da73a",
       "name": "Jobs",
       "description": {
         "content": "Poll the status of asynchronous Mindee inference jobs across every Mindee product.",
@@ -9,7 +9,7 @@
       },
       "item": [
         {
-          "id": "cd3d0f23-2022-4048-b91a-18273c275eed",
+          "id": "f2916b4d-247e-4944-ad6d-3231acf6525d",
           "name": "Get The Status Of A File's Processing",
           "request": {
             "name": "Get The Status Of A File's Processing",
@@ -71,7 +71,7 @@
           },
           "response": [
             {
-              "id": "3a23676e-3bef-4d61-863e-c7c36a551b1a",
+              "id": "34cecf1f-b2f3-468e-a8a8-3abfdc2f6fb4",
               "name": "Successful Response",
               "originalRequest": {
                 "url": {
@@ -124,12 +124,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"job\": {\n    \"id\": \"string\",\n    \"model_id\": \"string\",\n    \"filename\": \"file.jpg\",\n    \"created_at\": \"2018-10-06T11:44:28.378Z\",\n    \"status\": \"Processing\",\n    \"polling_url\": \"https://AyjhVtQNYVthAAyRPeyMKSmI.mqaAIbs-5HhCPftAXeFmjGJX,AyM5rSqUZjrApSL,kSi2.a+NU0X\",\n    \"alias\": \"string\",\n    \"completed_at\": \"1985-11-07T05:43:00.827Z\",\n    \"result_url\": \"http://r.lcgili2\",\n    \"error\": {\n      \"status\": 422,\n      \"detail\": \"One or more fields failed validation.\",\n      \"title\": \"Invalid fields in form\",\n      \"code\": \"422-001\"\n    }\n  }\n}",
+              "body": "{\n  \"job\": {\n    \"id\": \"string\",\n    \"model_id\": \"string\",\n    \"filename\": \"file.jpg\",\n    \"created_at\": \"1964-09-11T17:44:47.230Z\",\n    \"status\": \"Failed\",\n    \"polling_url\": \"http://SWKUUVKUHHDsT.fyiUjIy9dnyXqZDtR64SQaI+BpYtTPC0wy3,bZuu7WH6e2qyCXACFnt,\",\n    \"alias\": \"string\",\n    \"completed_at\": \"1958-03-10T22:05:59.752Z\",\n    \"result_url\": \"http://KdCRCP.imPNtj\",\n    \"error\": {\n      \"status\": 422,\n      \"detail\": \"One or more fields failed validation.\",\n      \"title\": \"Invalid fields in form\",\n      \"code\": \"422-001\"\n    }\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "d4e088a0-df6a-4d64-a284-127a6c9fdf3b",
+              "id": "212efd67-c870-4527-9bcd-ddd52c1db858",
               "name": "Found",
               "originalRequest": {
                 "url": {
@@ -182,12 +182,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"job\": {\n    \"id\": \"string\",\n    \"model_id\": \"string\",\n    \"filename\": \"file.jpg\",\n    \"created_at\": \"2018-10-06T11:44:28.378Z\",\n    \"status\": \"Processing\",\n    \"polling_url\": \"https://AyjhVtQNYVthAAyRPeyMKSmI.mqaAIbs-5HhCPftAXeFmjGJX,AyM5rSqUZjrApSL,kSi2.a+NU0X\",\n    \"alias\": \"string\",\n    \"completed_at\": \"1985-11-07T05:43:00.827Z\",\n    \"result_url\": \"http://r.lcgili2\",\n    \"error\": {\n      \"status\": 422,\n      \"detail\": \"One or more fields failed validation.\",\n      \"title\": \"Invalid fields in form\",\n      \"code\": \"422-001\"\n    }\n  }\n}",
+              "body": "{\n  \"job\": {\n    \"id\": \"string\",\n    \"model_id\": \"string\",\n    \"filename\": \"file.jpg\",\n    \"created_at\": \"1964-09-11T17:44:47.230Z\",\n    \"status\": \"Failed\",\n    \"polling_url\": \"http://SWKUUVKUHHDsT.fyiUjIy9dnyXqZDtR64SQaI+BpYtTPC0wy3,bZuu7WH6e2qyCXACFnt,\",\n    \"alias\": \"string\",\n    \"completed_at\": \"1958-03-10T22:05:59.752Z\",\n    \"result_url\": \"http://KdCRCP.imPNtj\",\n    \"error\": {\n      \"status\": 422,\n      \"detail\": \"One or more fields failed validation.\",\n      \"title\": \"Invalid fields in form\",\n      \"code\": \"422-001\"\n    }\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "2b939ad0-b9fd-48b8-a7dd-9e9c6c19cce2",
+              "id": "814d1033-ecdf-4ad1-ae3d-6b3c8ab8c4ba",
               "name": "Not Found",
               "originalRequest": {
                 "url": {
@@ -245,7 +245,7 @@
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "ae96bb75-1d50-4086-af82-4a1edcb0f065",
+              "id": "4ee38e2b-432c-4ddf-aae3-14ca120d6d8a",
               "name": "Unprocessable Content",
               "originalRequest": {
                 "url": {
@@ -303,7 +303,7 @@
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "75aa1e72-7f1f-42e1-85c0-d6338a0beeb4",
+              "id": "5b8f9268-53ca-4768-9ef5-b03d14c40112",
               "name": "Too Many Requests",
               "originalRequest": {
                 "url": {
@@ -396,11 +396,11 @@
     ]
   },
   "info": {
-    "_postman_id": "b3562d19-2b3d-4a95-8f36-c277a7edb70c",
-    "name": "Mindee Jobs API",
+    "_postman_id": "27f2e092-479b-425a-98fe-170ea5705a62",
+    "name": "Mindee Classification Jobs API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "description": {
-      "content": "Poll the status of asynchronous Mindee inference jobs across every Mindee product.\n\nContact Support:\n Name: Mindee",
+      "content": "Classify documents by type so they can be routed to the appropriate downstream extraction model.\n\nContact Support:\n Name: Mindee",
       "type": "text/plain"
     }
   }

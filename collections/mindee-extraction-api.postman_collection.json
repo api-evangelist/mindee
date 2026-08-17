@@ -1,7 +1,7 @@
 {
   "item": [
     {
-      "id": "2ae37f39-5f86-46d3-819b-d0d62c055f1b",
+      "id": "1ac835c8-5865-49be-9f83-ace2b0b20164",
       "name": "Extraction",
       "description": {
         "content": "Extract structured fields from invoices, receipts, IDs, and other documents using Mindee's configurable extraction models.",
@@ -9,7 +9,7 @@
       },
       "item": [
         {
-          "id": "77e5bc12-16e3-4a81-894e-1940bdb66332",
+          "id": "8a3770e9-f9f4-4325-8ad7-a8ac8d114b67",
           "name": "Send A File For An Extraction Product Inference",
           "request": {
             "name": "Send A File For An Extraction Product Inference",
@@ -144,7 +144,7 @@
           },
           "response": [
             {
-              "id": "98eea754-101c-4330-b007-91df249e76f3",
+              "id": "98738762-a0f6-4f2f-aa01-fe007d1e8468",
               "name": "Successful Response",
               "originalRequest": {
                 "url": {
@@ -306,12 +306,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"job\": {\n    \"id\": \"string\",\n    \"model_id\": \"string\",\n    \"filename\": \"file.jpg\",\n    \"created_at\": \"1981-02-01T20:32:46.374Z\",\n    \"status\": \"Processed\",\n    \"polling_url\": \"https://HVgM.vujDYeJLhalcwMfmRqiJKiGxDaRekNBp6gDD9gLhN8si+v,SXphMMEk1ar+CGrd0Zfv\",\n    \"alias\": \"string\",\n    \"completed_at\": \"2022-09-21T23:58:51.166Z\",\n    \"result_url\": \"https://dIuZoBHmUFRcimfO.ilSy\",\n    \"error\": {\n      \"status\": 422,\n      \"detail\": \"One or more fields failed validation.\",\n      \"title\": \"Invalid fields in form\",\n      \"code\": \"422-001\"\n    }\n  }\n}",
+              "body": "{\n  \"job\": {\n    \"id\": \"string\",\n    \"model_id\": \"string\",\n    \"filename\": \"file.jpg\",\n    \"created_at\": \"1973-03-27T11:01:08.359Z\",\n    \"status\": \"Failed\",\n    \"polling_url\": \"https://WnWvgOKcUOLHBuTwNd.jnWVBYv9j+vS5vFnGXWrG1D7YkbNJETMtqgJQrplkdpf6Ub5yWqUq\",\n    \"alias\": \"string\",\n    \"completed_at\": \"1991-01-13T17:43:22.913Z\",\n    \"result_url\": \"http://NCbizWeCjBllIHwmecxxymtCpXK.rpRRLbq3Q.Rv\",\n    \"error\": {\n      \"status\": 422,\n      \"detail\": \"One or more fields failed validation.\",\n      \"title\": \"Invalid fields in form\",\n      \"code\": \"422-001\"\n    }\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "c8f78b3e-706b-4b85-8222-f29bed7bc3a3",
+              "id": "3a2b4af3-7578-40a4-a939-34c25d21fe0e",
               "name": "Unprocessable Content",
               "originalRequest": {
                 "url": {
@@ -478,7 +478,7 @@
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "8d7c3114-17bb-462b-b6eb-da4b710442d7",
+              "id": "1d672de7-67a4-42ec-896d-5442723d3ef0",
               "name": "Too Many Requests",
               "originalRequest": {
                 "url": {
@@ -651,7 +651,7 @@
           }
         },
         {
-          "id": "d55ae3cb-fa33-4afb-9c50-c0619dab0fd8",
+          "id": "a4fc8b98-2cea-4fcd-8ee4-2ac5bf2f51ee",
           "name": "Send A File For An Extraction Product Inference",
           "request": {
             "name": "Send A File For An Extraction Product Inference",
@@ -785,7 +785,7 @@
           },
           "response": [
             {
-              "id": "02edff48-09c5-4c9b-aa2b-a2726b586aa6",
+              "id": "443a5794-bd55-43ab-b9c1-d927c112a0ec",
               "name": "Successful Response",
               "originalRequest": {
                 "url": {
@@ -946,12 +946,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"job\": {\n    \"id\": \"string\",\n    \"model_id\": \"string\",\n    \"filename\": \"file.jpg\",\n    \"created_at\": \"1981-02-01T20:32:46.374Z\",\n    \"status\": \"Processed\",\n    \"polling_url\": \"https://HVgM.vujDYeJLhalcwMfmRqiJKiGxDaRekNBp6gDD9gLhN8si+v,SXphMMEk1ar+CGrd0Zfv\",\n    \"alias\": \"string\",\n    \"completed_at\": \"2022-09-21T23:58:51.166Z\",\n    \"result_url\": \"https://dIuZoBHmUFRcimfO.ilSy\",\n    \"error\": {\n      \"status\": 422,\n      \"detail\": \"One or more fields failed validation.\",\n      \"title\": \"Invalid fields in form\",\n      \"code\": \"422-001\"\n    }\n  }\n}",
+              "body": "{\n  \"job\": {\n    \"id\": \"string\",\n    \"model_id\": \"string\",\n    \"filename\": \"file.jpg\",\n    \"created_at\": \"1973-03-27T11:01:08.359Z\",\n    \"status\": \"Failed\",\n    \"polling_url\": \"https://WnWvgOKcUOLHBuTwNd.jnWVBYv9j+vS5vFnGXWrG1D7YkbNJETMtqgJQrplkdpf6Ub5yWqUq\",\n    \"alias\": \"string\",\n    \"completed_at\": \"1991-01-13T17:43:22.913Z\",\n    \"result_url\": \"http://NCbizWeCjBllIHwmecxxymtCpXK.rpRRLbq3Q.Rv\",\n    \"error\": {\n      \"status\": 422,\n      \"detail\": \"One or more fields failed validation.\",\n      \"title\": \"Invalid fields in form\",\n      \"code\": \"422-001\"\n    }\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "8d4f08fb-00dc-4dc3-a82d-2c422c1254ea",
+              "id": "c3a81eca-c94f-4183-bd76-3b1f586ff3ec",
               "name": "Unprocessable Content",
               "originalRequest": {
                 "url": {
@@ -1117,7 +1117,7 @@
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "ab7a74f9-f830-421b-b7e0-bac81e451a3b",
+              "id": "96b72a95-286c-49a8-9baa-85aebe4438f1",
               "name": "Too Many Requests",
               "originalRequest": {
                 "url": {
@@ -1289,7 +1289,7 @@
           }
         },
         {
-          "id": "2a9744b3-1f2a-4769-8495-adb525f23f00",
+          "id": "22a3c211-efb3-4153-a76d-95f8cb36ee43",
           "name": "Get The Result Of A Completed Extraction Product Inference",
           "request": {
             "name": "Get The Result Of A Completed Extraction Product Inference",
@@ -1346,7 +1346,7 @@
           },
           "response": [
             {
-              "id": "65027f64-aaa7-4d10-ad9a-7fbeccb0826e",
+              "id": "f29ebad3-1895-4ce9-8ce8-9f64b68199f7",
               "name": "Successful Response",
               "originalRequest": {
                 "url": {
@@ -1396,12 +1396,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"inference\": {\n    \"id\": \"string\",\n    \"job\": {\n      \"id\": \"string\"\n    },\n    \"model\": {\n      \"id\": \"string\"\n    },\n    \"file\": {\n      \"name\": \"string\",\n      \"page_count\": 8335,\n      \"mime_type\": \"string\",\n      \"alias\": \"string\"\n    },\n    \"result\": {\n      \"fields\": {\n        \"key_0\": {\n          \"value\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"confidence\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        \"key_1\": {\n          \"value\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"confidence\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      },\n      \"raw_text\": {\n        \"pages\": [\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        ]\n      },\n      \"rag\": {\n        \"retrieved_document_id\": \"string\"\n      }\n    },\n    \"active_options\": {\n      \"raw_text\": true,\n      \"polygon\": true,\n      \"confidence\": false,\n      \"rag\": false,\n      \"multipage_context\": false,\n      \"text_context\": true,\n      \"data_schema\": {\n        \"replace\": true\n      }\n    }\n  }\n}",
+              "body": "{\n  \"inference\": {\n    \"id\": \"string\",\n    \"job\": {\n      \"id\": \"string\"\n    },\n    \"model\": {\n      \"id\": \"string\"\n    },\n    \"file\": {\n      \"name\": \"string\",\n      \"page_count\": 5221,\n      \"mime_type\": \"string\",\n      \"alias\": \"string\"\n    },\n    \"result\": {\n      \"fields\": {\n        \"key_0\": {\n          \"value\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"confidence\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      },\n      \"raw_text\": {\n        \"pages\": [\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        ]\n      },\n      \"rag\": {\n        \"retrieved_document_id\": \"string\"\n      }\n    },\n    \"active_options\": {\n      \"raw_text\": false,\n      \"polygon\": true,\n      \"confidence\": false,\n      \"rag\": false,\n      \"multipage_context\": false,\n      \"text_context\": false,\n      \"data_schema\": {\n        \"replace\": false\n      }\n    }\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "5221211a-099d-418b-9ed9-987792b67dd7",
+              "id": "86256317-9d3b-4b65-8b83-2a9ee695a829",
               "name": "Not Found",
               "originalRequest": {
                 "url": {
@@ -1456,7 +1456,7 @@
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "5659c86d-932c-43f7-9ac4-29b819a844f0",
+              "id": "98e9c40a-5d20-404c-b46d-72d903dad4c2",
               "name": "Unprocessable Content",
               "originalRequest": {
                 "url": {
@@ -1517,7 +1517,7 @@
           }
         },
         {
-          "id": "069b22da-4bf8-4abf-9ea3-d0b312616fe2",
+          "id": "1bd03945-418c-47f1-b7b6-9a4183c1f67e",
           "name": "Get The Result Of A Completed Extraction Product Inference",
           "request": {
             "name": "Get The Result Of A Completed Extraction Product Inference",
@@ -1572,7 +1572,7 @@
           },
           "response": [
             {
-              "id": "f382eaa8-93bf-4f52-bada-64b9a7158cd7",
+              "id": "464ba3d3-d956-401a-8b59-d847f284b0de",
               "name": "Successful Response",
               "originalRequest": {
                 "url": {
@@ -1620,12 +1620,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"inference\": {\n    \"id\": \"string\",\n    \"job\": {\n      \"id\": \"string\"\n    },\n    \"model\": {\n      \"id\": \"string\"\n    },\n    \"file\": {\n      \"name\": \"string\",\n      \"page_count\": 8335,\n      \"mime_type\": \"string\",\n      \"alias\": \"string\"\n    },\n    \"result\": {\n      \"fields\": {\n        \"key_0\": {\n          \"value\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"confidence\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        \"key_1\": {\n          \"value\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"confidence\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      },\n      \"raw_text\": {\n        \"pages\": [\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        ]\n      },\n      \"rag\": {\n        \"retrieved_document_id\": \"string\"\n      }\n    },\n    \"active_options\": {\n      \"raw_text\": true,\n      \"polygon\": true,\n      \"confidence\": false,\n      \"rag\": false,\n      \"multipage_context\": false,\n      \"text_context\": true,\n      \"data_schema\": {\n        \"replace\": true\n      }\n    }\n  }\n}",
+              "body": "{\n  \"inference\": {\n    \"id\": \"string\",\n    \"job\": {\n      \"id\": \"string\"\n    },\n    \"model\": {\n      \"id\": \"string\"\n    },\n    \"file\": {\n      \"name\": \"string\",\n      \"page_count\": 5221,\n      \"mime_type\": \"string\",\n      \"alias\": \"string\"\n    },\n    \"result\": {\n      \"fields\": {\n        \"key_0\": {\n          \"value\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          \"confidence\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      },\n      \"raw_text\": {\n        \"pages\": [\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          },\n          {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        ]\n      },\n      \"rag\": {\n        \"retrieved_document_id\": \"string\"\n      }\n    },\n    \"active_options\": {\n      \"raw_text\": false,\n      \"polygon\": true,\n      \"confidence\": false,\n      \"rag\": false,\n      \"multipage_context\": false,\n      \"text_context\": false,\n      \"data_schema\": {\n        \"replace\": false\n      }\n    }\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "ceb7fde3-7f1c-4e84-9a7f-bcc83f7ce807",
+              "id": "e4474712-f616-4a4f-af2c-e9a23bb9e8e5",
               "name": "Not Found",
               "originalRequest": {
                 "url": {
@@ -1678,7 +1678,7 @@
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "2269da14-5c40-4636-b8ce-3c1fe45ac3c7",
+              "id": "b68e0a97-a333-43d9-b267-70999e6f7fc1",
               "name": "Unprocessable Content",
               "originalRequest": {
                 "url": {
@@ -1766,11 +1766,11 @@
     ]
   },
   "info": {
-    "_postman_id": "6beaa9ba-5e0b-4166-99fc-6aa3fd4d85ce",
-    "name": "Mindee Extraction API",
+    "_postman_id": "85562c15-c9af-4861-8530-535ff4e1c118",
+    "name": "Mindee Classification Extraction API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "description": {
-      "content": "Extract structured fields from invoices, receipts, IDs, and other documents using Mindee's configurable extraction models.\n\nContact Support:\n Name: Mindee",
+      "content": "Classify documents by type so they can be routed to the appropriate downstream extraction model.\n\nContact Support:\n Name: Mindee",
       "type": "text/plain"
     }
   }

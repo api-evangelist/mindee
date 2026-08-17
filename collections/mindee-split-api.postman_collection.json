@@ -1,7 +1,7 @@
 {
   "item": [
     {
-      "id": "1c5bc1a2-6659-481b-9842-67fbd39fff63",
+      "id": "181034c2-b885-4968-be0b-f97e3c21e106",
       "name": "Split",
       "description": {
         "content": "Split a multi-document PDF or image batch into individual documents prior to classification or extraction.",
@@ -9,7 +9,7 @@
       },
       "item": [
         {
-          "id": "6e5ef867-e010-48e2-a0e2-40940fbfec96",
+          "id": "03880ec1-4062-4aa9-8f93-572856df5719",
           "name": "Send A File For A Split Utility Inference",
           "request": {
             "name": "Send A File For A Split Utility Inference",
@@ -108,7 +108,7 @@
           },
           "response": [
             {
-              "id": "5692ccba-487e-4f90-baa2-4c4bbd3a9acb",
+              "id": "491ada71-c09f-4597-957f-7bd0da417fc0",
               "name": "Successful Response",
               "originalRequest": {
                 "url": {
@@ -216,12 +216,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"job\": {\n    \"id\": \"string\",\n    \"model_id\": \"string\",\n    \"filename\": \"file.jpg\",\n    \"created_at\": \"1966-08-21T14:23:42.669Z\",\n    \"status\": \"Processing\",\n    \"polling_url\": \"http://mqFZwRhUeBpoSXDRscz.ieHz-hFl0iGVp3WxkR5CnWk.BuEOJJyGLRRuRK9c3g\",\n    \"alias\": \"string\",\n    \"completed_at\": \"1952-04-06T16:55:36.186Z\",\n    \"result_url\": \"https://sOdykdouVjHybZTiNGApzcnIPyB.wtcxmb5xpp6i4kv5C14piaHr\",\n    \"error\": {\n      \"status\": 422,\n      \"detail\": \"One or more fields failed validation.\",\n      \"title\": \"Invalid fields in form\",\n      \"code\": \"422-001\"\n    }\n  }\n}",
+              "body": "{\n  \"job\": {\n    \"id\": \"string\",\n    \"model_id\": \"string\",\n    \"filename\": \"file.jpg\",\n    \"created_at\": \"1983-06-29T03:38:56.623Z\",\n    \"status\": \"Failed\",\n    \"polling_url\": \"http://knWWvSnEiDgzaLXixZ.gimSIFEDEp0gCZcl5-QvR6rZjStOeYu9JxUiJAn+3z1PzoGQnUBE\",\n    \"alias\": \"string\",\n    \"completed_at\": \"1952-10-02T09:57:26.239Z\",\n    \"result_url\": \"http://Edk.aadf++mc6olU,SqyDy+ka83M+zWJFGT0-6fOqfbUGRJjqkEIaz-QnO-hcstiop,pk33weTcNzWzfCol-HF0CiIsStGs\",\n    \"error\": {\n      \"status\": 422,\n      \"detail\": \"One or more fields failed validation.\",\n      \"title\": \"Invalid fields in form\",\n      \"code\": \"422-001\"\n    }\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "4116bf50-bcf7-412a-a767-ea5e4764b787",
+              "id": "c5b04876-c1e0-4c1d-966c-c086eec6e0b1",
               "name": "Unprocessable Content",
               "originalRequest": {
                 "url": {
@@ -334,7 +334,7 @@
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "18a43644-8df2-4d88-8e33-3d150f8c5546",
+              "id": "82518043-fb76-443f-8f82-c04d6668fbd6",
               "name": "Too Many Requests",
               "originalRequest": {
                 "url": {
@@ -453,7 +453,7 @@
           }
         },
         {
-          "id": "2895980b-320c-4875-823b-3db227111a53",
+          "id": "22df8238-4924-4c45-b568-7b579bbd282a",
           "name": "Get The Result Of A Completed Split Product Inference",
           "request": {
             "name": "Get The Result Of A Completed Split Product Inference",
@@ -510,7 +510,7 @@
           },
           "response": [
             {
-              "id": "bf299e13-bdff-48e7-991b-a3208dc9be29",
+              "id": "8142c1be-1ff4-4c75-b4e9-782a0fd7f0bb",
               "name": "Successful Response",
               "originalRequest": {
                 "url": {
@@ -560,12 +560,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"inference\": {\n    \"id\": \"string\",\n    \"job\": {\n      \"id\": \"string\"\n    },\n    \"model\": {\n      \"id\": \"string\"\n    },\n    \"file\": {\n      \"name\": \"string\",\n      \"page_count\": 9757,\n      \"mime_type\": \"string\",\n      \"alias\": \"string\"\n    },\n    \"result\": {\n      \"splits\": [\n        {\n          \"page_range\": [\n            374,\n            1780\n          ],\n          \"document_type\": \"string\",\n          \"extraction_response\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        {\n          \"page_range\": [\n            4114,\n            7955\n          ],\n          \"document_type\": \"string\",\n          \"extraction_response\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      ]\n    }\n  }\n}",
+              "body": "{\n  \"inference\": {\n    \"id\": \"string\",\n    \"job\": {\n      \"id\": \"string\"\n    },\n    \"model\": {\n      \"id\": \"string\"\n    },\n    \"file\": {\n      \"name\": \"string\",\n      \"page_count\": 2803,\n      \"mime_type\": \"string\",\n      \"alias\": \"string\"\n    },\n    \"result\": {\n      \"splits\": [\n        {\n          \"page_range\": [\n            1117,\n            4265\n          ],\n          \"document_type\": \"string\",\n          \"extraction_response\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        {\n          \"page_range\": [\n            7486,\n            6674\n          ],\n          \"document_type\": \"string\",\n          \"extraction_response\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      ]\n    }\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "ed88c2d8-68bf-46b5-8696-111fe9bae3a7",
+              "id": "aed88d87-1586-4229-b6f5-27edddf036e1",
               "name": "Not Found",
               "originalRequest": {
                 "url": {
@@ -620,7 +620,7 @@
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "a2672df2-8ff5-4266-8ec1-ef5f732e2a32",
+              "id": "ddd9d482-9659-4ea6-bc7e-6a82f3beaadf",
               "name": "Unprocessable Content",
               "originalRequest": {
                 "url": {
@@ -710,11 +710,11 @@
     ]
   },
   "info": {
-    "_postman_id": "62c2c733-8f85-4444-b29c-81ff4c1e720f",
-    "name": "Mindee Split API",
+    "_postman_id": "1d1add05-2812-4d8c-8ba3-2e524cc32ae3",
+    "name": "Mindee Classification Split API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "description": {
-      "content": "Split a multi-document PDF or image batch into individual documents prior to classification or extraction.\n\nContact Support:\n Name: Mindee",
+      "content": "Classify documents by type so they can be routed to the appropriate downstream extraction model.\n\nContact Support:\n Name: Mindee",
       "type": "text/plain"
     }
   }

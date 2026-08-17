@@ -1,7 +1,7 @@
 {
   "opencollection": "1.0.0",
   "info": {
-    "name": "Mindee Crop API",
+    "name": "Mindee Classification Crop API",
     "version": "2.0.0"
   },
   "request": {

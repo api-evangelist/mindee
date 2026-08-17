@@ -1,7 +1,7 @@
 {
   "opencollection": "1.0.0",
   "info": {
-    "name": "Mindee Split API",
+    "name": "Mindee Classification Split API",
     "version": "2.0.0"
   },
   "request": {

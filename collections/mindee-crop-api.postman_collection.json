@@ -1,7 +1,7 @@
 {
   "item": [
     {
-      "id": "1f547dc6-74a2-4ee3-8872-ce436b93c168",
+      "id": "fd3abaef-38c3-47dc-9f93-bdad31d92e2c",
       "name": "Crop",
       "description": {
         "content": "Detect, crop, and isolate the document area inside a larger scanned image before further processing.",
@@ -9,7 +9,7 @@
       },
       "item": [
         {
-          "id": "79115d14-2f8f-4ddb-81cf-98fa6f597de4",
+          "id": "17f2c24b-2f30-404d-bd81-834e35668289",
           "name": "Send A File For A Crop Utility Inference",
           "request": {
             "name": "Send A File For A Crop Utility Inference",
@@ -108,7 +108,7 @@
           },
           "response": [
             {
-              "id": "e8d67679-65b1-431c-8544-10282e189039",
+              "id": "2dcb0439-eec5-4247-b04b-c46674d51432",
               "name": "Successful Response",
               "originalRequest": {
                 "url": {
@@ -216,12 +216,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"job\": {\n    \"id\": \"string\",\n    \"model_id\": \"string\",\n    \"filename\": \"file.jpg\",\n    \"created_at\": \"1999-08-12T23:40:58.346Z\",\n    \"status\": \"Failed\",\n    \"polling_url\": \"http://LJGmcWJIdtdXFjMxTNAsaCogWbelzrY.edgVyi7BaQP8VvDgQ0gDKXjGy.Gj,cMniUVaytTaJCUmia.+i,dkh6Xy6IR8KgsogMyyh\",\n    \"alias\": \"string\",\n    \"completed_at\": \"1961-09-07T09:02:27.885Z\",\n    \"result_url\": \"https://xXjPA.myfKHhQKpJAF6QtTLMkwSsAL.+ODpJbaBhC7-DgbCiHdSPqQ,e35kp5NDtUZWAFFfpc\",\n    \"error\": {\n      \"status\": 422,\n      \"detail\": \"One or more fields failed validation.\",\n      \"title\": \"Invalid fields in form\",\n      \"code\": \"422-001\"\n    }\n  }\n}",
+              "body": "{\n  \"job\": {\n    \"id\": \"string\",\n    \"model_id\": \"string\",\n    \"filename\": \"file.jpg\",\n    \"created_at\": \"1981-02-13T10:50:50.563Z\",\n    \"status\": \"Failed\",\n    \"polling_url\": \"https://pYvSMLQQNVuBilOoolOqtrajnNRdWj.kfnrS4VjipOMlKuoZq1tat5zBealeyuUMlO\",\n    \"alias\": \"string\",\n    \"completed_at\": \"1953-09-16T10:47:57.389Z\",\n    \"result_url\": \"https://dxA.gybrRHLTqQi\",\n    \"error\": {\n      \"status\": 422,\n      \"detail\": \"One or more fields failed validation.\",\n      \"title\": \"Invalid fields in form\",\n      \"code\": \"422-001\"\n    }\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "581c92b2-13b4-410b-8ee9-2c4c908d2383",
+              "id": "92fef503-d43a-48e4-b7ee-00eb28bd0de1",
               "name": "Unprocessable Content",
               "originalRequest": {
                 "url": {
@@ -334,7 +334,7 @@
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "b23f8915-1be9-454a-ad27-aa15d1687ab5",
+              "id": "18bec654-d3cc-42a1-a71f-5c707604a3c7",
               "name": "Too Many Requests",
               "originalRequest": {
                 "url": {
@@ -453,7 +453,7 @@
           }
         },
         {
-          "id": "88542f2a-c625-4e56-9587-94cefc278a1c",
+          "id": "06cf7ba5-db45-44b1-9824-1a1b68bb7bda",
           "name": "Get The Result Of A Completed Crop Product Inference",
           "request": {
             "name": "Get The Result Of A Completed Crop Product Inference",
@@ -510,7 +510,7 @@
           },
           "response": [
             {
-              "id": "11f44cd4-8ede-49d7-ad43-e7dc644d5f62",
+              "id": "829b82fe-8a2d-4b2b-8df9-355ee2a2dc2a",
               "name": "Successful Response",
               "originalRequest": {
                 "url": {
@@ -560,12 +560,12 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"inference\": {\n    \"id\": \"string\",\n    \"job\": {\n      \"id\": \"string\"\n    },\n    \"model\": {\n      \"id\": \"string\"\n    },\n    \"file\": {\n      \"name\": \"string\",\n      \"page_count\": 6373,\n      \"mime_type\": \"string\",\n      \"alias\": \"string\"\n    },\n    \"result\": {\n      \"crops\": [\n        {\n          \"object_type\": \"string\",\n          \"location\": {\n            \"polygon\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"page\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          },\n          \"extraction_response\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        {\n          \"object_type\": \"string\",\n          \"location\": {\n            \"polygon\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"page\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          },\n          \"extraction_response\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      ]\n    }\n  }\n}",
+              "body": "{\n  \"inference\": {\n    \"id\": \"string\",\n    \"job\": {\n      \"id\": \"string\"\n    },\n    \"model\": {\n      \"id\": \"string\"\n    },\n    \"file\": {\n      \"name\": \"string\",\n      \"page_count\": 3133,\n      \"mime_type\": \"string\",\n      \"alias\": \"string\"\n    },\n    \"result\": {\n      \"crops\": [\n        {\n          \"object_type\": \"string\",\n          \"location\": {\n            \"polygon\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"page\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          },\n          \"extraction_response\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        },\n        {\n          \"object_type\": \"string\",\n          \"location\": {\n            \"polygon\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            \"page\": {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          },\n          \"extraction_response\": {\n            \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n          }\n        }\n      ]\n    }\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "c06b355d-e944-497f-a5c4-c369aa50c559",
+              "id": "746694ac-0e39-4899-8e81-cabc0d33bb8b",
               "name": "Not Found",
               "originalRequest": {
                 "url": {
@@ -620,7 +620,7 @@
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "6ce5b54a-8533-4963-85e7-89859ae56b54",
+              "id": "0337ef4e-56f3-448f-9c57-a9aec1c2b860",
               "name": "Unprocessable Content",
               "originalRequest": {
                 "url": {
@@ -710,11 +710,11 @@
     ]
   },
   "info": {
-    "_postman_id": "f2d224af-882d-4375-b5a3-dd8b1a3b2d5f",
-    "name": "Mindee Crop API",
+    "_postman_id": "aa6dff00-f0c8-4bf4-998d-a5fdfa5d6e11",
+    "name": "Mindee Classification Crop API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "description": {
-      "content": "Detect, crop, and isolate the document area inside a larger scanned image before further processing.\n\nContact Support:\n Name: Mindee",
+      "content": "Classify documents by type so they can be routed to the appropriate downstream extraction model.\n\nContact Support:\n Name: Mindee",
       "type": "text/plain"
     }
   }
