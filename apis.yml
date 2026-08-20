@@ -101,6 +101,11 @@ apis:
     name: Mindee Jobs API
     tags:
       - Document Parsing
+      - Job
+      - Async
+      - Polling
+    tags_raw:
+      - Document Parsing
       - Jobs
       - Async
       - Polling
@@ -120,6 +125,16 @@ apis:
       webhook_url.
 name: Mindee
 tags:
+  - Document Parsing
+  - OCR
+  - IDP
+  - Artificial Intelligence
+  - Machine-Learning
+  - Invoices
+  - Receipts
+  - IDS
+  - Computer-Vision
+tags_raw:
   - Document Parsing
   - OCR
   - IDP
