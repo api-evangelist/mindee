@@ -129,11 +129,11 @@ tags:
   - OCR
   - IDP
   - Artificial Intelligence
-  - Machine-Learning
+  - Machine Learning
   - Invoices
   - Receipts
   - IDS
-  - Computer-Vision
+  - Computer Vision
 tags_raw:
   - Document Parsing
   - OCR
@@ -144,6 +144,8 @@ tags_raw:
   - Receipts
   - IDs
   - Computer Vision
+  - Machine-Learning
+  - Computer-Vision
 kind: contract
 deliveryModel:
   model: saas

@@ -1150,6 +1150,87 @@ paths:
           description: Unprocessable Content
 components:
   schemas:
+    FieldConfidence:
+      type: string
+      enum:
+      - Certain
+      - High
+      - Medium
+      title: FieldConfidence
+      description: Confidence level of a field.
+    ObjectField-Output:
+      properties:
+        locations:
+          items:
+            $ref: '#/components/schemas/FieldLocation'
+          type: array
+          title: Locations
+          default: []
+        confidence:
+          anyOf:
+          - $ref: '#/components/schemas/FieldConfidence'
+          - type: 'null'
+        fields:
+          additionalProperties:
+            oneOf:
+            - $ref: '#/components/schemas/SimpleField'
+            - $ref: '#/components/schemas/ObjectField-Output'
+            - $ref: '#/components/schemas/ListField-Output'
+          propertyNames:
+            description: Name of the field in the data schema.
+            examples:
+            - my_simple_field
+          type: object
+          title: Fields
+      additionalProperties: false
+      type: object
+      required:
+      - fields
+      title: ObjectField
+      description: Field having a set of sub-fields.
+    JobResponse:
+      properties:
+        job:
+          $ref: '#/components/schemas/Job'
+      type: object
+      required:
+      - job
+      title: JobResponse
+      description: Response for a Job.
+    BaseJob:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          title: Id
+          description: UUID of the Job.
+      type: object
+      required:
+      - id
+      title: BaseJob
+      description: Base class for Job.
+    ErrorItem:
+      properties:
+        pointer:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Pointer
+          description: A JSON Pointer to the location of the body property.
+          examples:
+          - '#/model_id'
+        detail:
+          type: string
+          title: Detail
+          description: Explicit information on the issue.
+          examples:
+          - '''model_id'' must be a valid UUID format'
+      type: object
+      required:
+      - pointer
+      - detail
+      title: ErrorItem
+      description: Explicit details on a problem.
     WebhookResponse:
       properties:
         id:
@@ -1180,17 +1261,34 @@ components:
       - id
       title: WebhookResponse
       description: Response from a webhook call.
-    DataSchemaActiveOption:
+    InferenceFile:
       properties:
-        replace:
-          type: boolean
-          title: Replace
-          description: Whether the data schema was replaced for the inference.
+        name:
+          type: string
+          title: Name
+          description: File name as sent to the API.
+        alias:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Alias
+          description: Alias sent to the API.
+        page_count:
+          type: integer
+          minimum: 1.0
+          title: Page Count
+          description: Number of pages in the file.
+        mime_type:
+          type: string
+          title: MIME Type
+          description: Detected MIME type of the file.
       type: object
       required:
-      - replace
-      title: DataSchemaActiveOption
-      description: Data schema options activated during the inference.
+      - name
+      - page_count
+      - mime_type
+      title: InferenceFile
+      description: File used for the inference.
     ListField-Output:
       properties:
         items:
@@ -1211,27 +1309,76 @@ components:
       - items
       title: ListField
       description: Field having a list of fields.
-    BaseJob:
+    Status:
+      type: string
+      enum:
+      - Processing
+      - Failed
+      - Processed
+      title: Status
+      description: Possible states of an operation.
+    Rag:
       properties:
-        id:
-          type: string
-          format: uuid4
-          title: Id
-          description: UUID of the Job.
+        retrieved_document_id:
+          anyOf:
+          - type: string
+            format: uuid4
+          - type: 'null'
+          title: Retrieved document ID
+          description: The UUID of the matched document used during the RAG operation.
       type: object
       required:
-      - id
-      title: BaseJob
-      description: Base class for Job.
-    JobResponse:
+      - retrieved_document_id
+      title: Rag
+      description: Metadata about the RAG operation.
+    RawText:
       properties:
-        job:
-          $ref: '#/components/schemas/Job'
+        pages:
+          items:
+            $ref: '#/components/schemas/RawTextPage'
+          type: array
+          title: Pages
+          description: List of pages with their extracted text content.
       type: object
       required:
-      - job
-      title: JobResponse
-      description: Response for a Job.
+      - pages
+      title: RawText
+      description: Raw text extracted from all pages in the document.
+    FieldLocation:
+      properties:
+        polygon:
+          items:
+            prefixItems:
+            - type: number
+              maximum: 1.0
+              minimum: 0.0
+              title: Coordinate
+              description: Coordinate value relative to document edge.
+            - type: number
+              maximum: 1.0
+              minimum: 0.0
+              title: Coordinate
+              description: Coordinate value relative to document edge.
+            type: array
+            maxItems: 2
+            minItems: 2
+            title: Point
+            description: Relative coordinates of a point in [X,Y] notation.
+          type: array
+          minItems: 3
+          title: Polygon
+          description: Position information as a list of points in clockwise order.
+        page:
+          type: integer
+          minimum: 0.0
+          title: Page
+          description: 0-based page index of where the polygon is located.
+      type: object
+      required:
+      - polygon
+      - page
+      title: FieldLocation
+      description: A field's location on the document.
     InferenceActiveOptions:
       properties:
         raw_text:
@@ -1292,34 +1439,6 @@ components:
         * By setting their default values on the Platform UI
 
         * By explicitly setting them in the inference request'
-    InferenceFile:
-      properties:
-        name:
-          type: string
-          title: Name
-          description: File name as sent to the API.
-        alias:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Alias
-          description: Alias sent to the API.
-        page_count:
-          type: integer
-          minimum: 1.0
-          title: Page Count
-          description: Number of pages in the file.
-        mime_type:
-          type: string
-          title: MIME Type
-          description: Detected MIME type of the file.
-      type: object
-      required:
-      - name
-      - page_count
-      - mime_type
-      title: InferenceFile
-      description: File used for the inference.
     InferenceModel:
       properties:
         id:
@@ -1332,112 +1451,17 @@ components:
       - id
       title: InferenceModel
       description: Model used for the inference.
-    ExtractionResponse-Output:
+    DataSchemaActiveOption:
       properties:
-        inference:
-          $ref: '#/components/schemas/ExtractionInference-Output'
+        replace:
+          type: boolean
+          title: Replace
+          description: Whether the data schema was replaced for the inference.
       type: object
       required:
-      - inference
-      title: ExtractionResponse
-      description: Response for an extraction inference.
-    ExtractionInference-Output:
-      properties:
-        id:
-          type: string
-          format: uuid4
-          title: Id
-          description: UUID of the Inference.
-        job:
-          $ref: '#/components/schemas/BaseJob'
-          title: Job
-          description: Job the inference belongs to.
-        model:
-          $ref: '#/components/schemas/InferenceModel'
-        file:
-          $ref: '#/components/schemas/InferenceFile'
-        result:
-          $ref: '#/components/schemas/ExtractionResult-Output'
-        active_options:
-          $ref: '#/components/schemas/InferenceActiveOptions'
-      type: object
-      required:
-      - id
-      - job
-      - model
-      - file
-      - result
-      - active_options
-      title: ExtractionInference
-      description: The inference result for an extraction request.
-    Rag:
-      properties:
-        retrieved_document_id:
-          anyOf:
-          - type: string
-            format: uuid4
-          - type: 'null'
-          title: Retrieved document ID
-          description: The UUID of the matched document used during the RAG operation.
-      type: object
-      required:
-      - retrieved_document_id
-      title: Rag
-      description: Metadata about the RAG operation.
-    ErrorItem:
-      properties:
-        pointer:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Pointer
-          description: A JSON Pointer to the location of the body property.
-          examples:
-          - '#/model_id'
-        detail:
-          type: string
-          title: Detail
-          description: Explicit information on the issue.
-          examples:
-          - '''model_id'' must be a valid UUID format'
-      type: object
-      required:
-      - pointer
-      - detail
-      title: ErrorItem
-      description: Explicit details on a problem.
-    ExtractionResult-Output:
-      properties:
-        fields:
-          additionalProperties:
-            oneOf:
-            - $ref: '#/components/schemas/SimpleField'
-            - $ref: '#/components/schemas/ObjectField-Output'
-            - $ref: '#/components/schemas/ListField-Output'
-          propertyNames:
-            description: Name of the field in the data schema.
-            examples:
-            - my_simple_field
-          type: object
-          title: Fields
-          description: Extracted fields, the key corresponds to the field's name in the data schema.
-        raw_text:
-          anyOf:
-          - $ref: '#/components/schemas/RawText'
-          - type: 'null'
-          title: Raw Text
-          description: If `raw_text` was activated, contains the extracted text of the document.
-        rag:
-          anyOf:
-          - $ref: '#/components/schemas/Rag'
-          - type: 'null'
-          title: RAG
-          description: If `rag` was activated, contains metadata about the RAG operation.
-      type: object
-      required:
-      - fields
-      title: ExtractionResult
-      description: Result of an extraction inference.
+      - replace
+      title: DataSchemaActiveOption
+      description: Data schema options activated during the inference.
     ErrorResponse:
       properties:
         status:
@@ -1481,41 +1505,35 @@ components:
       - code
       title: ErrorResponse
       description: Error response detailing a problem. The format adheres to RFC 9457.
-    FieldLocation:
+    ExtractionInference-Output:
       properties:
-        polygon:
-          items:
-            prefixItems:
-            - type: number
-              maximum: 1.0
-              minimum: 0.0
-              title: Coordinate
-              description: Coordinate value relative to document edge.
-            - type: number
-              maximum: 1.0
-              minimum: 0.0
-              title: Coordinate
-              description: Coordinate value relative to document edge.
-            type: array
-            maxItems: 2
-            minItems: 2
-            title: Point
-            description: Relative coordinates of a point in [X,Y] notation.
-          type: array
-          minItems: 3
-          title: Polygon
-          description: Position information as a list of points in clockwise order.
-        page:
-          type: integer
-          minimum: 0.0
-          title: Page
-          description: 0-based page index of where the polygon is located.
+        id:
+          type: string
+          format: uuid4
+          title: Id
+          description: UUID of the Inference.
+        job:
+          $ref: '#/components/schemas/BaseJob'
+          title: Job
+          description: Job the inference belongs to.
+        model:
+          $ref: '#/components/schemas/InferenceModel'
+        file:
+          $ref: '#/components/schemas/InferenceFile'
+        result:
+          $ref: '#/components/schemas/ExtractionResult-Output'
+        active_options:
+          $ref: '#/components/schemas/InferenceActiveOptions'
       type: object
       required:
-      - polygon
-      - page
-      title: FieldLocation
-      description: A field's location on the document.
+      - id
+      - job
+      - model
+      - file
+      - result
+      - active_options
+      title: ExtractionInference
+      description: The inference result for an extraction request.
     SimpleField:
       properties:
         locations:
@@ -1542,19 +1560,49 @@ components:
       - value
       title: SimpleField
       description: Field having a single value.
-    RawText:
+    RawTextPage:
       properties:
-        pages:
-          items:
-            $ref: '#/components/schemas/RawTextPage'
-          type: array
-          title: Pages
-          description: List of pages with their extracted text content.
+        content:
+          type: string
+          title: Content
+          description: Text content of the page as a single string. '\n' is used to separate lines.
       type: object
       required:
-      - pages
-      title: RawText
-      description: Raw text extracted from all pages in the document.
+      - content
+      title: RawTextPage
+      description: Raw text extracted from a single page.
+    ExtractionResult-Output:
+      properties:
+        fields:
+          additionalProperties:
+            oneOf:
+            - $ref: '#/components/schemas/SimpleField'
+            - $ref: '#/components/schemas/ObjectField-Output'
+            - $ref: '#/components/schemas/ListField-Output'
+          propertyNames:
+            description: Name of the field in the data schema.
+            examples:
+            - my_simple_field
+          type: object
+          title: Fields
+          description: Extracted fields, the key corresponds to the field's name in the data schema.
+        raw_text:
+          anyOf:
+          - $ref: '#/components/schemas/RawText'
+          - type: 'null'
+          title: Raw Text
+          description: If `raw_text` was activated, contains the extracted text of the document.
+        rag:
+          anyOf:
+          - $ref: '#/components/schemas/Rag'
+          - type: 'null'
+          title: RAG
+          description: If `rag` was activated, contains metadata about the RAG operation.
+      type: object
+      required:
+      - fields
+      title: ExtractionResult
+      description: Result of an extraction inference.
     Job:
       properties:
         id:
@@ -1631,63 +1679,15 @@ components:
       - polling_url
       title: Job
       description: Information on the processing of a file sent to the Mindee API.
-    ObjectField-Output:
+    ExtractionResponse-Output:
       properties:
-        locations:
-          items:
-            $ref: '#/components/schemas/FieldLocation'
-          type: array
-          title: Locations
-          default: []
-        confidence:
-          anyOf:
-          - $ref: '#/components/schemas/FieldConfidence'
-          - type: 'null'
-        fields:
-          additionalProperties:
-            oneOf:
-            - $ref: '#/components/schemas/SimpleField'
-            - $ref: '#/components/schemas/ObjectField-Output'
-            - $ref: '#/components/schemas/ListField-Output'
-          propertyNames:
-            description: Name of the field in the data schema.
-            examples:
-            - my_simple_field
-          type: object
-          title: Fields
-      additionalProperties: false
+        inference:
+          $ref: '#/components/schemas/ExtractionInference-Output'
       type: object
       required:
-      - fields
-      title: ObjectField
-      description: Field having a set of sub-fields.
-    RawTextPage:
-      properties:
-        content:
-          type: string
-          title: Content
-          description: Text content of the page as a single string. '\n' is used to separate lines.
-      type: object
-      required:
-      - content
-      title: RawTextPage
-      description: Raw text extracted from a single page.
-    Status:
-      type: string
-      enum:
-      - Processing
-      - Failed
-      - Processed
-      title: Status
-      description: Possible states of an operation.
-    FieldConfidence:
-      type: string
-      enum:
-      - Certain
-      - High
-      - Medium
-      title: FieldConfidence
-      description: Confidence level of a field.
+      - inference
+      title: ExtractionResponse
+      description: Response for an extraction inference.
   securitySchemes:
     APIKeyHeader:
       type: apiKey

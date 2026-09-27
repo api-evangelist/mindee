@@ -259,115 +259,15 @@ components:
       - id
       title: WebhookResponse
       description: Response from a webhook call.
-    ErrorItem:
+    OCRResponse-Output:
       properties:
-        pointer:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Pointer
-          description: A JSON Pointer to the location of the body property.
-          examples:
-          - '#/model_id'
-        detail:
-          type: string
-          title: Detail
-          description: Explicit information on the issue.
-          examples:
-          - '''model_id'' must be a valid UUID format'
+        inference:
+          $ref: '#/components/schemas/OCRInference-Output'
       type: object
       required:
-      - pointer
-      - detail
-      title: ErrorItem
-      description: Explicit details on a problem.
-    BaseJob:
-      properties:
-        id:
-          type: string
-          format: uuid4
-          title: Id
-          description: UUID of the Job.
-      type: object
-      required:
-      - id
-      title: BaseJob
-      description: Base class for Job.
-    JobResponse:
-      properties:
-        job:
-          $ref: '#/components/schemas/Job'
-      type: object
-      required:
-      - job
-      title: JobResponse
-      description: Response for a Job.
-    InferenceFile:
-      properties:
-        name:
-          type: string
-          title: Name
-          description: File name as sent to the API.
-        alias:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Alias
-          description: Alias sent to the API.
-        page_count:
-          type: integer
-          minimum: 1.0
-          title: Page Count
-          description: Number of pages in the file.
-        mime_type:
-          type: string
-          title: MIME Type
-          description: Detected MIME type of the file.
-      type: object
-      required:
-      - name
-      - page_count
-      - mime_type
-      title: InferenceFile
-      description: File used for the inference.
-    PageOCR:
-      properties:
-        words:
-          items:
-            $ref: '#/components/schemas/WordOCR'
-          type: array
-          title: Words
-          description: List of words extracted from the document page.
-        content:
-          type: string
-          title: Content
-          description: Full text content extracted from the document page.
-      type: object
-      required:
-      - words
-      - content
-      title: PageOCR
-      description: OCR result for a single page.
-    InferenceModel:
-      properties:
-        id:
-          type: string
-          format: uuid4
-          title: ID
-          description: UUID of the model.
-      type: object
-      required:
-      - id
-      title: InferenceModel
-      description: Model used for the inference.
-    Status:
-      type: string
-      enum:
-      - Processing
-      - Failed
-      - Processed
-      title: Status
-      description: Possible states of an operation.
+      - inference
+      title: OCRResponse
+      description: Response for an ocr utility inference.
     OCRResult-Output:
       properties:
         pages:
@@ -415,58 +315,54 @@ components:
       - polygon
       title: WordOCR
       description: OCR result for a single word extracted from the document page.
-    ErrorResponse:
+    InferenceFile:
       properties:
-        status:
+        name:
+          type: string
+          title: Name
+          description: File name as sent to the API.
+        alias:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Alias
+          description: Alias sent to the API.
+        page_count:
           type: integer
-          maximum: 599.0
-          minimum: 100.0
-          title: Status
-          description: The HTTP status code returned by the server.
-          examples:
-          - 422
-        detail:
+          minimum: 1.0
+          title: Page Count
+          description: Number of pages in the file.
+        mime_type:
           type: string
-          title: Detail
-          description: A human-readable explanation specific to the occurrence of the problem.
-          examples:
-          - One or more fields failed validation.
-        title:
-          type: string
-          title: Title
-          description: A short, human-readable summary of the problem.
-          examples:
-          - Invalid fields in form
-        code:
-          type: string
-          title: Code
-          description: A machine-readable code specific to the occurrence of the problem.
-          examples:
-          - 422-001
-        errors:
-          items:
-            $ref: '#/components/schemas/ErrorItem'
-          type: array
-          title: Errors
-          description: A list of explicit details on the problem.
-          default: []
+          title: MIME Type
+          description: Detected MIME type of the file.
       type: object
       required:
-      - status
-      - detail
-      - title
-      - code
-      title: ErrorResponse
-      description: Error response detailing a problem. The format adheres to RFC 9457.
-    OCRResponse-Output:
+      - name
+      - page_count
+      - mime_type
+      title: InferenceFile
+      description: File used for the inference.
+    InferenceModel:
       properties:
-        inference:
-          $ref: '#/components/schemas/OCRInference-Output'
+        id:
+          type: string
+          format: uuid4
+          title: ID
+          description: UUID of the model.
       type: object
       required:
-      - inference
-      title: OCRResponse
-      description: Response for an ocr utility inference.
+      - id
+      title: InferenceModel
+      description: Model used for the inference.
+    Status:
+      type: string
+      enum:
+      - Processing
+      - Failed
+      - Processed
+      title: Status
+      description: Possible states of an operation.
     OCRInference-Output:
       properties:
         id:
@@ -569,6 +465,110 @@ components:
       - polling_url
       title: Job
       description: Information on the processing of a file sent to the Mindee API.
+    PageOCR:
+      properties:
+        words:
+          items:
+            $ref: '#/components/schemas/WordOCR'
+          type: array
+          title: Words
+          description: List of words extracted from the document page.
+        content:
+          type: string
+          title: Content
+          description: Full text content extracted from the document page.
+      type: object
+      required:
+      - words
+      - content
+      title: PageOCR
+      description: OCR result for a single page.
+    ErrorResponse:
+      properties:
+        status:
+          type: integer
+          maximum: 599.0
+          minimum: 100.0
+          title: Status
+          description: The HTTP status code returned by the server.
+          examples:
+          - 422
+        detail:
+          type: string
+          title: Detail
+          description: A human-readable explanation specific to the occurrence of the problem.
+          examples:
+          - One or more fields failed validation.
+        title:
+          type: string
+          title: Title
+          description: A short, human-readable summary of the problem.
+          examples:
+          - Invalid fields in form
+        code:
+          type: string
+          title: Code
+          description: A machine-readable code specific to the occurrence of the problem.
+          examples:
+          - 422-001
+        errors:
+          items:
+            $ref: '#/components/schemas/ErrorItem'
+          type: array
+          title: Errors
+          description: A list of explicit details on the problem.
+          default: []
+      type: object
+      required:
+      - status
+      - detail
+      - title
+      - code
+      title: ErrorResponse
+      description: Error response detailing a problem. The format adheres to RFC 9457.
+    BaseJob:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          title: Id
+          description: UUID of the Job.
+      type: object
+      required:
+      - id
+      title: BaseJob
+      description: Base class for Job.
+    JobResponse:
+      properties:
+        job:
+          $ref: '#/components/schemas/Job'
+      type: object
+      required:
+      - job
+      title: JobResponse
+      description: Response for a Job.
+    ErrorItem:
+      properties:
+        pointer:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Pointer
+          description: A JSON Pointer to the location of the body property.
+          examples:
+          - '#/model_id'
+        detail:
+          type: string
+          title: Detail
+          description: Explicit information on the issue.
+          examples:
+          - '''model_id'' must be a valid UUID format'
+      type: object
+      required:
+      - pointer
+      - detail
+      title: ErrorItem
+      description: Explicit details on a problem.
   securitySchemes:
     APIKeyHeader:
       type: apiKey

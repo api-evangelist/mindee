@@ -126,37 +126,6 @@ components:
       - id
       title: WebhookResponse
       description: Response from a webhook call.
-    ErrorItem:
-      properties:
-        pointer:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Pointer
-          description: A JSON Pointer to the location of the body property.
-          examples:
-          - '#/model_id'
-        detail:
-          type: string
-          title: Detail
-          description: Explicit information on the issue.
-          examples:
-          - '''model_id'' must be a valid UUID format'
-      type: object
-      required:
-      - pointer
-      - detail
-      title: ErrorItem
-      description: Explicit details on a problem.
-    JobResponse:
-      properties:
-        job:
-          $ref: '#/components/schemas/Job'
-      type: object
-      required:
-      - job
-      title: JobResponse
-      description: Response for a Job.
     Status:
       type: string
       enum:
@@ -165,49 +134,6 @@ components:
       - Processed
       title: Status
       description: Possible states of an operation.
-    ErrorResponse:
-      properties:
-        status:
-          type: integer
-          maximum: 599.0
-          minimum: 100.0
-          title: Status
-          description: The HTTP status code returned by the server.
-          examples:
-          - 422
-        detail:
-          type: string
-          title: Detail
-          description: A human-readable explanation specific to the occurrence of the problem.
-          examples:
-          - One or more fields failed validation.
-        title:
-          type: string
-          title: Title
-          description: A short, human-readable summary of the problem.
-          examples:
-          - Invalid fields in form
-        code:
-          type: string
-          title: Code
-          description: A machine-readable code specific to the occurrence of the problem.
-          examples:
-          - 422-001
-        errors:
-          items:
-            $ref: '#/components/schemas/ErrorItem'
-          type: array
-          title: Errors
-          description: A list of explicit details on the problem.
-          default: []
-      type: object
-      required:
-      - status
-      - detail
-      - title
-      - code
-      title: ErrorResponse
-      description: Error response detailing a problem. The format adheres to RFC 9457.
     Job:
       properties:
         id:
@@ -284,6 +210,80 @@ components:
       - polling_url
       title: Job
       description: Information on the processing of a file sent to the Mindee API.
+    JobResponse:
+      properties:
+        job:
+          $ref: '#/components/schemas/Job'
+      type: object
+      required:
+      - job
+      title: JobResponse
+      description: Response for a Job.
+    ErrorResponse:
+      properties:
+        status:
+          type: integer
+          maximum: 599.0
+          minimum: 100.0
+          title: Status
+          description: The HTTP status code returned by the server.
+          examples:
+          - 422
+        detail:
+          type: string
+          title: Detail
+          description: A human-readable explanation specific to the occurrence of the problem.
+          examples:
+          - One or more fields failed validation.
+        title:
+          type: string
+          title: Title
+          description: A short, human-readable summary of the problem.
+          examples:
+          - Invalid fields in form
+        code:
+          type: string
+          title: Code
+          description: A machine-readable code specific to the occurrence of the problem.
+          examples:
+          - 422-001
+        errors:
+          items:
+            $ref: '#/components/schemas/ErrorItem'
+          type: array
+          title: Errors
+          description: A list of explicit details on the problem.
+          default: []
+      type: object
+      required:
+      - status
+      - detail
+      - title
+      - code
+      title: ErrorResponse
+      description: Error response detailing a problem. The format adheres to RFC 9457.
+    ErrorItem:
+      properties:
+        pointer:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Pointer
+          description: A JSON Pointer to the location of the body property.
+          examples:
+          - '#/model_id'
+        detail:
+          type: string
+          title: Detail
+          description: Explicit information on the issue.
+          examples:
+          - '''model_id'' must be a valid UUID format'
+      type: object
+      required:
+      - pointer
+      - detail
+      title: ErrorItem
+      description: Explicit details on a problem.
   securitySchemes:
     APIKeyHeader:
       type: apiKey
