@@ -259,90 +259,6 @@ components:
       - id
       title: WebhookResponse
       description: Response from a webhook call.
-    OCRResponse-Output:
-      properties:
-        inference:
-          $ref: '#/components/schemas/OCRInference-Output'
-      type: object
-      required:
-      - inference
-      title: OCRResponse
-      description: Response for an ocr utility inference.
-    OCRResult-Output:
-      properties:
-        pages:
-          items:
-            $ref: '#/components/schemas/PageOCR'
-          type: array
-          title: pages
-          description: List of OCR results for each page in the document.
-      type: object
-      required:
-      - pages
-      title: OCRResult
-      description: Result of the OCR utility inference.
-    WordOCR:
-      properties:
-        content:
-          type: string
-          title: Content
-          description: Text content of the word.
-        polygon:
-          items:
-            prefixItems:
-            - type: number
-              maximum: 1.0
-              minimum: 0.0
-              title: Coordinate
-              description: Coordinate value relative to document edge.
-            - type: number
-              maximum: 1.0
-              minimum: 0.0
-              title: Coordinate
-              description: Coordinate value relative to document edge.
-            type: array
-            maxItems: 2
-            minItems: 2
-            title: Point
-            description: Relative coordinates of a point in [X,Y] notation.
-          type: array
-          minItems: 3
-          title: Polygon
-          description: Position information as a list of points in clockwise order.
-      type: object
-      required:
-      - content
-      - polygon
-      title: WordOCR
-      description: OCR result for a single word extracted from the document page.
-    InferenceFile:
-      properties:
-        name:
-          type: string
-          title: Name
-          description: File name as sent to the API.
-        alias:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Alias
-          description: Alias sent to the API.
-        page_count:
-          type: integer
-          minimum: 1.0
-          title: Page Count
-          description: Number of pages in the file.
-        mime_type:
-          type: string
-          title: MIME Type
-          description: Detected MIME type of the file.
-      type: object
-      required:
-      - name
-      - page_count
-      - mime_type
-      title: InferenceFile
-      description: File used for the inference.
     InferenceModel:
       properties:
         id:
@@ -355,40 +271,24 @@ components:
       - id
       title: InferenceModel
       description: Model used for the inference.
-    Status:
-      type: string
-      enum:
-      - Processing
-      - Failed
-      - Processed
-      title: Status
-      description: Possible states of an operation.
-    OCRInference-Output:
+    PageOCR:
       properties:
-        id:
+        words:
+          items:
+            $ref: '#/components/schemas/WordOCR'
+          type: array
+          title: Words
+          description: List of words extracted from the document page.
+        content:
           type: string
-          format: uuid4
-          title: Id
-          description: UUID of the Inference.
-        job:
-          $ref: '#/components/schemas/BaseJob'
-          title: Job
-          description: Job the inference belongs to.
-        model:
-          $ref: '#/components/schemas/InferenceModel'
-        file:
-          $ref: '#/components/schemas/InferenceFile'
-        result:
-          $ref: '#/components/schemas/OCRResult-Output'
+          title: Content
+          description: Full text content extracted from the document page.
       type: object
       required:
-      - id
-      - job
-      - model
-      - file
-      - result
-      title: OCRInference
-      description: The inference result for a ocr utility request.
+      - words
+      - content
+      title: PageOCR
+      description: OCR result for a single page.
     Job:
       properties:
         id:
@@ -465,24 +365,43 @@ components:
       - polling_url
       title: Job
       description: Information on the processing of a file sent to the Mindee API.
-    PageOCR:
+    JobResponse:
       properties:
-        words:
-          items:
-            $ref: '#/components/schemas/WordOCR'
-          type: array
-          title: Words
-          description: List of words extracted from the document page.
-        content:
-          type: string
-          title: Content
-          description: Full text content extracted from the document page.
+        job:
+          $ref: '#/components/schemas/Job'
       type: object
       required:
-      - words
-      - content
-      title: PageOCR
-      description: OCR result for a single page.
+      - job
+      title: JobResponse
+      description: Response for a Job.
+    InferenceFile:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: File name as sent to the API.
+        alias:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Alias
+          description: Alias sent to the API.
+        page_count:
+          type: integer
+          minimum: 1.0
+          title: Page Count
+          description: Number of pages in the file.
+        mime_type:
+          type: string
+          title: MIME Type
+          description: Detected MIME type of the file.
+      type: object
+      required:
+      - name
+      - page_count
+      - mime_type
+      title: InferenceFile
+      description: File used for the inference.
     ErrorResponse:
       properties:
         status:
@@ -526,6 +445,23 @@ components:
       - code
       title: ErrorResponse
       description: Error response detailing a problem. The format adheres to RFC 9457.
+    Status:
+      type: string
+      enum:
+      - Processing
+      - Failed
+      - Processed
+      title: Status
+      description: Possible states of an operation.
+    OCRResponse-Output:
+      properties:
+        inference:
+          $ref: '#/components/schemas/OCRInference-Output'
+      type: object
+      required:
+      - inference
+      title: OCRResponse
+      description: Response for an ocr utility inference.
     BaseJob:
       properties:
         id:
@@ -538,15 +474,6 @@ components:
       - id
       title: BaseJob
       description: Base class for Job.
-    JobResponse:
-      properties:
-        job:
-          $ref: '#/components/schemas/Job'
-      type: object
-      required:
-      - job
-      title: JobResponse
-      description: Response for a Job.
     ErrorItem:
       properties:
         pointer:
@@ -569,6 +496,79 @@ components:
       - detail
       title: ErrorItem
       description: Explicit details on a problem.
+    OCRResult-Output:
+      properties:
+        pages:
+          items:
+            $ref: '#/components/schemas/PageOCR'
+          type: array
+          title: pages
+          description: List of OCR results for each page in the document.
+      type: object
+      required:
+      - pages
+      title: OCRResult
+      description: Result of the OCR utility inference.
+    WordOCR:
+      properties:
+        content:
+          type: string
+          title: Content
+          description: Text content of the word.
+        polygon:
+          items:
+            prefixItems:
+            - type: number
+              maximum: 1.0
+              minimum: 0.0
+              title: Coordinate
+              description: Coordinate value relative to document edge.
+            - type: number
+              maximum: 1.0
+              minimum: 0.0
+              title: Coordinate
+              description: Coordinate value relative to document edge.
+            type: array
+            maxItems: 2
+            minItems: 2
+            title: Point
+            description: Relative coordinates of a point in [X,Y] notation.
+          type: array
+          minItems: 3
+          title: Polygon
+          description: Position information as a list of points in clockwise order.
+      type: object
+      required:
+      - content
+      - polygon
+      title: WordOCR
+      description: OCR result for a single word extracted from the document page.
+    OCRInference-Output:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          title: Id
+          description: UUID of the Inference.
+        job:
+          $ref: '#/components/schemas/BaseJob'
+          title: Job
+          description: Job the inference belongs to.
+        model:
+          $ref: '#/components/schemas/InferenceModel'
+        file:
+          $ref: '#/components/schemas/InferenceFile'
+        result:
+          $ref: '#/components/schemas/OCRResult-Output'
+      type: object
+      required:
+      - id
+      - job
+      - model
+      - file
+      - result
+      title: OCRInference
+      description: The inference result for a ocr utility request.
   securitySchemes:
     APIKeyHeader:
       type: apiKey

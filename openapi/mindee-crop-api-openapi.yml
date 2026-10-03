@@ -229,108 +229,6 @@ paths:
           description: Unprocessable Content
 components:
   schemas:
-    CropItem-Output:
-      properties:
-        object_type:
-          type: string
-          title: Object Type
-          description: Type or classification of the detected object.
-        location:
-          $ref: '#/components/schemas/FieldLocation'
-          title: Location
-          description: Location which includes cropping coordinates for the detected object, within the source document.
-        extraction_response:
-          anyOf:
-          - $ref: '#/components/schemas/ExtractionResponse-Output'
-          - type: 'null'
-          description: The extraction response associated with the crop.
-      type: object
-      required:
-      - object_type
-      - location
-      title: CropItem
-      description: Result of a cropped document region with chained result.
-    FieldConfidence:
-      type: string
-      enum:
-      - Certain
-      - High
-      - Medium
-      title: FieldConfidence
-      description: Confidence level of a field.
-    ObjectField-Output:
-      properties:
-        locations:
-          items:
-            $ref: '#/components/schemas/FieldLocation'
-          type: array
-          title: Locations
-          default: []
-        confidence:
-          anyOf:
-          - $ref: '#/components/schemas/FieldConfidence'
-          - type: 'null'
-        fields:
-          additionalProperties:
-            oneOf:
-            - $ref: '#/components/schemas/SimpleField'
-            - $ref: '#/components/schemas/ObjectField-Output'
-            - $ref: '#/components/schemas/ListField-Output'
-          propertyNames:
-            description: Name of the field in the data schema.
-            examples:
-            - my_simple_field
-          type: object
-          title: Fields
-      additionalProperties: false
-      type: object
-      required:
-      - fields
-      title: ObjectField
-      description: Field having a set of sub-fields.
-    JobResponse:
-      properties:
-        job:
-          $ref: '#/components/schemas/Job'
-      type: object
-      required:
-      - job
-      title: JobResponse
-      description: Response for a Job.
-    BaseJob:
-      properties:
-        id:
-          type: string
-          format: uuid4
-          title: Id
-          description: UUID of the Job.
-      type: object
-      required:
-      - id
-      title: BaseJob
-      description: Base class for Job.
-    ErrorItem:
-      properties:
-        pointer:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Pointer
-          description: A JSON Pointer to the location of the body property.
-          examples:
-          - '#/model_id'
-        detail:
-          type: string
-          title: Detail
-          description: Explicit information on the issue.
-          examples:
-          - '''model_id'' must be a valid UUID format'
-      type: object
-      required:
-      - pointer
-      - detail
-      title: ErrorItem
-      description: Explicit details on a problem.
     WebhookResponse:
       properties:
         id:
@@ -361,272 +259,32 @@ components:
       - id
       title: WebhookResponse
       description: Response from a webhook call.
-    CropResult-Output:
-      properties:
-        crops:
-          items:
-            $ref: '#/components/schemas/CropItem-Output'
-          type: array
-          title: Crops
-          description: List of objects and their cropping coordinates identified in the source document.
-      type: object
-      required:
-      - crops
-      title: CropResult
-      description: Result of a crop utility inference.
-    CropResponse-Output:
-      properties:
-        inference:
-          $ref: '#/components/schemas/CropInference-Output'
-      type: object
-      required:
-      - inference
-      title: CropResponse
-      description: Response for a crop utility inference.
-    InferenceFile:
-      properties:
-        name:
-          type: string
-          title: Name
-          description: File name as sent to the API.
-        alias:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Alias
-          description: Alias sent to the API.
-        page_count:
-          type: integer
-          minimum: 1.0
-          title: Page Count
-          description: Number of pages in the file.
-        mime_type:
-          type: string
-          title: MIME Type
-          description: Detected MIME type of the file.
-      type: object
-      required:
-      - name
-      - page_count
-      - mime_type
-      title: InferenceFile
-      description: File used for the inference.
-    ListField-Output:
-      properties:
-        items:
-          items:
-            oneOf:
-            - $ref: '#/components/schemas/SimpleField'
-            - $ref: '#/components/schemas/ObjectField-Output'
-            - $ref: '#/components/schemas/ListField-Output'
-          type: array
-          title: Items
-        confidence:
-          anyOf:
-          - $ref: '#/components/schemas/FieldConfidence'
-          - type: 'null'
-      additionalProperties: false
-      type: object
-      required:
-      - items
-      title: ListField
-      description: Field having a list of fields.
-    Status:
-      type: string
-      enum:
-      - Processing
-      - Failed
-      - Processed
-      title: Status
-      description: Possible states of an operation.
-    Rag:
-      properties:
-        retrieved_document_id:
-          anyOf:
-          - type: string
-            format: uuid4
-          - type: 'null'
-          title: Retrieved document ID
-          description: The UUID of the matched document used during the RAG operation.
-      type: object
-      required:
-      - retrieved_document_id
-      title: Rag
-      description: Metadata about the RAG operation.
-    RawText:
-      properties:
-        pages:
-          items:
-            $ref: '#/components/schemas/RawTextPage'
-          type: array
-          title: Pages
-          description: List of pages with their extracted text content.
-      type: object
-      required:
-      - pages
-      title: RawText
-      description: Raw text extracted from all pages in the document.
-    FieldLocation:
-      properties:
-        polygon:
-          items:
-            prefixItems:
-            - type: number
-              maximum: 1.0
-              minimum: 0.0
-              title: Coordinate
-              description: Coordinate value relative to document edge.
-            - type: number
-              maximum: 1.0
-              minimum: 0.0
-              title: Coordinate
-              description: Coordinate value relative to document edge.
-            type: array
-            maxItems: 2
-            minItems: 2
-            title: Point
-            description: Relative coordinates of a point in [X,Y] notation.
-          type: array
-          minItems: 3
-          title: Polygon
-          description: Position information as a list of points in clockwise order.
-        page:
-          type: integer
-          minimum: 0.0
-          title: Page
-          description: 0-based page index of where the polygon is located.
-      type: object
-      required:
-      - polygon
-      - page
-      title: FieldLocation
-      description: A field's location on the document.
-    InferenceActiveOptions:
-      properties:
-        raw_text:
-          type: boolean
-          title: Raw Text
-          description: 'Whether the Raw Text feature was activated.
-
-            When this feature is activated, the raw text extracted from the document is returned in the result.'
-        polygon:
-          type: boolean
-          title: Polygon
-          description: 'Whether the polygon feature was activated.
-
-            When this feature is activated, the bounding-box polygon(s) for each field is returned in the result.'
-        confidence:
-          type: boolean
-          title: Confidence
-          description: 'Whether the confidence feature was activated.
-
-            When this feature is activated, a confidence score for each field is returned in the result.'
-        rag:
-          type: boolean
-          title: RAG
-          description: 'Whether the Retrieval-Augmented Generation feature was activated.
-
-            When this feature is activated, the RAG pipeline is used to increase result accuracy.'
-        multipage_context:
-          type: boolean
-          title: Multipage Context
-          description: 'Whether the multipage context feature was activated.
-
-            When this feature is activated, the model has access to all the other pages as context.'
-        text_context:
-          type: boolean
-          title: Text Context
-          description: 'Whether the text context feature was activated.
-
-            When this feature is activated, the provided context is used to improve the accuracy of the inference.'
-        data_schema:
-          $ref: '#/components/schemas/DataSchemaActiveOption'
-          title: Data Schema
-          description: Data schema options provided for the inference.
-      type: object
-      required:
-      - raw_text
-      - polygon
-      - confidence
-      - rag
-      - multipage_context
-      - text_context
-      - data_schema
-      title: InferenceActiveOptions
-      description: 'Options which were activated during the inference.
-
-
-        Options can be activated or deactivated:
-
-        * By setting their default values on the Platform UI
-
-        * By explicitly setting them in the inference request'
-    InferenceModel:
+    CropInference-Output:
       properties:
         id:
           type: string
           format: uuid4
-          title: ID
-          description: UUID of the model.
+          title: Id
+          description: UUID of the Inference.
+        job:
+          $ref: '#/components/schemas/BaseJob'
+          title: Job
+          description: Job the inference belongs to.
+        model:
+          $ref: '#/components/schemas/InferenceModel'
+        file:
+          $ref: '#/components/schemas/InferenceFile'
+        result:
+          $ref: '#/components/schemas/CropResult-Output'
       type: object
       required:
       - id
-      title: InferenceModel
-      description: Model used for the inference.
-    DataSchemaActiveOption:
-      properties:
-        replace:
-          type: boolean
-          title: Replace
-          description: Whether the data schema was replaced for the inference.
-      type: object
-      required:
-      - replace
-      title: DataSchemaActiveOption
-      description: Data schema options activated during the inference.
-    ErrorResponse:
-      properties:
-        status:
-          type: integer
-          maximum: 599.0
-          minimum: 100.0
-          title: Status
-          description: The HTTP status code returned by the server.
-          examples:
-          - 422
-        detail:
-          type: string
-          title: Detail
-          description: A human-readable explanation specific to the occurrence of the problem.
-          examples:
-          - One or more fields failed validation.
-        title:
-          type: string
-          title: Title
-          description: A short, human-readable summary of the problem.
-          examples:
-          - Invalid fields in form
-        code:
-          type: string
-          title: Code
-          description: A machine-readable code specific to the occurrence of the problem.
-          examples:
-          - 422-001
-        errors:
-          items:
-            $ref: '#/components/schemas/ErrorItem'
-          type: array
-          title: Errors
-          description: A list of explicit details on the problem.
-          default: []
-      type: object
-      required:
-      - status
-      - detail
-      - title
-      - code
-      title: ErrorResponse
-      description: Error response detailing a problem. The format adheres to RFC 9457.
+      - job
+      - model
+      - file
+      - result
+      title: CropInference
+      description: The inference result for a crop utility request.
     ExtractionInference-Output:
       properties:
         id:
@@ -656,69 +314,15 @@ components:
       - active_options
       title: ExtractionInference
       description: The inference result for an extraction request.
-    CropInference-Output:
+    JobResponse:
       properties:
-        id:
-          type: string
-          format: uuid4
-          title: Id
-          description: UUID of the Inference.
         job:
-          $ref: '#/components/schemas/BaseJob'
-          title: Job
-          description: Job the inference belongs to.
-        model:
-          $ref: '#/components/schemas/InferenceModel'
-        file:
-          $ref: '#/components/schemas/InferenceFile'
-        result:
-          $ref: '#/components/schemas/CropResult-Output'
+          $ref: '#/components/schemas/Job'
       type: object
       required:
-      - id
       - job
-      - model
-      - file
-      - result
-      title: CropInference
-      description: The inference result for a crop utility request.
-    SimpleField:
-      properties:
-        locations:
-          items:
-            $ref: '#/components/schemas/FieldLocation'
-          type: array
-          title: Locations
-          default: []
-        confidence:
-          anyOf:
-          - $ref: '#/components/schemas/FieldConfidence'
-          - type: 'null'
-        value:
-          anyOf:
-          - type: boolean
-          - type: integer
-          - type: number
-          - type: string
-          - type: 'null'
-          title: Value
-      additionalProperties: false
-      type: object
-      required:
-      - value
-      title: SimpleField
-      description: Field having a single value.
-    RawTextPage:
-      properties:
-        content:
-          type: string
-          title: Content
-          description: Text content of the page as a single string. '\n' is used to separate lines.
-      type: object
-      required:
-      - content
-      title: RawTextPage
-      description: Raw text extracted from a single page.
+      title: JobResponse
+      description: Response for a Job.
     ExtractionResult-Output:
       properties:
         fields:
@@ -751,6 +355,61 @@ components:
       - fields
       title: ExtractionResult
       description: Result of an extraction inference.
+    Rag:
+      properties:
+        retrieved_document_id:
+          anyOf:
+          - type: string
+            format: uuid4
+          - type: 'null'
+          title: Retrieved document ID
+          description: The UUID of the matched document used during the RAG operation.
+      type: object
+      required:
+      - retrieved_document_id
+      title: Rag
+      description: Metadata about the RAG operation.
+    ObjectField-Output:
+      properties:
+        locations:
+          items:
+            $ref: '#/components/schemas/FieldLocation'
+          type: array
+          title: Locations
+          default: []
+        confidence:
+          anyOf:
+          - $ref: '#/components/schemas/FieldConfidence'
+          - type: 'null'
+        fields:
+          additionalProperties:
+            oneOf:
+            - $ref: '#/components/schemas/SimpleField'
+            - $ref: '#/components/schemas/ObjectField-Output'
+            - $ref: '#/components/schemas/ListField-Output'
+          propertyNames:
+            description: Name of the field in the data schema.
+            examples:
+            - my_simple_field
+          type: object
+          title: Fields
+      additionalProperties: false
+      type: object
+      required:
+      - fields
+      title: ObjectField
+      description: Field having a set of sub-fields.
+    RawTextPage:
+      properties:
+        content:
+          type: string
+          title: Content
+          description: Text content of the page as a single string. '\n' is used to separate lines.
+      type: object
+      required:
+      - content
+      title: RawTextPage
+      description: Raw text extracted from a single page.
     Job:
       properties:
         id:
@@ -836,6 +495,347 @@ components:
       - inference
       title: ExtractionResponse
       description: Response for an extraction inference.
+    CropResponse-Output:
+      properties:
+        inference:
+          $ref: '#/components/schemas/CropInference-Output'
+      type: object
+      required:
+      - inference
+      title: CropResponse
+      description: Response for a crop utility inference.
+    BaseJob:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          title: Id
+          description: UUID of the Job.
+      type: object
+      required:
+      - id
+      title: BaseJob
+      description: Base class for Job.
+    InferenceActiveOptions:
+      properties:
+        raw_text:
+          type: boolean
+          title: Raw Text
+          description: 'Whether the Raw Text feature was activated.
+
+            When this feature is activated, the raw text extracted from the document is returned in the result.'
+        polygon:
+          type: boolean
+          title: Polygon
+          description: 'Whether the polygon feature was activated.
+
+            When this feature is activated, the bounding-box polygon(s) for each field is returned in the result.'
+        confidence:
+          type: boolean
+          title: Confidence
+          description: 'Whether the confidence feature was activated.
+
+            When this feature is activated, a confidence score for each field is returned in the result.'
+        rag:
+          type: boolean
+          title: RAG
+          description: 'Whether the Retrieval-Augmented Generation feature was activated.
+
+            When this feature is activated, the RAG pipeline is used to increase result accuracy.'
+        multipage_context:
+          type: boolean
+          title: Multipage Context
+          description: 'Whether the multipage context feature was activated.
+
+            When this feature is activated, the model has access to all the other pages as context.'
+        text_context:
+          type: boolean
+          title: Text Context
+          description: 'Whether the text context feature was activated.
+
+            When this feature is activated, the provided context is used to improve the accuracy of the inference.'
+        data_schema:
+          $ref: '#/components/schemas/DataSchemaActiveOption'
+          title: Data Schema
+          description: Data schema options provided for the inference.
+      type: object
+      required:
+      - raw_text
+      - polygon
+      - confidence
+      - rag
+      - multipage_context
+      - text_context
+      - data_schema
+      title: InferenceActiveOptions
+      description: 'Options which were activated during the inference.
+
+
+        Options can be activated or deactivated:
+
+        * By setting their default values on the Platform UI
+
+        * By explicitly setting them in the inference request'
+    InferenceFile:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: File name as sent to the API.
+        alias:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Alias
+          description: Alias sent to the API.
+        page_count:
+          type: integer
+          minimum: 1.0
+          title: Page Count
+          description: Number of pages in the file.
+        mime_type:
+          type: string
+          title: MIME Type
+          description: Detected MIME type of the file.
+      type: object
+      required:
+      - name
+      - page_count
+      - mime_type
+      title: InferenceFile
+      description: File used for the inference.
+    FieldConfidence:
+      type: string
+      enum:
+      - Certain
+      - High
+      - Medium
+      title: FieldConfidence
+      description: Confidence level of a field.
+    RawText:
+      properties:
+        pages:
+          items:
+            $ref: '#/components/schemas/RawTextPage'
+          type: array
+          title: Pages
+          description: List of pages with their extracted text content.
+      type: object
+      required:
+      - pages
+      title: RawText
+      description: Raw text extracted from all pages in the document.
+    InferenceModel:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          title: ID
+          description: UUID of the model.
+      type: object
+      required:
+      - id
+      title: InferenceModel
+      description: Model used for the inference.
+    ListField-Output:
+      properties:
+        items:
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/SimpleField'
+            - $ref: '#/components/schemas/ObjectField-Output'
+            - $ref: '#/components/schemas/ListField-Output'
+          type: array
+          title: Items
+        confidence:
+          anyOf:
+          - $ref: '#/components/schemas/FieldConfidence'
+          - type: 'null'
+      additionalProperties: false
+      type: object
+      required:
+      - items
+      title: ListField
+      description: Field having a list of fields.
+    CropResult-Output:
+      properties:
+        crops:
+          items:
+            $ref: '#/components/schemas/CropItem-Output'
+          type: array
+          title: Crops
+          description: List of objects and their cropping coordinates identified in the source document.
+      type: object
+      required:
+      - crops
+      title: CropResult
+      description: Result of a crop utility inference.
+    FieldLocation:
+      properties:
+        polygon:
+          items:
+            prefixItems:
+            - type: number
+              maximum: 1.0
+              minimum: 0.0
+              title: Coordinate
+              description: Coordinate value relative to document edge.
+            - type: number
+              maximum: 1.0
+              minimum: 0.0
+              title: Coordinate
+              description: Coordinate value relative to document edge.
+            type: array
+            maxItems: 2
+            minItems: 2
+            title: Point
+            description: Relative coordinates of a point in [X,Y] notation.
+          type: array
+          minItems: 3
+          title: Polygon
+          description: Position information as a list of points in clockwise order.
+        page:
+          type: integer
+          minimum: 0.0
+          title: Page
+          description: 0-based page index of where the polygon is located.
+      type: object
+      required:
+      - polygon
+      - page
+      title: FieldLocation
+      description: A field's location on the document.
+    SimpleField:
+      properties:
+        locations:
+          items:
+            $ref: '#/components/schemas/FieldLocation'
+          type: array
+          title: Locations
+          default: []
+        confidence:
+          anyOf:
+          - $ref: '#/components/schemas/FieldConfidence'
+          - type: 'null'
+        value:
+          anyOf:
+          - type: boolean
+          - type: integer
+          - type: number
+          - type: string
+          - type: 'null'
+          title: Value
+      additionalProperties: false
+      type: object
+      required:
+      - value
+      title: SimpleField
+      description: Field having a single value.
+    ErrorResponse:
+      properties:
+        status:
+          type: integer
+          maximum: 599.0
+          minimum: 100.0
+          title: Status
+          description: The HTTP status code returned by the server.
+          examples:
+          - 422
+        detail:
+          type: string
+          title: Detail
+          description: A human-readable explanation specific to the occurrence of the problem.
+          examples:
+          - One or more fields failed validation.
+        title:
+          type: string
+          title: Title
+          description: A short, human-readable summary of the problem.
+          examples:
+          - Invalid fields in form
+        code:
+          type: string
+          title: Code
+          description: A machine-readable code specific to the occurrence of the problem.
+          examples:
+          - 422-001
+        errors:
+          items:
+            $ref: '#/components/schemas/ErrorItem'
+          type: array
+          title: Errors
+          description: A list of explicit details on the problem.
+          default: []
+      type: object
+      required:
+      - status
+      - detail
+      - title
+      - code
+      title: ErrorResponse
+      description: Error response detailing a problem. The format adheres to RFC 9457.
+    Status:
+      type: string
+      enum:
+      - Processing
+      - Failed
+      - Processed
+      title: Status
+      description: Possible states of an operation.
+    DataSchemaActiveOption:
+      properties:
+        replace:
+          type: boolean
+          title: Replace
+          description: Whether the data schema was replaced for the inference.
+      type: object
+      required:
+      - replace
+      title: DataSchemaActiveOption
+      description: Data schema options activated during the inference.
+    ErrorItem:
+      properties:
+        pointer:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Pointer
+          description: A JSON Pointer to the location of the body property.
+          examples:
+          - '#/model_id'
+        detail:
+          type: string
+          title: Detail
+          description: Explicit information on the issue.
+          examples:
+          - '''model_id'' must be a valid UUID format'
+      type: object
+      required:
+      - pointer
+      - detail
+      title: ErrorItem
+      description: Explicit details on a problem.
+    CropItem-Output:
+      properties:
+        object_type:
+          type: string
+          title: Object Type
+          description: Type or classification of the detected object.
+        location:
+          $ref: '#/components/schemas/FieldLocation'
+          title: Location
+          description: Location which includes cropping coordinates for the detected object, within the source document.
+        extraction_response:
+          anyOf:
+          - $ref: '#/components/schemas/ExtractionResponse-Output'
+          - type: 'null'
+          description: The extraction response associated with the crop.
+      type: object
+      required:
+      - object_type
+      - location
+      title: CropItem
+      description: Result of a cropped document region with chained result.
   securitySchemes:
     APIKeyHeader:
       type: apiKey
