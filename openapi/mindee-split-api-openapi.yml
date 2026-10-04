@@ -229,36 +229,18 @@ paths:
           description: Unprocessable Content
 components:
   schemas:
-    WebhookResponse:
+    InferenceModel:
       properties:
         id:
           type: string
           format: uuid4
-          title: Id
-          description: UUID of the webhook endpoint.
-        created_at:
-          type: string
-          format: date-time
-          title: Created At
-          description: Date and time the webhook was called.
-        status:
-          $ref: '#/components/schemas/Status'
-          default: Processing
-        error:
-          anyOf:
-          - $ref: '#/components/schemas/ErrorResponse'
-          - type: 'null'
-          description: If an error occurred when calling the webhook, contains the problem details.
-        attempts_count:
-          type: integer
-          title: Attempts Count
-          description: Number of attempts made to call the webhook.
-          default: 0
+          title: ID
+          description: UUID of the model.
       type: object
       required:
       - id
-      title: WebhookResponse
-      description: Response from a webhook call.
+      title: InferenceModel
+      description: Model used for the inference.
     ExtractionInference-Output:
       properties:
         id:
@@ -288,6 +270,127 @@ components:
       - active_options
       title: ExtractionInference
       description: The inference result for an extraction request.
+    InferenceActiveOptions:
+      properties:
+        raw_text:
+          type: boolean
+          title: Raw Text
+          description: 'Whether the Raw Text feature was activated.
+
+            When this feature is activated, the raw text extracted from the document is returned in the result.'
+        polygon:
+          type: boolean
+          title: Polygon
+          description: 'Whether the polygon feature was activated.
+
+            When this feature is activated, the bounding-box polygon(s) for each field is returned in the result.'
+        confidence:
+          type: boolean
+          title: Confidence
+          description: 'Whether the confidence feature was activated.
+
+            When this feature is activated, a confidence score for each field is returned in the result.'
+        rag:
+          type: boolean
+          title: RAG
+          description: 'Whether the Retrieval-Augmented Generation feature was activated.
+
+            When this feature is activated, the RAG pipeline is used to increase result accuracy.'
+        multipage_context:
+          type: boolean
+          title: Multipage Context
+          description: 'Whether the multipage context feature was activated.
+
+            When this feature is activated, the model has access to all the other pages as context.'
+        text_context:
+          type: boolean
+          title: Text Context
+          description: 'Whether the text context feature was activated.
+
+            When this feature is activated, the provided context is used to improve the accuracy of the inference.'
+        data_schema:
+          $ref: '#/components/schemas/DataSchemaActiveOption'
+          title: Data Schema
+          description: Data schema options provided for the inference.
+      type: object
+      required:
+      - raw_text
+      - polygon
+      - confidence
+      - rag
+      - multipage_context
+      - text_context
+      - data_schema
+      title: InferenceActiveOptions
+      description: 'Options which were activated during the inference.
+
+
+        Options can be activated or deactivated:
+
+        * By setting their default values on the Platform UI
+
+        * By explicitly setting them in the inference request'
+    SplitResult-Output:
+      properties:
+        splits:
+          items:
+            $ref: '#/components/schemas/SplitRange-Output'
+          type: array
+          title: Documents
+          description: List of documents identified within a multi-document source file.
+      type: object
+      required:
+      - splits
+      title: SplitResult
+      description: Result of the document splitter inference.
+    Status:
+      type: string
+      enum:
+      - Processing
+      - Failed
+      - Processed
+      title: Status
+      description: Possible states of an operation.
+    ErrorItem:
+      properties:
+        pointer:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Pointer
+          description: A JSON Pointer to the location of the body property.
+          examples:
+          - '#/model_id'
+        detail:
+          type: string
+          title: Detail
+          description: Explicit information on the issue.
+          examples:
+          - '''model_id'' must be a valid UUID format'
+      type: object
+      required:
+      - pointer
+      - detail
+      title: ErrorItem
+      description: Explicit details on a problem.
+    SplitResponse-Output:
+      properties:
+        inference:
+          $ref: '#/components/schemas/SplitInference-Output'
+      type: object
+      required:
+      - inference
+      title: SplitResponse
+      description: Response for a split utility inference.
+    ExtractionResponse-Output:
+      properties:
+        inference:
+          $ref: '#/components/schemas/ExtractionInference-Output'
+      type: object
+      required:
+      - inference
+      title: ExtractionResponse
+      description: Response for an extraction inference.
     JobResponse:
       properties:
         job:
@@ -297,6 +400,133 @@ components:
       - job
       title: JobResponse
       description: Response for a Job.
+    InferenceFile:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: File name as sent to the API.
+        alias:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Alias
+          description: Alias sent to the API.
+        page_count:
+          type: integer
+          minimum: 1.0
+          title: Page Count
+          description: Number of pages in the file.
+        mime_type:
+          type: string
+          title: MIME Type
+          description: Detected MIME type of the file.
+      type: object
+      required:
+      - name
+      - page_count
+      - mime_type
+      title: InferenceFile
+      description: File used for the inference.
+    ListField-Output:
+      properties:
+        items:
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/SimpleField'
+            - $ref: '#/components/schemas/ObjectField-Output'
+            - $ref: '#/components/schemas/ListField-Output'
+          type: array
+          title: Items
+        confidence:
+          anyOf:
+          - $ref: '#/components/schemas/FieldConfidence'
+          - type: 'null'
+      additionalProperties: false
+      type: object
+      required:
+      - items
+      title: ListField
+      description: Field having a list of fields.
+    ObjectField-Output:
+      properties:
+        locations:
+          items:
+            $ref: '#/components/schemas/FieldLocation'
+          type: array
+          title: Locations
+          default: []
+        confidence:
+          anyOf:
+          - $ref: '#/components/schemas/FieldConfidence'
+          - type: 'null'
+        fields:
+          additionalProperties:
+            oneOf:
+            - $ref: '#/components/schemas/SimpleField'
+            - $ref: '#/components/schemas/ObjectField-Output'
+            - $ref: '#/components/schemas/ListField-Output'
+          propertyNames:
+            description: Name of the field in the data schema.
+            examples:
+            - my_simple_field
+          type: object
+          title: Fields
+      additionalProperties: false
+      type: object
+      required:
+      - fields
+      title: ObjectField
+      description: Field having a set of sub-fields.
+    DataSchemaActiveOption:
+      properties:
+        replace:
+          type: boolean
+          title: Replace
+          description: Whether the data schema was replaced for the inference.
+      type: object
+      required:
+      - replace
+      title: DataSchemaActiveOption
+      description: Data schema options activated during the inference.
+    SimpleField:
+      properties:
+        locations:
+          items:
+            $ref: '#/components/schemas/FieldLocation'
+          type: array
+          title: Locations
+          default: []
+        confidence:
+          anyOf:
+          - $ref: '#/components/schemas/FieldConfidence'
+          - type: 'null'
+        value:
+          anyOf:
+          - type: boolean
+          - type: integer
+          - type: number
+          - type: string
+          - type: 'null'
+          title: Value
+      additionalProperties: false
+      type: object
+      required:
+      - value
+      title: SimpleField
+      description: Field having a single value.
+    BaseJob:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          title: Id
+          description: UUID of the Job.
+      type: object
+      required:
+      - id
+      title: BaseJob
+      description: Base class for Job.
     ExtractionResult-Output:
       properties:
         fields:
@@ -329,36 +559,6 @@ components:
       - fields
       title: ExtractionResult
       description: Result of an extraction inference.
-    ObjectField-Output:
-      properties:
-        locations:
-          items:
-            $ref: '#/components/schemas/FieldLocation'
-          type: array
-          title: Locations
-          default: []
-        confidence:
-          anyOf:
-          - $ref: '#/components/schemas/FieldConfidence'
-          - type: 'null'
-        fields:
-          additionalProperties:
-            oneOf:
-            - $ref: '#/components/schemas/SimpleField'
-            - $ref: '#/components/schemas/ObjectField-Output'
-            - $ref: '#/components/schemas/ListField-Output'
-          propertyNames:
-            description: Name of the field in the data schema.
-            examples:
-            - my_simple_field
-          type: object
-          title: Fields
-      additionalProperties: false
-      type: object
-      required:
-      - fields
-      title: ObjectField
-      description: Field having a set of sub-fields.
     RawTextPage:
       properties:
         content:
@@ -446,15 +646,19 @@ components:
       - polling_url
       title: Job
       description: Information on the processing of a file sent to the Mindee API.
-    ExtractionResponse-Output:
+    RawText:
       properties:
-        inference:
-          $ref: '#/components/schemas/ExtractionInference-Output'
+        pages:
+          items:
+            $ref: '#/components/schemas/RawTextPage'
+          type: array
+          title: Pages
+          description: List of pages with their extracted text content.
       type: object
       required:
-      - inference
-      title: ExtractionResponse
-      description: Response for an extraction inference.
+      - pages
+      title: RawText
+      description: Raw text extracted from all pages in the document.
     SplitInference-Output:
       properties:
         id:
@@ -481,207 +685,6 @@ components:
       - result
       title: SplitInference
       description: The inference result for a split utility request.
-    BaseJob:
-      properties:
-        id:
-          type: string
-          format: uuid4
-          title: Id
-          description: UUID of the Job.
-      type: object
-      required:
-      - id
-      title: BaseJob
-      description: Base class for Job.
-    InferenceActiveOptions:
-      properties:
-        raw_text:
-          type: boolean
-          title: Raw Text
-          description: 'Whether the Raw Text feature was activated.
-
-            When this feature is activated, the raw text extracted from the document is returned in the result.'
-        polygon:
-          type: boolean
-          title: Polygon
-          description: 'Whether the polygon feature was activated.
-
-            When this feature is activated, the bounding-box polygon(s) for each field is returned in the result.'
-        confidence:
-          type: boolean
-          title: Confidence
-          description: 'Whether the confidence feature was activated.
-
-            When this feature is activated, a confidence score for each field is returned in the result.'
-        rag:
-          type: boolean
-          title: RAG
-          description: 'Whether the Retrieval-Augmented Generation feature was activated.
-
-            When this feature is activated, the RAG pipeline is used to increase result accuracy.'
-        multipage_context:
-          type: boolean
-          title: Multipage Context
-          description: 'Whether the multipage context feature was activated.
-
-            When this feature is activated, the model has access to all the other pages as context.'
-        text_context:
-          type: boolean
-          title: Text Context
-          description: 'Whether the text context feature was activated.
-
-            When this feature is activated, the provided context is used to improve the accuracy of the inference.'
-        data_schema:
-          $ref: '#/components/schemas/DataSchemaActiveOption'
-          title: Data Schema
-          description: Data schema options provided for the inference.
-      type: object
-      required:
-      - raw_text
-      - polygon
-      - confidence
-      - rag
-      - multipage_context
-      - text_context
-      - data_schema
-      title: InferenceActiveOptions
-      description: 'Options which were activated during the inference.
-
-
-        Options can be activated or deactivated:
-
-        * By setting their default values on the Platform UI
-
-        * By explicitly setting them in the inference request'
-    SplitResult-Output:
-      properties:
-        splits:
-          items:
-            $ref: '#/components/schemas/SplitRange-Output'
-          type: array
-          title: Documents
-          description: List of documents identified within a multi-document source file.
-      type: object
-      required:
-      - splits
-      title: SplitResult
-      description: Result of the document splitter inference.
-    SplitRange-Output:
-      properties:
-        page_range:
-          items:
-            type: integer
-            minimum: 0.0
-          type: array
-          maxItems: 2
-          minItems: 2
-          title: Page Range
-          description: 0-based page indexes, where the first integer indicates the start page and the second integer indicates the end page.
-        document_type:
-          type: string
-          title: Document Type
-          description: The document type, as identified on given classification values.
-        extraction_response:
-          anyOf:
-          - $ref: '#/components/schemas/ExtractionResponse-Output'
-          - type: 'null'
-          description: The extraction response associated with the split.
-      type: object
-      required:
-      - page_range
-      - document_type
-      title: SplitRange
-      description: A single document with chained result, as identified when splitting a multi-document source file.
-    SplitResponse-Output:
-      properties:
-        inference:
-          $ref: '#/components/schemas/SplitInference-Output'
-      type: object
-      required:
-      - inference
-      title: SplitResponse
-      description: Response for a split utility inference.
-    InferenceFile:
-      properties:
-        name:
-          type: string
-          title: Name
-          description: File name as sent to the API.
-        alias:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Alias
-          description: Alias sent to the API.
-        page_count:
-          type: integer
-          minimum: 1.0
-          title: Page Count
-          description: Number of pages in the file.
-        mime_type:
-          type: string
-          title: MIME Type
-          description: Detected MIME type of the file.
-      type: object
-      required:
-      - name
-      - page_count
-      - mime_type
-      title: InferenceFile
-      description: File used for the inference.
-    FieldConfidence:
-      type: string
-      enum:
-      - Certain
-      - High
-      - Medium
-      title: FieldConfidence
-      description: Confidence level of a field.
-    RawText:
-      properties:
-        pages:
-          items:
-            $ref: '#/components/schemas/RawTextPage'
-          type: array
-          title: Pages
-          description: List of pages with their extracted text content.
-      type: object
-      required:
-      - pages
-      title: RawText
-      description: Raw text extracted from all pages in the document.
-    InferenceModel:
-      properties:
-        id:
-          type: string
-          format: uuid4
-          title: ID
-          description: UUID of the model.
-      type: object
-      required:
-      - id
-      title: InferenceModel
-      description: Model used for the inference.
-    ListField-Output:
-      properties:
-        items:
-          items:
-            oneOf:
-            - $ref: '#/components/schemas/SimpleField'
-            - $ref: '#/components/schemas/ObjectField-Output'
-            - $ref: '#/components/schemas/ListField-Output'
-          type: array
-          title: Items
-        confidence:
-          anyOf:
-          - $ref: '#/components/schemas/FieldConfidence'
-          - type: 'null'
-      additionalProperties: false
-      type: object
-      required:
-      - items
-      title: ListField
-      description: Field having a list of fields.
     FieldLocation:
       properties:
         polygon:
@@ -717,32 +720,84 @@ components:
       - page
       title: FieldLocation
       description: A field's location on the document.
-    SimpleField:
+    FieldConfidence:
+      type: string
+      enum:
+      - Certain
+      - High
+      - Medium
+      title: FieldConfidence
+      description: Confidence level of a field.
+    Rag:
       properties:
-        locations:
-          items:
-            $ref: '#/components/schemas/FieldLocation'
-          type: array
-          title: Locations
-          default: []
-        confidence:
+        retrieved_document_id:
           anyOf:
-          - $ref: '#/components/schemas/FieldConfidence'
-          - type: 'null'
-        value:
-          anyOf:
-          - type: boolean
-          - type: integer
-          - type: number
           - type: string
+            format: uuid4
           - type: 'null'
-          title: Value
-      additionalProperties: false
+          title: Retrieved document ID
+          description: The UUID of the matched document used during the RAG operation.
       type: object
       required:
-      - value
-      title: SimpleField
-      description: Field having a single value.
+      - retrieved_document_id
+      title: Rag
+      description: Metadata about the RAG operation.
+    SplitRange-Output:
+      properties:
+        page_range:
+          items:
+            type: integer
+            minimum: 0.0
+          type: array
+          maxItems: 2
+          minItems: 2
+          title: Page Range
+          description: 0-based page indexes, where the first integer indicates the start page and the second integer indicates the end page.
+        document_type:
+          type: string
+          title: Document Type
+          description: The document type, as identified on given classification values.
+        extraction_response:
+          anyOf:
+          - $ref: '#/components/schemas/ExtractionResponse-Output'
+          - type: 'null'
+          description: The extraction response associated with the split.
+      type: object
+      required:
+      - page_range
+      - document_type
+      title: SplitRange
+      description: A single document with chained result, as identified when splitting a multi-document source file.
+    WebhookResponse:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          title: Id
+          description: UUID of the webhook endpoint.
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: Date and time the webhook was called.
+        status:
+          $ref: '#/components/schemas/Status'
+          default: Processing
+        error:
+          anyOf:
+          - $ref: '#/components/schemas/ErrorResponse'
+          - type: 'null'
+          description: If an error occurred when calling the webhook, contains the problem details.
+        attempts_count:
+          type: integer
+          title: Attempts Count
+          description: Number of attempts made to call the webhook.
+          default: 0
+      type: object
+      required:
+      - id
+      title: WebhookResponse
+      description: Response from a webhook call.
     ErrorResponse:
       properties:
         status:
@@ -786,61 +841,6 @@ components:
       - code
       title: ErrorResponse
       description: Error response detailing a problem. The format adheres to RFC 9457.
-    Status:
-      type: string
-      enum:
-      - Processing
-      - Failed
-      - Processed
-      title: Status
-      description: Possible states of an operation.
-    DataSchemaActiveOption:
-      properties:
-        replace:
-          type: boolean
-          title: Replace
-          description: Whether the data schema was replaced for the inference.
-      type: object
-      required:
-      - replace
-      title: DataSchemaActiveOption
-      description: Data schema options activated during the inference.
-    ErrorItem:
-      properties:
-        pointer:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Pointer
-          description: A JSON Pointer to the location of the body property.
-          examples:
-          - '#/model_id'
-        detail:
-          type: string
-          title: Detail
-          description: Explicit information on the issue.
-          examples:
-          - '''model_id'' must be a valid UUID format'
-      type: object
-      required:
-      - pointer
-      - detail
-      title: ErrorItem
-      description: Explicit details on a problem.
-    Rag:
-      properties:
-        retrieved_document_id:
-          anyOf:
-          - type: string
-            format: uuid4
-          - type: 'null'
-          title: Retrieved document ID
-          description: The UUID of the matched document used during the RAG operation.
-      type: object
-      required:
-      - retrieved_document_id
-      title: Rag
-      description: Metadata about the RAG operation.
   securitySchemes:
     APIKeyHeader:
       type: apiKey

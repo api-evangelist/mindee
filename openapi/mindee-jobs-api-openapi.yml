@@ -96,36 +96,23 @@ paths:
           description: Too Many Requests
 components:
   schemas:
-    WebhookResponse:
+    JobResponse:
       properties:
-        id:
-          type: string
-          format: uuid4
-          title: Id
-          description: UUID of the webhook endpoint.
-        created_at:
-          type: string
-          format: date-time
-          title: Created At
-          description: Date and time the webhook was called.
-        status:
-          $ref: '#/components/schemas/Status'
-          default: Processing
-        error:
-          anyOf:
-          - $ref: '#/components/schemas/ErrorResponse'
-          - type: 'null'
-          description: If an error occurred when calling the webhook, contains the problem details.
-        attempts_count:
-          type: integer
-          title: Attempts Count
-          description: Number of attempts made to call the webhook.
-          default: 0
+        job:
+          $ref: '#/components/schemas/Job'
       type: object
       required:
-      - id
-      title: WebhookResponse
-      description: Response from a webhook call.
+      - job
+      title: JobResponse
+      description: Response for a Job.
+    Status:
+      type: string
+      enum:
+      - Processing
+      - Failed
+      - Processed
+      title: Status
+      description: Possible states of an operation.
     Job:
       properties:
         id:
@@ -202,15 +189,58 @@ components:
       - polling_url
       title: Job
       description: Information on the processing of a file sent to the Mindee API.
-    JobResponse:
+    ErrorItem:
       properties:
-        job:
-          $ref: '#/components/schemas/Job'
+        pointer:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Pointer
+          description: A JSON Pointer to the location of the body property.
+          examples:
+          - '#/model_id'
+        detail:
+          type: string
+          title: Detail
+          description: Explicit information on the issue.
+          examples:
+          - '''model_id'' must be a valid UUID format'
       type: object
       required:
-      - job
-      title: JobResponse
-      description: Response for a Job.
+      - pointer
+      - detail
+      title: ErrorItem
+      description: Explicit details on a problem.
+    WebhookResponse:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          title: Id
+          description: UUID of the webhook endpoint.
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: Date and time the webhook was called.
+        status:
+          $ref: '#/components/schemas/Status'
+          default: Processing
+        error:
+          anyOf:
+          - $ref: '#/components/schemas/ErrorResponse'
+          - type: 'null'
+          description: If an error occurred when calling the webhook, contains the problem details.
+        attempts_count:
+          type: integer
+          title: Attempts Count
+          description: Number of attempts made to call the webhook.
+          default: 0
+      type: object
+      required:
+      - id
+      title: WebhookResponse
+      description: Response from a webhook call.
     ErrorResponse:
       properties:
         status:
@@ -254,36 +284,6 @@ components:
       - code
       title: ErrorResponse
       description: Error response detailing a problem. The format adheres to RFC 9457.
-    Status:
-      type: string
-      enum:
-      - Processing
-      - Failed
-      - Processed
-      title: Status
-      description: Possible states of an operation.
-    ErrorItem:
-      properties:
-        pointer:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Pointer
-          description: A JSON Pointer to the location of the body property.
-          examples:
-          - '#/model_id'
-        detail:
-          type: string
-          title: Detail
-          description: Explicit information on the issue.
-          examples:
-          - '''model_id'' must be a valid UUID format'
-      type: object
-      required:
-      - pointer
-      - detail
-      title: ErrorItem
-      description: Explicit details on a problem.
   securitySchemes:
     APIKeyHeader:
       type: apiKey

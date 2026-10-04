@@ -229,36 +229,6 @@ paths:
         required: true
 components:
   schemas:
-    WebhookResponse:
-      properties:
-        id:
-          type: string
-          format: uuid4
-          title: Id
-          description: UUID of the webhook endpoint.
-        created_at:
-          type: string
-          format: date-time
-          title: Created At
-          description: Date and time the webhook was called.
-        status:
-          $ref: '#/components/schemas/Status'
-          default: Processing
-        error:
-          anyOf:
-          - $ref: '#/components/schemas/ErrorResponse'
-          - type: 'null'
-          description: If an error occurred when calling the webhook, contains the problem details.
-        attempts_count:
-          type: integer
-          title: Attempts Count
-          description: Number of attempts made to call the webhook.
-          default: 0
-      type: object
-      required:
-      - id
-      title: WebhookResponse
-      description: Response from a webhook call.
     InferenceModel:
       properties:
         id:
@@ -271,24 +241,133 @@ components:
       - id
       title: InferenceModel
       description: Model used for the inference.
-    PageOCR:
+    JobResponse:
       properties:
-        words:
-          items:
-            $ref: '#/components/schemas/WordOCR'
-          type: array
-          title: Words
-          description: List of words extracted from the document page.
+        job:
+          $ref: '#/components/schemas/Job'
+      type: object
+      required:
+      - job
+      title: JobResponse
+      description: Response for a Job.
+    OCRResponse-Output:
+      properties:
+        inference:
+          $ref: '#/components/schemas/OCRInference-Output'
+      type: object
+      required:
+      - inference
+      title: OCRResponse
+      description: Response for an ocr utility inference.
+    WordOCR:
+      properties:
         content:
           type: string
           title: Content
-          description: Full text content extracted from the document page.
+          description: Text content of the word.
+        polygon:
+          items:
+            prefixItems:
+            - type: number
+              maximum: 1.0
+              minimum: 0.0
+              title: Coordinate
+              description: Coordinate value relative to document edge.
+            - type: number
+              maximum: 1.0
+              minimum: 0.0
+              title: Coordinate
+              description: Coordinate value relative to document edge.
+            type: array
+            maxItems: 2
+            minItems: 2
+            title: Point
+            description: Relative coordinates of a point in [X,Y] notation.
+          type: array
+          minItems: 3
+          title: Polygon
+          description: Position information as a list of points in clockwise order.
       type: object
       required:
-      - words
       - content
-      title: PageOCR
-      description: OCR result for a single page.
+      - polygon
+      title: WordOCR
+      description: OCR result for a single word extracted from the document page.
+    OCRResult-Output:
+      properties:
+        pages:
+          items:
+            $ref: '#/components/schemas/PageOCR'
+          type: array
+          title: pages
+          description: List of OCR results for each page in the document.
+      type: object
+      required:
+      - pages
+      title: OCRResult
+      description: Result of the OCR utility inference.
+    OCRInference-Output:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          title: Id
+          description: UUID of the Inference.
+        job:
+          $ref: '#/components/schemas/BaseJob'
+          title: Job
+          description: Job the inference belongs to.
+        model:
+          $ref: '#/components/schemas/InferenceModel'
+        file:
+          $ref: '#/components/schemas/InferenceFile'
+        result:
+          $ref: '#/components/schemas/OCRResult-Output'
+      type: object
+      required:
+      - id
+      - job
+      - model
+      - file
+      - result
+      title: OCRInference
+      description: The inference result for a ocr utility request.
+    InferenceFile:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: File name as sent to the API.
+        alias:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Alias
+          description: Alias sent to the API.
+        page_count:
+          type: integer
+          minimum: 1.0
+          title: Page Count
+          description: Number of pages in the file.
+        mime_type:
+          type: string
+          title: MIME Type
+          description: Detected MIME type of the file.
+      type: object
+      required:
+      - name
+      - page_count
+      - mime_type
+      title: InferenceFile
+      description: File used for the inference.
+    Status:
+      type: string
+      enum:
+      - Processing
+      - Failed
+      - Processed
+      title: Status
+      description: Possible states of an operation.
     Job:
       properties:
         id:
@@ -365,43 +444,76 @@ components:
       - polling_url
       title: Job
       description: Information on the processing of a file sent to the Mindee API.
-    JobResponse:
+    ErrorItem:
       properties:
-        job:
-          $ref: '#/components/schemas/Job'
-      type: object
-      required:
-      - job
-      title: JobResponse
-      description: Response for a Job.
-    InferenceFile:
-      properties:
-        name:
-          type: string
-          title: Name
-          description: File name as sent to the API.
-        alias:
+        pointer:
           anyOf:
           - type: string
           - type: 'null'
-          title: Alias
-          description: Alias sent to the API.
-        page_count:
-          type: integer
-          minimum: 1.0
-          title: Page Count
-          description: Number of pages in the file.
-        mime_type:
+          title: Pointer
+          description: A JSON Pointer to the location of the body property.
+          examples:
+          - '#/model_id'
+        detail:
           type: string
-          title: MIME Type
-          description: Detected MIME type of the file.
+          title: Detail
+          description: Explicit information on the issue.
+          examples:
+          - '''model_id'' must be a valid UUID format'
       type: object
       required:
-      - name
-      - page_count
-      - mime_type
-      title: InferenceFile
-      description: File used for the inference.
+      - pointer
+      - detail
+      title: ErrorItem
+      description: Explicit details on a problem.
+    WebhookResponse:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          title: Id
+          description: UUID of the webhook endpoint.
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: Date and time the webhook was called.
+        status:
+          $ref: '#/components/schemas/Status'
+          default: Processing
+        error:
+          anyOf:
+          - $ref: '#/components/schemas/ErrorResponse'
+          - type: 'null'
+          description: If an error occurred when calling the webhook, contains the problem details.
+        attempts_count:
+          type: integer
+          title: Attempts Count
+          description: Number of attempts made to call the webhook.
+          default: 0
+      type: object
+      required:
+      - id
+      title: WebhookResponse
+      description: Response from a webhook call.
+    PageOCR:
+      properties:
+        words:
+          items:
+            $ref: '#/components/schemas/WordOCR'
+          type: array
+          title: Words
+          description: List of words extracted from the document page.
+        content:
+          type: string
+          title: Content
+          description: Full text content extracted from the document page.
+      type: object
+      required:
+      - words
+      - content
+      title: PageOCR
+      description: OCR result for a single page.
     ErrorResponse:
       properties:
         status:
@@ -445,23 +557,6 @@ components:
       - code
       title: ErrorResponse
       description: Error response detailing a problem. The format adheres to RFC 9457.
-    Status:
-      type: string
-      enum:
-      - Processing
-      - Failed
-      - Processed
-      title: Status
-      description: Possible states of an operation.
-    OCRResponse-Output:
-      properties:
-        inference:
-          $ref: '#/components/schemas/OCRInference-Output'
-      type: object
-      required:
-      - inference
-      title: OCRResponse
-      description: Response for an ocr utility inference.
     BaseJob:
       properties:
         id:
@@ -474,101 +569,6 @@ components:
       - id
       title: BaseJob
       description: Base class for Job.
-    ErrorItem:
-      properties:
-        pointer:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Pointer
-          description: A JSON Pointer to the location of the body property.
-          examples:
-          - '#/model_id'
-        detail:
-          type: string
-          title: Detail
-          description: Explicit information on the issue.
-          examples:
-          - '''model_id'' must be a valid UUID format'
-      type: object
-      required:
-      - pointer
-      - detail
-      title: ErrorItem
-      description: Explicit details on a problem.
-    OCRResult-Output:
-      properties:
-        pages:
-          items:
-            $ref: '#/components/schemas/PageOCR'
-          type: array
-          title: pages
-          description: List of OCR results for each page in the document.
-      type: object
-      required:
-      - pages
-      title: OCRResult
-      description: Result of the OCR utility inference.
-    WordOCR:
-      properties:
-        content:
-          type: string
-          title: Content
-          description: Text content of the word.
-        polygon:
-          items:
-            prefixItems:
-            - type: number
-              maximum: 1.0
-              minimum: 0.0
-              title: Coordinate
-              description: Coordinate value relative to document edge.
-            - type: number
-              maximum: 1.0
-              minimum: 0.0
-              title: Coordinate
-              description: Coordinate value relative to document edge.
-            type: array
-            maxItems: 2
-            minItems: 2
-            title: Point
-            description: Relative coordinates of a point in [X,Y] notation.
-          type: array
-          minItems: 3
-          title: Polygon
-          description: Position information as a list of points in clockwise order.
-      type: object
-      required:
-      - content
-      - polygon
-      title: WordOCR
-      description: OCR result for a single word extracted from the document page.
-    OCRInference-Output:
-      properties:
-        id:
-          type: string
-          format: uuid4
-          title: Id
-          description: UUID of the Inference.
-        job:
-          $ref: '#/components/schemas/BaseJob'
-          title: Job
-          description: Job the inference belongs to.
-        model:
-          $ref: '#/components/schemas/InferenceModel'
-        file:
-          $ref: '#/components/schemas/InferenceFile'
-        result:
-          $ref: '#/components/schemas/OCRResult-Output'
-      type: object
-      required:
-      - id
-      - job
-      - model
-      - file
-      - result
-      title: OCRInference
-      description: The inference result for a ocr utility request.
   securitySchemes:
     APIKeyHeader:
       type: apiKey
