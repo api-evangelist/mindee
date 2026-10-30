@@ -1,4 +1,4 @@
-# Mindee (mindee)
+# Mindee
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -66,207 +66,194 @@
 
 Mindee is a document parsing and intelligent document processing platform. Its REST API (api-v2.mindee.net) provides asynchronous inference across five model families — Extraction, Classification, Crop, OCR, and Split — plus a unified Jobs endpoint for polling. Mindee ships prebuilt models for invoices, receipts, passports, IDs, resumes, bank statements, and barcodes, along with customer-configurable extraction models with their own Data Schemas. Native SDKs cover Python, Node.js, Java, PHP, Ruby, and .NET, and front-end vision SDKs cover React and Vue. Mindee also stewards the open-source docTR OCR library.
 
-**APIs.json:** [https://raw.githubusercontent.com/api-evangelist/mindee/refs/heads/main/apis.yml](https://raw.githubusercontent.com/api-evangelist/mindee/refs/heads/main/apis.yml)
+**Areas:** Document Parsing · OCR · Intelligent Document Processing · Artificial Intelligence · Machine Learning · Invoices · Receipts · IDS · Computer Vision
 
-## Scope
+## Mindee on APIs.io
 
-- **Position:** Consuming
-- **Access:** 3rd-Party
+Everything profiled for Mindee is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/mindee/](https://apis.io/providers/mindee/)** — or go straight to one of the APIs or properties below.
 
-## Tags
+### APIs (6)
 
-- Document Parsing
-- OCR
-- IDP
-- AI
-- Machine Learning
-- Invoices
-- Receipts
-- IDs
-- Computer Vision
+- [Mindee Extraction API](https://apis.io/apis/mindee/mindee-extraction-api/) — Extract structured fields from invoices, receipts, IDs, passports, resumes, bank statements, and any other document type via Mindee's configurable…
+- [Mindee Classification API](https://apis.io/apis/mindee/mindee-classification-api/) — Classify documents into predefined categories so they can be routed to the appropriate downstream extraction model. Enqueue at POST…
+- [Mindee Crop API](https://apis.io/apis/mindee/mindee-crop-api/) — Detect, isolate, and crop the document area inside a larger scanned image. Useful for cleaning up phone-captured documents prior to classification or…
+- [Mindee OCR API](https://apis.io/apis/mindee/mindee-ocr-api/) — Run full-page optical character recognition on a document and return the raw text plus bounding polygons. Enqueue at POST /v2/products/ocr/enqueue and…
+- [Mindee Split API](https://apis.io/apis/mindee/mindee-split-api/) — Split a multi-document PDF or image batch into individual documents that can each be classified and extracted independently. Async enqueue/results pattern…
+- [Mindee Jobs API](https://apis.io/apis/mindee/mindee-jobs-api/) — Poll the status of asynchronous Mindee inference jobs across every Mindee model family via GET /v2/jobs/{job_id}. Jobs return Waiting, Processing, Failed,…
 
-## Timestamps
+### Published properties
 
-- **Created:** 2026-05-25
-- **Modified:** 2026-05-25
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-## APIs
+#### Arazzo workflows (14)
 
-### Mindee Extraction API
+Multi-step workflows that chain operations into a business task.
 
-Extract structured fields from invoices, receipts, IDs, passports, resumes, bank statements, and any other document type via Mindee's configurable extraction models. Enqueue a file at POST /v2/inferences/enqueue (or POST /v2/products/extraction/enqueue), reference your model_id, and retrieve the structured JSON result from GET /v2/inferences/{inference_id}. Supports RAG, raw text, polygons, and confidence scores depending on plan.
+- [Mindee Bank Statement Extraction](https://apis.io/arazzos/mindee/mindee-bank-statement-extraction-workflow/)
+- [Mindee Classify Document Type](https://apis.io/arazzos/mindee/mindee-classify-document-type-workflow/)
+- [Mindee Classify Then Extract](https://apis.io/arazzos/mindee/mindee-classify-then-extract-workflow/)
+- [Mindee Crop Document](https://apis.io/arazzos/mindee/mindee-crop-document-workflow/)
+- [Mindee Custom Document Extraction](https://apis.io/arazzos/mindee/mindee-custom-document-extraction-workflow/)
+- [Mindee Extract From URL](https://apis.io/arazzos/mindee/mindee-extract-from-url-workflow/)
+- [Mindee Invoice Extraction](https://apis.io/arazzos/mindee/mindee-invoice-extraction-workflow/)
+- [Mindee OCR Full Text](https://apis.io/arazzos/mindee/mindee-ocr-full-text-workflow/)
+- [Mindee OCR Then Extract](https://apis.io/arazzos/mindee/mindee-ocr-then-extract-workflow/)
+- [Mindee Passport and ID Extraction](https://apis.io/arazzos/mindee/mindee-passport-id-extraction-workflow/)
+- [Mindee Poll Job With Failure Branch](https://apis.io/arazzos/mindee/mindee-poll-job-with-failure-branch-workflow/)
+- [Mindee Receipt Extraction](https://apis.io/arazzos/mindee/mindee-receipt-extraction-workflow/)
+- [Mindee Split Multi-Document File](https://apis.io/arazzos/mindee/mindee-split-multi-document-workflow/)
+- [Mindee Split Then Extract](https://apis.io/arazzos/mindee/mindee-split-then-extract-workflow/)
 
-- **Human URL:** [https://docs.mindee.com/extraction-models/data-schema](https://docs.mindee.com/extraction-models/data-schema)
+#### Agentic access (1)
 
-#### Tags
+Which operations an agent can call, which act, and which need a human in the loop.
 
-- Document Parsing
-- OCR
-- Extraction
-- Invoices
-- Receipts
-- IDP
+- [Mindee Agentic Access](https://apis.io/agentic-access/mindee/mindee-agentic-access/)
 
-#### Properties
+#### JSON Schema (2)
 
-- [Documentation](https://docs.mindee.com/extraction-models/data-schema)
-- [Documentation](https://docs.mindee.com/integrations/api-overview)
-- [OpenAPI](openapi/mindee-extraction-api-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/mindee-extraction-api.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/mindee-extraction-api.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-- [JSON Schema](json-schema/mindee-inference-schema.json) — [JSON Schema](https://json-schema.org/specification)
-- [JSON Structure](json-structure/mindee-extraction-structure.json)
-- [JSON-LD](json-ld/mindee-context.jsonld) — [JSON-LD](https://www.w3.org/TR/json-ld11/)
-- [Example](examples/mindee-extraction-enqueue-example.json)
-- [Example](examples/mindee-extraction-result-example.json)
+The data models the API reads and writes.
 
-### Mindee Classification API
+- [Mindee Inference](https://apis.io/schemas/mindee/mindee-inference/)
+- [Mindee Job](https://apis.io/schemas/mindee/mindee-job/)
 
-Classify documents into predefined categories so they can be routed to the appropriate downstream extraction model. Enqueue at POST /v2/products/classification/enqueue and retrieve the label from GET /v2/products/classification/results/{inference_id}.
+#### JSON Structure (1)
 
-- **Human URL:** [https://docs.mindee.com/classification-models/classification-overview](https://docs.mindee.com/classification-models/classification-overview)
+Data models expressed in JSON Structure.
 
-#### Tags
+- [Mindee Extraction Structure](https://apis.io/json-structure/mindee/mindee-extraction-structure/)
 
-- Document Parsing
-- Classification
-- Routing
-- IDP
+#### JSON-LD (1)
 
-#### Properties
+Linked-data contexts for the provider's vocabulary.
 
-- [Documentation](https://docs.mindee.com/classification-models/classification-overview)
-- [OpenAPI](openapi/mindee-classification-api-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/mindee-classification-api.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/mindee-classification-api.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+- [Mindee Context](https://apis.io/jsonld/mindee/mindee-context/)
 
-### Mindee Crop API
+#### Vocabulary (1)
 
-Detect, isolate, and crop the document area inside a larger scanned image. Useful for cleaning up phone-captured documents prior to classification or extraction. Async enqueue/results pattern at /v2/products/crop/.
+The provider's domain terms, defined.
 
-- **Human URL:** [https://docs.mindee.com/crop-models/crop-overview](https://docs.mindee.com/crop-models/crop-overview)
+- [Mindee Vocabulary](https://apis.io/vocabularies/mindee/mindee-vocabulary/)
 
-#### Tags
+#### Examples (2)
 
-- Document Parsing
-- Cropping
-- Preprocessing
-- IDP
+Example requests and responses.
 
-#### Properties
+- [Mindee Extraction Enqueue Example](https://apis.io/examples/mindee/mindee-extraction-enqueue-example/)
+- [Mindee Extraction Result Example](https://apis.io/examples/mindee/mindee-extraction-result-example/)
 
-- [Documentation](https://docs.mindee.com/crop-models/crop-overview)
-- [OpenAPI](openapi/mindee-crop-api-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/mindee-crop-api.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/mindee-crop-api.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+#### Collections (12)
 
-### Mindee OCR API
+Postman and Open Collection request collections.
 
-Run full-page optical character recognition on a document and return the raw text plus bounding polygons. Enqueue at POST /v2/products/ocr/enqueue and retrieve the OCR payload from GET /v2/products/ocr/results/{inference_id}.
+- [Mindee Classification API](https://apis.io/collections/mindee/open-mindee-classification-api/)
+- [Mindee Classification Crop API](https://apis.io/collections/mindee/open-mindee-crop-api/)
+- [Mindee Classification Extraction API](https://apis.io/collections/mindee/open-mindee-extraction-api/)
+- [Mindee Classification Jobs API](https://apis.io/collections/mindee/open-mindee-jobs-api/)
+- [Mindee Classification Ocr API](https://apis.io/collections/mindee/open-mindee-ocr-api/)
+- [Mindee Classification Split API](https://apis.io/collections/mindee/open-mindee-split-api/)
+- [Mindee Classification API](https://apis.io/collections/mindee/postman-mindee-classification-api/)
+- [Mindee Crop API](https://apis.io/collections/mindee/postman-mindee-crop-api/)
+- [Mindee Extraction API](https://apis.io/collections/mindee/postman-mindee-extraction-api/)
+- [Mindee Jobs API](https://apis.io/collections/mindee/postman-mindee-jobs-api/)
+- [Mindee OCR API](https://apis.io/collections/mindee/postman-mindee-ocr-api/)
+- [Mindee Split API](https://apis.io/collections/mindee/postman-mindee-split-api/)
 
-- **Human URL:** [https://docs.mindee.com/ocr-models/ocr-overview](https://docs.mindee.com/ocr-models/ocr-overview)
+#### Governance rules (2)
 
-#### Tags
+Spectral rulesets for the provider's contracts.
 
-- OCR
-- Document Parsing
-- Text Extraction
+- [Mindee — jsonschema rules](https://apis.io/rules/mindee/mindee-jsonschema-spectral-rules/)
+- [Mindee API Rules](https://apis.io/rules/mindee/mindee-rules/)
 
-#### Properties
+#### Security (2)
 
-- [Documentation](https://docs.mindee.com/ocr-models/ocr-overview)
-- [OpenAPI](openapi/mindee-ocr-api-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/mindee-ocr-api.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/mindee-ocr-api.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+Authentication, trust centre, and vulnerability disclosure.
 
-### Mindee Split API
+- [Mindee Authentication](https://apis.io/security/mindee/mindee-authentication/)
+- [Mindee Domain Security](https://apis.io/security/mindee/mindee-domain-security/)
 
-Split a multi-document PDF or image batch into individual documents that can each be classified and extracted independently. Async enqueue/results pattern at /v2/products/split/.
+#### Plans and pricing (1)
 
-- **Human URL:** [https://docs.mindee.com/split-models/split-overview](https://docs.mindee.com/split-models/split-overview)
+Published plans, tiers and prices.
 
-#### Tags
+- [Mindee Plans Pricing](https://apis.io/plans/mindee/mindee-plans-pricing/)
 
-- Document Parsing
-- Splitting
-- Preprocessing
-- IDP
+#### Rate limits (1)
 
-#### Properties
+Published request limits.
 
-- [Documentation](https://docs.mindee.com/split-models/split-overview)
-- [OpenAPI](openapi/mindee-split-api-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/mindee-split-api.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/mindee-split-api.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+- [Mindee Rate Limits](https://apis.io/rate-limits/mindee/mindee-rate-limits/)
 
-### Mindee Jobs API
+#### FinOps (1)
 
-Poll the status of asynchronous Mindee inference jobs across every Mindee model family via GET /v2/jobs/{job_id}. Jobs return Waiting, Processing, Failed, or Success states and a polling_url plus optional result_url and webhook_url.
+What the API costs to run, by operation.
 
-- **Human URL:** [https://docs.mindee.com/integrations/polling-for-results](https://docs.mindee.com/integrations/polling-for-results)
+- [Mindee Finops](https://apis.io/finops/mindee/mindee-finops/)
 
-#### Tags
+## Where to find this API
 
-- Document Parsing
-- Jobs
-- Async
-- Polling
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
 
-#### Properties
-
-- [Documentation](https://docs.mindee.com/integrations/polling-for-results)
-- [Documentation](https://docs.mindee.com/integrations/webhooks)
-- [OpenAPI](openapi/mindee-jobs-api-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/mindee-jobs-api.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/mindee-jobs-api.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-- [JSON Schema](json-schema/mindee-job-schema.json) — [JSON Schema](https://json-schema.org/specification)
-
-## Common Properties
-
-- [Arazzo Workflows](arazzo/) — [Arazzo Specification](https://spec.openapis.org/arazzo/latest.html)
-- [Portal](https://mindee.com)
+- [Website](https://www.mindee.com/)
 - [Documentation](https://docs.mindee.com)
-- [Getting Started](https://docs.mindee.com/getting-started/quick-start)
-- [Documentation](https://docs.mindee.com/integrations/api-overview)
-- [Authentication](https://docs.mindee.com/integrations/api-keys)
-- [Webhooks](https://docs.mindee.com/integrations/webhooks)
-- [Documentation](https://docs.mindee.com/integrations/polling-for-results)
-- [Errors](https://docs.mindee.com/integrations/problem-database)
-- [Rate Limits](https://docs.mindee.com/integrations/technical-limitations)
-- [Documentation](https://docs.mindee.com/integrations/response-times)
-- [OpenAPI](https://api-v2.mindee.net/openapi.json) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Sign Up](https://app.mindee.com)
-- [Authentication](https://app.mindee.com/api-keys)
-- [Status Page](https://status.mindee.com)
+- [Getting started](https://docs.mindee.com/getting-started/quick-start)
 - [Pricing](https://mindee.com/pricing)
 - [Blog](https://mindee.com/blog)
-- [About Us](https://mindee.com/about)
-- [Careers](https://mindee.com/careers)
-- [Contact](https://mindee.com/contact)
-- [LinkedIn](https://www.linkedin.com/company/mindee)
-- [Twitter](https://twitter.com/mindee_official)
-- [GitHub Organization](https://github.com/mindee)
-- [SDK](https://github.com/mindee/mindee-api-python)
-- [SDK](https://github.com/mindee/mindee-api-nodejs)
-- [SDK](https://github.com/mindee/mindee-api-java)
-- [SDK](https://github.com/mindee/mindee-api-php)
-- [SDK](https://github.com/mindee/mindee-api-ruby)
-- [SDK](https://github.com/mindee/mindee-api-dotnet)
-- [SDK](https://github.com/mindee/react-mindee-js)
-- [SDK](https://github.com/mindee/vue-mindee-js)
-- [Open Source](https://github.com/mindee/doctr)
-- [Integration](https://github.com/mindee/integration-zapier)
-- [Integration](https://github.com/mindee/integration-microsoft-flow)
-- [Documentation](https://github.com/mindee/platform-docs)
-- [Plans](plans/mindee-plans-pricing.yml)
-- [Rate Limits](rate-limits/mindee-rate-limits.yml)
-- [Fin Ops](finops/mindee-finops.yml)
-- [Vocabulary](vocabulary/mindee-vocabulary.yml)
-- [Spectral Rules](rules/mindee-rules.yml)
-- [Features](undefined)
+- [GitHub](https://github.com/mindee)
+- [Status](https://status.mindee.com)
 
-## Maintainers
+## API Evangelist rating
 
-**FN:** Kin Lane
-**Email:** info@apievangelist.com
-**URL:** https://apievangelist.com
+**Kin Score 50.0** — developing · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 62.5 |
+| Contract quality | 67.2 |
+| Contract governance | 27.3 |
+| Operational transparency | 28.9 |
+| Developer ergonomics | 63.1 |
+| Access clarity | 39.5 |
+
+**Agent readiness 31.3** — agent-ready
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | — |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | verified |
+| OpenAPI Examples | partial |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | unknown |
+| Agent Skills | — |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | na |
+| Operation Distinctiveness | — |
+
+**Regulatory alignment 15.5** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/mindee/](https://apis.io/providers/mindee/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Mindee: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/mindee/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
